@@ -25,7 +25,14 @@ export default function Index() {
 
   return (
     <div className="min-h-screen bg-[#0f0f0f] flex flex-col">
-      <Header viewMode={flow.viewMode} setViewMode={flow.setViewMode} step={flow.step} />
+      <Header 
+        viewMode={flow.viewMode} 
+        setViewMode={flow.setViewMode} 
+        step={flow.step}
+        workflowStep={flow.workflowStep}
+        setStep={flow.setStep}
+        onResume={flow.resumeStep}
+      />
 
       <div className="flex-1 flex overflow-hidden">
         <main className="flex-1 overflow-y-auto">

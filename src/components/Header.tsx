@@ -1,11 +1,14 @@
 import { ViewMode, WelderStep } from '@/types/weldcloud';
-import { Zap, ChevronDown, Wifi } from 'lucide-react';
+import { Zap, ChevronDown, Wifi, RotateCcw } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 interface HeaderProps {
   viewMode: ViewMode;
   setViewMode: (m: ViewMode) => void;
   step: WelderStep;
+  workflowStep: WelderStep;
+  setStep: (s: WelderStep) => void;
+  onResume: () => void;
 }
 
 const welderSteps: { key: WelderStep; label: string; num: string }[] = [
@@ -16,8 +19,9 @@ const welderSteps: { key: WelderStep; label: string; num: string }[] = [
   { key: 'completeSign', label: 'Complete · sign', num: '05' },
 ];
 
-export function Header({ viewMode, setViewMode, step }: HeaderProps) {
+export function Header({ viewMode, setViewMode, step, workflowStep, setStep, onResume }: HeaderProps) {
   const activeIndex = welderSteps.findIndex((s) => s.key === step);
+  const workflowIndex = welderSteps.findIndex((s) => s.key === workflowStep);
 
   return (
     <header className="bg-[#141414] border-b border-[#2a2a2a]">
@@ -37,6 +41,16 @@ export function Header({ viewMode, setViewMode, step }: HeaderProps) {
         </div>
 
         <div className="flex items-center gap-2">
+          {viewMode === 'welder' && step !== workflowStep && (
+            <Button
+              onClick={onResume}
+              className="bg-yellow-500 hover:bg-yellow-400 text-black font-medium text-xs gap-1.5"
+            >
+              <RotateCcw className="w-3 h-3" />
+              Resume
+            </Button>
+          )}
+
           <div className="flex items-center gap-2 px-3 py-1.5 bg-[#1f1f1f] rounded-md">
             <div className="w-6 h-6 bg-yellow-500 rounded-full flex items-center justify-center text-xs font-bold text-black">
               MC
@@ -81,23 +95,22 @@ export function Header({ viewMode, setViewMode, step }: HeaderProps) {
       </div>
 
       {viewMode === 'welder' && (
-        <div className="flex border-t border-[#2a2a2a]">
+        <div className="flex border-t border-[#2a2a2a] overflow-x-auto">
           {welderSteps.map((s, i) => {
-            const isActive = i === activeIndex;
-            const isPast = i < activeIndex;
+            const isViewed = i === activeIndex;
+            const isPast = i < workflowIndex;
+            const isFuture = i > workflowIndex;
             return (
               <button
                 key={s.key}
-                onClick={() => {
-                  if (isPast) setViewMode('welder');
-                }}
-                className={`flex-1 flex items-center gap-2 px-4 py-2.5 text-left transition-colors ${
-                  isActive ? 'bg-[#1f1f1f]' : 'hover:bg-[#1a1a1a]'
+                onClick={() => setStep(s.key)}
+                className={`flex-1 flex items-center gap-2 px-4 py-2.5 text-left transition-colors min-w-[100px] ${
+                  isViewed ? 'bg-[#1f1f1f]' : 'hover:bg-[#1a1a1a]'
                 }`}
               >
                 <span
-                  className={`flex items-center justify-center w-6 h-6 rounded text-xs font-bold ${
-                    isActive
+                  className={`flex items-center justify-center w-6 h-6 rounded text-xs font-bold shrink-0 ${
+                    isViewed
                       ? 'bg-yellow-500 text-black'
                       : isPast
                       ? 'bg-[#2a2a2a] text-yellow-500'
@@ -109,17 +122,17 @@ export function Header({ viewMode, setViewMode, step }: HeaderProps) {
                 <div className="hidden lg:block">
                   <div
                     className={`text-xs font-medium ${
-                      isActive ? 'text-white' : isPast ? 'text-gray-400' : 'text-gray-600'
+                      isViewed ? 'text-white' : isPast ? 'text-gray-400' : 'text-gray-600'
                     }`}
                   >
                     {s.label}
                   </div>
                   <div
                     className={`text-[10px] uppercase tracking-wider ${
-                      isActive ? 'text-yellow-500' : 'text-gray-600'
+                      isViewed ? 'text-yellow-500' : 'text-gray-600'
                     }`}
                   >
-                    {s.key === 'taskQueue' ? 'Welder' : 'Welder'}
+                    {isFuture ? 'Preview' : 'Welder'}
                   </div>
                 </div>
               </button>
@@ -127,9 +140,9 @@ export function Header({ viewMode, setViewMode, step }: HeaderProps) {
           })}
           <button
             onClick={() => setViewMode('supervisor')}
-            className="flex-1 flex items-center gap-2 px-4 py-2.5 text-left hover:bg-[#1a1a1a] transition-colors"
+            className="flex-1 flex items-center gap-2 px-4 py-2.5 text-left hover:bg-[#1a1a1a] transition-colors min-w-[100px]"
           >
-            <span className="flex items-center justify-center w-6 h-6 rounded text-xs font-bold bg-[#2a2a2a] text-gray-600">
+            <span className="flex items-center justify-center w-6 h-6 rounded text-xs font-bold bg-[#2a2a2a] text-gray-600 shrink-0">
               06
             </span>
             <div className="hidden lg:block">

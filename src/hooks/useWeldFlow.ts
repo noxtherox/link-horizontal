@@ -5,6 +5,7 @@ import { welds as initialWelds, consumables as initialConsumables } from '@/data
 export function useWeldFlow() {
   const [viewMode, setViewMode] = useState<ViewMode>('welder');
   const [step, setStep] = useState<WelderStep>('taskQueue');
+  const [workflowStep, setWorkflowStep] = useState<WelderStep>('taskQueue');
   const [welds, setWelds] = useState<Weld[]>(initialWelds);
   const [selectedWeld, setSelectedWeld] = useState<Weld | null>(null);
   const [consumables, setConsumables] = useState<Consumable[]>(initialConsumables);
@@ -40,6 +41,7 @@ export function useWeldFlow() {
   const selectWeld = useCallback((weld: Weld) => {
     setSelectedWeld(weld);
     setStep('preWeldCheck');
+    setWorkflowStep('preWeldCheck');
     setArcTime(0);
   }, []);
 
@@ -53,12 +55,14 @@ export function useWeldFlow() {
 
   const startArc = useCallback(() => {
     setStep('arcOn');
+    setWorkflowStep('arcOn');
     startArcTimer();
   }, [startArcTimer]);
 
   const pauseArc = useCallback(() => {
     stopArcTimer();
     setStep('deviationFlag');
+    setWorkflowStep('deviationFlag');
   }, [stopArcTimer]);
 
   const saveDeviation = useCallback(() => {
@@ -68,6 +72,7 @@ export function useWeldFlow() {
       setShowConfirm(false);
       setDeviationText('');
       setStep('arcOn');
+      setWorkflowStep('arcOn');
       startArcTimer();
     });
   }, [startArcTimer]);
@@ -75,6 +80,7 @@ export function useWeldFlow() {
   const completeWeld = useCallback(() => {
     stopArcTimer();
     setStep('completeSign');
+    setWorkflowStep('completeSign');
   }, [stopArcTimer]);
 
   const signWeld = useCallback(() => {
@@ -84,7 +90,12 @@ export function useWeldFlow() {
     setArcTime(0);
     setDeviationText('');
     setStep('taskQueue');
+    setWorkflowStep('taskQueue');
   }, [selectedWeld]);
+
+  const resumeStep = useCallback(() => {
+    setStep(workflowStep);
+  }, [workflowStep]);
 
   const handleVoice = useCallback((cmd: string) => {
     setVoiceCommand(cmd);
@@ -96,6 +107,7 @@ export function useWeldFlow() {
     setViewMode,
     step,
     setStep,
+    workflowStep,
     welds,
     selectedWeld,
     consumables,
@@ -117,6 +129,7 @@ export function useWeldFlow() {
     saveDeviation,
     completeWeld,
     signWeld,
+    resumeStep,
     handleVoice,
   };
 }
