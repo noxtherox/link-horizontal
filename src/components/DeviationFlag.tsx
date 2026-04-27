@@ -7,7 +7,7 @@ interface DeviationFlagProps {
   arcTime: number;
 }
 
-export function DeviationFlag({ _deviationText, _setDeviationText, onSave, arcTime }: DeviationFlagProps) {
+export function DeviationFlag({ onSave, arcTime }: DeviationFlagProps) {
   const formatTime = (seconds: number) => {
     const mins = Math.floor(seconds / 60);
     const secs = seconds % 60;
