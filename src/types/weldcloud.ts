@@ -1,0 +1,44 @@
+export interface Weld {
+  id: string;
+  partNumber: string;
+  jointType: string;
+  wps: string;
+  duration: number;
+  priority?: boolean;
+}
+
+export interface Consumable {
+  id: string;
+  name: string;
+  lot: string;
+  verified: boolean;
+  method: 'scan' | 'auto' | 'voice';
+}
+
+export interface MachineReading {
+  voltage: number;
+  current: number;
+  travel: number;
+  heatInput: number;
+}
+
+export interface Station {
+  id: string;
+  name: string;
+  welder: string;
+  currentWeld?: string;
+  status: 'idle' | 'pre-weld' | 'arc-on' | 'paused';
+  heatInput?: number;
+  wpsConformance?: number;
+}
+
+export interface Alert {
+  id: string;
+  station: string;
+  message: string;
+  time: string;
+  acknowledged: boolean;
+}
+
+export type WelderStep = 'taskQueue' | 'preWeldCheck' | 'arcOn' | 'deviationFlag' | 'completeSign';
+export type ViewMode = 'welder' | 'supervisor';
