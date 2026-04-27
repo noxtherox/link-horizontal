@@ -1,4 +1,4 @@
-import { Mic, Check } from 'lucide-react';
+import { Mic, Check, Scan } from 'lucide-react';
 import { ViewMode, WelderStep } from '@/types/weldcloud';
 
 interface VoicePanelProps {
@@ -28,19 +28,19 @@ const panelTitles: Record<string, string> = {
 };
 
 const micLabels: Record<string, string> = {
-  taskQueue: 'Hold to speak',
-  preWeldCheck: 'Hold to speak',
-  arcOn: 'Say a command',
-  deviationFlag: 'Describe deviation',
-  completeSign: 'Say "yes sign"',
-  supervisor: 'Hold to command',
+  taskQueue: 'Press to speak',
+  preWeldCheck: 'Press to speak',
+  arcOn: 'Press to speak',
+  deviationFlag: 'Press to speak',
+  completeSign: 'Press to speak',
+  supervisor: 'Press to speak',
 };
 
 export function VoicePanel({ viewMode, step, isRecording, setIsRecording, voiceCommand }: VoicePanelProps) {
   const key = viewMode === 'supervisor' ? 'supervisor' : step;
   const commands = commandMap[key] || [];
   const title = panelTitles[key] || 'SAY ONE OF';
-  const micLabel = micLabels[key] || 'Hold to speak';
+  const micLabel = micLabels[key] || 'Press to speak';
 
   return (
     <aside className="w-full lg:w-72 bg-[#141414] border-l border-[#2a2a2a] flex flex-col">
@@ -99,12 +99,17 @@ export function VoicePanel({ viewMode, step, isRecording, setIsRecording, voiceC
 
       <div className="flex-1" />
 
-      <div className="p-6 flex flex-col items-center">
+      <div className="p-6 flex flex-col items-center gap-4">
         <button
-          onMouseDown={() => setIsRecording(true)}
-          onMouseUp={() => setIsRecording(false)}
-          onTouchStart={() => setIsRecording(true)}
-          onTouchEnd={() => setIsRecording(false)}
+          className="w-full flex flex-col items-center justify-center gap-1 p-4 bg-[#2a2a2a] hover:bg-[#333333] rounded-lg transition-colors border border-[#3a3a3a]"
+        >
+          <Scan className="w-6 h-6 text-yellow-500" />
+          <span className="text-white font-medium text-sm">Scan</span>
+          <span className="text-[10px] text-gray-400">Tap to scan barcode</span>
+        </button>
+
+        <button
+          onClick={() => setIsRecording(!isRecording)}
           className={`w-20 h-20 rounded-full flex items-center justify-center transition-all ${
             isRecording
               ? 'bg-yellow-500 scale-110 shadow-lg shadow-yellow-500/20'
@@ -113,8 +118,8 @@ export function VoicePanel({ viewMode, step, isRecording, setIsRecording, voiceC
         >
           <Mic className={`w-8 h-8 ${isRecording ? 'text-black' : 'text-white'}`} />
         </button>
-        <p className="mt-3 text-sm font-medium text-white">{micLabel}</p>
-        {isRecording && <p className="mt-1 text-xs text-gray-500">"deviation" or "complete"</p>}
+        <p className="text-sm font-medium text-white">{micLabel}</p>
+        {isRecording && <p className="text-xs text-gray-500">Listening...</p>}
       </div>
     </aside>
   );

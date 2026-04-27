@@ -62,22 +62,6 @@ export function Header({ viewMode, setViewMode, step, workflowStep, setStep, onR
             <ChevronDown className="w-3 h-3 text-gray-500" />
           </div>
 
-          <div className="flex items-center gap-1">
-            {(['RFID', 'Scan', 'Voice', 'Touch'] as const).map((mode) => (
-              <button
-                key={mode}
-                onClick={() => {}}
-                className={`px-3 py-1.5 rounded-md text-xs font-medium transition-colors ${
-                  mode === 'Voice'
-                    ? 'bg-yellow-500 text-black'
-                    : 'bg-[#1f1f1f] text-gray-400 hover:text-white'
-                }`}
-              >
-                {mode}
-              </button>
-            ))}
-          </div>
-
           <Button
             variant="outline"
             size="sm"
@@ -138,18 +122,6 @@ export function Header({ viewMode, setViewMode, step, workflowStep, setStep, onR
               </button>
             );
           })}
-          <button
-            onClick={() => setViewMode('supervisor')}
-            className="flex-1 flex items-center gap-2 px-4 py-2.5 text-left hover:bg-[#1a1a1a] transition-colors min-w-[100px]"
-          >
-            <span className="flex items-center justify-center w-6 h-6 rounded text-xs font-bold bg-[#2a2a2a] text-gray-600 shrink-0">
-              06
-            </span>
-            <div className="hidden lg:block">
-              <div className="text-xs font-medium text-gray-600">Floor status</div>
-              <div className="text-[10px] uppercase tracking-wider text-gray-600">Supervisor</div>
-            </div>
-          </button>
         </div>
       )}
 
