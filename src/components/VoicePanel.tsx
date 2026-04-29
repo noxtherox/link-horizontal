@@ -43,7 +43,7 @@ export function VoicePanel({ viewMode, step, isRecording, setIsRecording, voiceC
   const micLabel = micLabels[key] || 'Press to speak';
 
   return (
-    <aside className="w-full lg:w-72 bg-[#141414] border-l border-[#2a2a2a] flex flex-col">
+    <aside className="w-full lg:w-72 bg-[#141414] border-t lg:border-l lg:border-t-0 border-[#2a2a2a] flex flex-col shrink-0">
       {viewMode === 'welder' && step === 'completeSign' && (
         <div className="p-4 border-b border-[#2a2a2a]">
           <div className="text-[10px] uppercase tracking-wider text-gray-500 mb-2">2-Input Rule</div>

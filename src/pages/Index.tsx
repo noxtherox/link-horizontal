@@ -34,8 +34,8 @@ export default function Index() {
         onResume={flow.resumeStep}
       />
 
-      <div className="flex-1 flex overflow-hidden">
-        <main className="flex-1 overflow-y-auto">
+      <div className="flex-1 flex flex-col lg:flex-row overflow-hidden">
+        <main className="flex-1 overflow-y-auto min-h-0">
           {flow.viewMode === 'supervisor' && <FloorStatus />}
 
           {flow.viewMode === 'welder' && flow.step === 'taskQueue' && (
