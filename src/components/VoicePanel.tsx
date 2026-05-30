@@ -1,5 +1,5 @@
 import { Mic, Check, Scan } from 'lucide-react';
-import { ViewMode, WelderStep, Weld, Part } from '@/types/weldcloud';
+import { ViewMode, WelderStep, Weld, Part, Consumable } from '@/types/weldcloud';
 
 interface VoicePanelProps {
   viewMode: ViewMode;
@@ -9,6 +9,8 @@ interface VoicePanelProps {
   voiceCommand: string;
   selectedWeld: Weld | null;
   parts: Part[];
+  consumables?: Consumable[];
+  onVerify?: (id: string) => void;
 }
 
 const commandMap: Record<string, string[]> = {
@@ -38,7 +40,7 @@ const micLabels: Record<string, string> = {
   supervisor: 'Press to speak',
 };
 
-export function VoicePanel({ viewMode, step, isRecording, setIsRecording, voiceCommand, selectedWeld, parts }: VoicePanelProps) {
+export function VoicePanel({ viewMode, step, isRecording, setIsRecording, voiceCommand, selectedWeld, parts, consumables, onVerify }: VoicePanelProps) {
   const key = viewMode === 'supervisor' ? 'supervisor' : step;
   let commands = commandMap[key] || [];
   
@@ -56,6 +58,8 @@ export function VoicePanel({ viewMode, step, isRecording, setIsRecording, voiceC
   
   const title = panelTitles[key] || 'SAY ONE OF';
   const micLabel = micLabels[key] || 'Press to speak';
+
+  const isPreWeldScan = viewMode === 'welder' && step === 'preWeldCheck' && consumables && onVerify;
 
   return (
     <aside className="w-full lg:w-72 bg-[#141414] border-t lg:border-l lg:border-t-0 border-[#2a2a2a] flex flex-col shrink-0">
@@ -88,31 +92,88 @@ export function VoicePanel({ viewMode, step, isRecording, setIsRecording, voiceC
         </div>
       )}
 
-      <div className="p-4 border-b border-[#2a2a2a]">
-        <div className="text-[10px] uppercase tracking-wider text-gray-500 mb-3">{title}</div>
-        <div className="space-y-2">
-          {commands.map((cmd) => (
-            <div
-              key={cmd}
-              className="px-2.5 py-1.5 bg-[#1f1f1f] rounded text-xs text-yellow-500 font-mono border border-[#2a2a2a]"
-            >
-              {cmd}
-            </div>
-          ))}
-        </div>
-      </div>
-
-      {voiceCommand && (
-        <div className="p-4 border-b border-[#2a2a2a] bg-[#1a1a1a]">
-          <div className="flex items-center gap-2 text-xs text-green-400">
-            <Check className="w-3 h-3" />
-            <span>Understood</span>
+      {isPreWeldScan ? (
+        <div className="p-4 border-b border-[#2a2a2a] flex-1 overflow-y-auto">
+          <div className="text-[10px] uppercase tracking-wider text-gray-500 mb-3">Scan Consumables</div>
+          <div className="space-y-3">
+            {consumables.map((c, i) => (
+              <button
+                key={c.id}
+                onClick={() => onVerify(c.id)}
+                className={`w-full text-left p-3 rounded-lg border transition-colors ${
+                  c.verified
+                    ? 'bg-green-500/10 border-green-500/30'
+                    : i === 3
+                    ? 'bg-yellow-500/5 border-yellow-500/30'
+                    : 'bg-[#1a1a1a] border-[#2a2a2a] hover:bg-[#1f1f1f]'
+                }`}
+              >
+                <div className="flex items-center gap-3">
+                  <div
+                    className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 ${
+                      c.verified ? 'bg-green-500 text-black' : 'bg-[#2a2a2a] text-gray-400'
+                    }`}
+                  >
+                    {c.verified ? <Check className="w-4 h-4" /> : <span className="text-sm">{i + 1}</span>}
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <div className={`text-sm font-medium ${c.verified ? 'text-green-400' : 'text-white'}`}>
+                      {c.name}
+                    </div>
+                    <div className="text-xs text-gray-500">{c.lot}</div>
+                  </div>
+                </div>
+                <div className="mt-2 flex items-center gap-2">
+                  {c.verified ? (
+                    <span className="text-[10px] text-green-400 flex items-center gap-1">
+                      <Scan className="w-3 h-3" /> Verified
+                    </span>
+                  ) : (
+                    <span className="text-[10px] text-yellow-500 flex items-center gap-1">
+                      <Scan className="w-3 h-3" /> Tap to scan
+                    </span>
+                  )}
+                </div>
+              </button>
+            ))}
           </div>
-          <p className="mt-1 text-sm text-white font-mono">{voiceCommand}</p>
+
+          <div className="mt-4 p-3 bg-[#1a1a1a] border border-[#2a2a2a] rounded-lg">
+            <div className="flex items-center gap-2 text-xs text-gray-400">
+              <span className="text-yellow-500">🎤</span>
+              <span className="font-mono">"gas confirmed"</span>
+            </div>
+          </div>
         </div>
+      ) : (
+        <>
+          <div className="p-4 border-b border-[#2a2a2a]">
+            <div className="text-[10px] uppercase tracking-wider text-gray-500 mb-3">{title}</div>
+            <div className="space-y-2">
+              {commands.map((cmd) => (
+                <div
+                  key={cmd}
+                  className="px-2.5 py-1.5 bg-[#1f1f1f] rounded text-xs text-yellow-500 font-mono border border-[#2a2a2a]"
+                >
+                  {cmd}
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {voiceCommand && (
+            <div className="p-4 border-b border-[#2a2a2a] bg-[#1a1a1a]">
+              <div className="flex items-center gap-2 text-xs text-green-400">
+                <Check className="w-3 h-3" />
+                <span>Understood</span>
+              </div>
+              <p className="mt-1 text-sm text-white font-mono">{voiceCommand}</p>
+            </div>
+          )}
+        </>
       )}
 
-      <div className="flex-1" />
+      {!isPreWeldScan && <div className="flex-1" />}
 
       <div className="p-6 flex flex-col items-center gap-4">
         <button

@@ -84,6 +84,8 @@ export default function Index() {
           voiceCommand={flow.voiceCommand}
           selectedWeld={flow.selectedWeld}
           parts={flow.parts}
+          consumables={flow.consumables}
+          onVerify={flow.verifyConsumable}
         />
       </div>
 
