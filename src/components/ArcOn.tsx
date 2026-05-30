@@ -1,18 +1,20 @@
 import { useEffect, useState } from 'react';
-import { AlertTriangle } from 'lucide-react';
+import { AlertTriangle, Pause, Play } from 'lucide-react';
 import { Weld, Part } from '@/types/weldcloud';
 import { machineSpec } from '@/data/mockData';
 import { DrawingWithHighlight } from './DrawingWithHighlight';
 
 interface ArcOnProps {
   arcTime: number;
+  isPaused: boolean;
+  onTogglePause: () => void;
   onPause: () => void;
   onComplete: () => void;
   selectedWeld: Weld | null;
   parts: Part[];
 }
 
-export function ArcOn({ arcTime, onPause, onComplete, selectedWeld, parts }: ArcOnProps) {
+export function ArcOn({ arcTime, isPaused, onTogglePause, onPause, onComplete, selectedWeld, parts }: ArcOnProps) {
   const currentPart = selectedWeld
     ? parts.find(p => p.id === selectedWeld.partNumber)
     : undefined;
@@ -49,10 +51,31 @@ export function ArcOn({ arcTime, onPause, onComplete, selectedWeld, parts }: Arc
       </div>
 
       <div className="mb-6 text-center">
-        <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-green-500/10 border-2 border-green-500 mb-3">
-          <div className="w-6 h-6 rounded-full bg-green-500 animate-pulse" />
-        </div>
-        <div className="text-xs font-bold text-green-500 uppercase tracking-[0.2em] mb-2">Arc On</div>
+        <button
+          onClick={onTogglePause}
+          className="inline-flex flex-col items-center justify-center group cursor-pointer"
+        >
+          <div
+            className={`w-16 h-16 rounded-full border-2 mb-3 flex items-center justify-center transition-all duration-300 ${
+              isPaused
+                ? 'bg-yellow-500/10 border-yellow-500'
+                : 'bg-green-500/10 border-green-500'
+            }`}
+          >
+            {isPaused ? (
+              <Pause className="w-7 h-7 text-yellow-500" />
+            ) : (
+              <div className="w-6 h-6 rounded-full bg-green-500 animate-pulse" />
+            )}
+          </div>
+          <div
+            className={`text-xs font-bold uppercase tracking-[0.2em] mb-2 transition-colors ${
+              isPaused ? 'text-yellow-500' : 'text-green-500'
+            }`}
+          >
+            {isPaused ? 'Arc Paused' : 'Arc On'}
+          </div>
+        </button>
         <div className="text-5xl md:text-6xl font-bold text-white font-mono tracking-tight">
           {formatTime(arcTime)}
         </div>

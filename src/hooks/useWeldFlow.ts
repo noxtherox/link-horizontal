@@ -16,6 +16,7 @@ export function useWeldFlow() {
   const [showConfirm, setShowConfirm] = useState(false);
   const [confirmAction, setConfirmAction] = useState<(() => void) | null>(null);
   const [confirmMessage, setConfirmMessage] = useState('');
+  const [isArcPaused, setIsArcPaused] = useState(false);
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   const nextWeld = useMemo(() => {
@@ -53,6 +54,18 @@ export function useWeldFlow() {
     }
   }, []);
 
+  const toggleArcPause = useCallback(() => {
+    setIsArcPaused((prev) => {
+      const next = !prev;
+      if (next) {
+        stopArcTimer();
+      } else {
+        startArcTimer();
+      }
+      return next;
+    });
+  }, [startArcTimer, stopArcTimer]);
+
   useEffect(() => {
     return () => {
       if (timerRef.current) clearInterval(timerRef.current);
@@ -64,6 +77,7 @@ export function useWeldFlow() {
     setStep('preWeldCheck');
     setWorkflowStep('preWeldCheck');
     setArcTime(0);
+    setIsArcPaused(false);
   }, []);
 
   const verifyConsumable = useCallback((id: string) => {
@@ -77,11 +91,13 @@ export function useWeldFlow() {
   const startArc = useCallback(() => {
     setStep('arcOn');
     setWorkflowStep('arcOn');
+    setIsArcPaused(false);
     startArcTimer();
   }, [startArcTimer]);
 
   const pauseArc = useCallback(() => {
     stopArcTimer();
+    setIsArcPaused(true);
     setStep('deviationFlag');
     setWorkflowStep('deviationFlag');
   }, [stopArcTimer]);
@@ -92,6 +108,7 @@ export function useWeldFlow() {
     setConfirmAction(() => () => {
       setShowConfirm(false);
       setDeviationText('');
+      setIsArcPaused(false);
       setStep('arcOn');
       setWorkflowStep('arcOn');
       startArcTimer();
@@ -100,6 +117,7 @@ export function useWeldFlow() {
 
   const completeWeld = useCallback(() => {
     stopArcTimer();
+    setIsArcPaused(false);
     setStep('completeSign');
     setWorkflowStep('completeSign');
   }, [stopArcTimer]);
@@ -116,6 +134,7 @@ export function useWeldFlow() {
     setSelectedWeld(null);
     setConsumables(initialConsumables);
     setArcTime(0);
+    setIsArcPaused(false);
     setDeviationText('');
     setStep('taskQueue');
     setWorkflowStep('taskQueue');
@@ -151,10 +170,12 @@ export function useWeldFlow() {
     confirmAction,
     confirmMessage,
     allConsumablesVerified,
+    isArcPaused,
     selectWeld,
     verifyConsumable,
     startArc,
     pauseArc,
+    toggleArcPause,
     saveDeviation,
     completeWeld,
     signWeld,

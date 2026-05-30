@@ -56,6 +56,8 @@ export default function Index() {
           {flow.viewMode === 'welder' && flow.step === 'arcOn' && (
             <ArcOn
               arcTime={flow.arcTime}
+              isPaused={flow.isArcPaused}
+              onTogglePause={flow.toggleArcPause}
               onPause={flow.pauseArc}
               onComplete={flow.completeWeld}
               selectedWeld={flow.selectedWeld}
