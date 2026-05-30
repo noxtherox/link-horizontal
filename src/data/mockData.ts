@@ -1,10 +1,31 @@
-import { Weld, Consumable, Station, Alert } from '@/types/weldcloud';
+import { Weld, Part, Consumable, Station, Alert } from '@/types/weldcloud';
 
 export const welds: Weld[] = [
   { id: 'W-014', partNumber: 'P-4471-B', jointType: 'Butt joint 3G', wps: 'WPS-A36-3G', duration: 8, priority: true },
   { id: 'W-015', partNumber: 'P-4471-B', jointType: 'Fillet 2F', wps: 'WPS-A36-2F', duration: 5 },
   { id: 'W-016', partNumber: 'P-4471-C', jointType: 'Fillet 2F', wps: 'WPS-A36-2F', duration: 5 },
   { id: 'W-017', partNumber: 'P-4471-C', jointType: 'Fillet 2F', wps: 'WPS-A36-2F', duration: 5 },
+];
+
+export const parts: Part[] = [
+  {
+    id: 'P-4471-B',
+    name: 'Piping Spool 001',
+    description: 'Pressure Header — Section B',
+    welds: [
+      { id: 'W-014', partNumber: 'P-4471-B', jointType: 'Butt joint 3G', wps: 'WPS-A36-3G', duration: 8, priority: true },
+      { id: 'W-015', partNumber: 'P-4471-B', jointType: 'Fillet 2F', wps: 'WPS-A36-2F', duration: 5 },
+    ],
+  },
+  {
+    id: 'P-4471-C',
+    name: 'Piping Spool 002',
+    description: 'Pressure Header — Section C',
+    welds: [
+      { id: 'W-016', partNumber: 'P-4471-C', jointType: 'Fillet 2F', wps: 'WPS-A36-2F', duration: 5 },
+      { id: 'W-017', partNumber: 'P-4471-C', jointType: 'Fillet 2F', wps: 'WPS-A36-2F', duration: 5 },
+    ],
+  },
 ];
 
 export const consumables: Consumable[] = [

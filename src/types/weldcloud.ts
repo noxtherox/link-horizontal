@@ -7,6 +7,13 @@ export interface Weld {
   priority?: boolean;
 }
 
+export interface Part {
+  id: string;
+  name: string;
+  description: string;
+  welds: Weld[];
+}
+
 export interface Consumable {
   id: string;
   name: string;

@@ -1,12 +1,12 @@
 import { useState, useCallback, useEffect, useRef } from 'react';
-import { WelderStep, ViewMode, Weld, Consumable } from '@/types/weldcloud';
-import { welds as initialWelds, consumables as initialConsumables } from '@/data/mockData';
+import { WelderStep, ViewMode, Weld, Consumable, Part } from '@/types/weldcloud';
+import { parts as initialParts, consumables as initialConsumables } from '@/data/mockData';
 
 export function useWeldFlow() {
   const [viewMode, setViewMode] = useState<ViewMode>('welder');
   const [step, setStep] = useState<WelderStep>('taskQueue');
   const [workflowStep, setWorkflowStep] = useState<WelderStep>('taskQueue');
-  const [welds, setWelds] = useState<Weld[]>(initialWelds);
+  const [parts, setParts] = useState<Part[]>(initialParts);
   const [selectedWeld, setSelectedWeld] = useState<Weld | null>(null);
   const [consumables, setConsumables] = useState<Consumable[]>(initialConsumables);
   const [arcTime, setArcTime] = useState(0);
@@ -84,7 +84,14 @@ export function useWeldFlow() {
   }, [stopArcTimer]);
 
   const signWeld = useCallback(() => {
-    setWelds((prev) => prev.filter((w) => w.id !== selectedWeld?.id));
+    setParts((prev) =>
+      prev
+        .map((part) => ({
+          ...part,
+          welds: part.welds.filter((w) => w.id !== selectedWeld?.id),
+        }))
+        .filter((part) => part.welds.length > 0)
+    );
     setSelectedWeld(null);
     setConsumables(initialConsumables);
     setArcTime(0);
@@ -108,7 +115,7 @@ export function useWeldFlow() {
     step,
     setStep,
     workflowStep,
-    welds,
+    parts,
     selectedWeld,
     consumables,
     arcTime,
