@@ -1,4 +1,4 @@
-import { Mic, Check, Scan } from 'lucide-react';
+import { Mic, Check, Scan, Zap, ArrowRight } from 'lucide-react';
 import { ViewMode, WelderStep, Weld, Part, Consumable } from '@/types/weldcloud';
 
 interface VoicePanelProps {
@@ -8,6 +8,7 @@ interface VoicePanelProps {
   setIsRecording: (v: boolean) => void;
   voiceCommand: string;
   selectedWeld: Weld | null;
+  nextWeld: Weld | null;
   parts: Part[];
   consumables?: Consumable[];
   onVerify?: (id: string) => void;
@@ -40,7 +41,7 @@ const micLabels: Record<string, string> = {
   supervisor: 'Press to speak',
 };
 
-export function VoicePanel({ viewMode, step, isRecording, setIsRecording, voiceCommand, selectedWeld, parts, consumables, onVerify }: VoicePanelProps) {
+export function VoicePanel({ viewMode, step, isRecording, setIsRecording, voiceCommand, selectedWeld, nextWeld, parts, consumables, onVerify }: VoicePanelProps) {
   const key = viewMode === 'supervisor' ? 'supervisor' : step;
   let commands = commandMap[key] || [];
   
@@ -145,6 +146,86 @@ export function VoicePanel({ viewMode, step, isRecording, setIsRecording, voiceC
             </div>
           </div>
         </div>
+      ) : viewMode === 'welder' && step === 'arcOn' ? (
+        <>
+          <div className="p-4 border-b border-[#2a2a2a] space-y-3">
+            {/* Current Weld */}
+            <div className="bg-[#1a1a1a] border border-yellow-500/30 rounded-lg p-3 relative overflow-hidden">
+              <div className="absolute top-0 left-0 w-1 h-full bg-yellow-500" />
+              <div className="flex items-center gap-1.5 mb-2">
+                <Zap className="w-3 h-3 text-yellow-500" />
+                <span className="text-[10px] uppercase tracking-wider text-yellow-500 font-semibold">Current Weld</span>
+              </div>
+              {selectedWeld ? (
+                <div className="space-y-1.5">
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <span className="text-sm font-bold text-white">{selectedWeld.id}</span>
+                    <span className="text-[10px] text-yellow-500 bg-yellow-500/10 px-1.5 py-0.5 rounded font-mono border border-yellow-500/20">
+                      {selectedWeld.process}
+                    </span>
+                  </div>
+                  <div className="text-xs text-gray-300">{selectedWeld.jointType}</div>
+                  <div className="flex flex-wrap gap-1">
+                    <span className="text-[10px] text-gray-500 bg-[#141414] px-1.5 py-0.5 rounded border border-[#2a2a2a]">
+                      {selectedWeld.wps}
+                    </span>
+                    <span className="text-[10px] text-gray-500 bg-[#141414] px-1.5 py-0.5 rounded border border-[#2a2a2a]">
+                      {selectedWeld.duration} min
+                    </span>
+                    <span className="text-[10px] text-gray-500 bg-[#141414] px-1.5 py-0.5 rounded border border-[#2a2a2a]">
+                      {selectedWeld.partNumber}
+                    </span>
+                  </div>
+                </div>
+              ) : (
+                <p className="text-xs text-gray-500">No weld selected</p>
+              )}
+            </div>
+
+            {/* Next-up */}
+            <div className="bg-[#1a1a1a] border border-[#2a2a2a] rounded-lg p-3 relative overflow-hidden">
+              <div className="absolute top-0 left-0 w-1 h-full bg-gray-600" />
+              <div className="flex items-center gap-1.5 mb-2">
+                <ArrowRight className="w-3 h-3 text-gray-400" />
+                <span className="text-[10px] uppercase tracking-wider text-gray-400 font-semibold">Next-up</span>
+              </div>
+              {nextWeld ? (
+                <div className="space-y-1.5">
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <span className="text-sm font-bold text-gray-200">{nextWeld.id}</span>
+                    <span className="text-[10px] text-gray-400 bg-[#1f1f1f] px-1.5 py-0.5 rounded font-mono border border-[#2a2a2a]">
+                      {nextWeld.process}
+                    </span>
+                  </div>
+                  <div className="text-xs text-gray-400">{nextWeld.jointType}</div>
+                  <div className="flex flex-wrap gap-1">
+                    <span className="text-[10px] text-gray-500 bg-[#141414] px-1.5 py-0.5 rounded border border-[#2a2a2a]">
+                      {nextWeld.wps}
+                    </span>
+                    <span className="text-[10px] text-gray-500 bg-[#141414] px-1.5 py-0.5 rounded border border-[#2a2a2a]">
+                      {nextWeld.duration} min
+                    </span>
+                    <span className="text-[10px] text-gray-500 bg-[#141414] px-1.5 py-0.5 rounded border border-[#2a2a2a]">
+                      {nextWeld.partNumber}
+                    </span>
+                  </div>
+                </div>
+              ) : (
+                <p className="text-xs text-gray-500">Queue complete</p>
+              )}
+            </div>
+          </div>
+
+          {voiceCommand && (
+            <div className="p-4 border-b border-[#2a2a2a] bg-[#1a1a1a]">
+              <div className="flex items-center gap-2 text-xs text-green-400">
+                <Check className="w-3 h-3" />
+                <span>Understood</span>
+              </div>
+              <p className="mt-1 text-sm text-white font-mono">{voiceCommand}</p>
+            </div>
+          )}
+        </>
       ) : (
         <>
           <div className="p-4 border-b border-[#2a2a2a]">

@@ -59,7 +59,6 @@ export default function Index() {
               onPause={flow.pauseArc}
               onComplete={flow.completeWeld}
               selectedWeld={flow.selectedWeld}
-              nextWeld={flow.nextWeld}
               parts={flow.parts}
             />
           )}
@@ -85,6 +84,7 @@ export default function Index() {
           setIsRecording={flow.setIsRecording}
           voiceCommand={flow.voiceCommand}
           selectedWeld={flow.selectedWeld}
+          nextWeld={flow.nextWeld}
           parts={flow.parts}
           consumables={flow.consumables}
           onVerify={flow.verifyConsumable}
