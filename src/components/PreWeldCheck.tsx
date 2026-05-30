@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Check, Scan, ImageOff } from 'lucide-react';
+import { ImageOff, AlertTriangle } from 'lucide-react';
 import { Weld, Part } from '@/types/weldcloud';
 import { gasSpec } from '@/data/mockData';
 
@@ -58,14 +58,17 @@ export function PreWeldCheck({
                 Priority
               </span>
             )}
-            {allVerified && (
-              <button
-                onClick={onStart}
-                className="px-5 py-2 bg-yellow-500 hover:bg-yellow-400 text-black font-bold rounded-lg transition-colors text-sm"
-              >
-                Start Arc
-              </button>
-            )}
+            <button
+              onClick={onStart}
+              disabled={!allVerified}
+              className={`px-5 py-2 rounded-lg font-bold text-sm transition-colors ${
+                allVerified
+                  ? 'bg-yellow-500 hover:bg-yellow-400 text-black'
+                  : 'bg-[#2a2a2a] text-gray-500 cursor-not-allowed'
+              }`}
+            >
+              Start Arc
+            </button>
           </div>
         </div>
       </div>
@@ -186,6 +189,15 @@ export function PreWeldCheck({
               </div>
             </div>
           </div>
+          
+          {!allVerified && (
+            <div className="mt-3 p-3 bg-yellow-500/10 border border-yellow-500/30 rounded-lg flex items-start gap-2">
+              <AlertTriangle className="w-4 h-4 text-yellow-500 shrink-0 mt-0.5" />
+              <p className="text-xs text-yellow-500">
+                Scan all consumables in the right panel before starting arc.
+              </p>
+            </div>
+          )}
         </div>
       </div>
     </div>
