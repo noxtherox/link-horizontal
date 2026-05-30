@@ -48,6 +48,9 @@ export default function Index() {
               onVerify={flow.verifyConsumable}
               onStart={flow.startArc}
               allVerified={flow.allConsumablesVerified}
+              selectedWeld={flow.selectedWeld}
+              parts={flow.parts}
+              onSelectWeld={flow.selectWeld}
             />
           )}
 
@@ -79,6 +82,8 @@ export default function Index() {
           isRecording={flow.isRecording}
           setIsRecording={flow.setIsRecording}
           voiceCommand={flow.voiceCommand}
+          selectedWeld={flow.selectedWeld}
+          parts={flow.parts}
         />
       </div>
 

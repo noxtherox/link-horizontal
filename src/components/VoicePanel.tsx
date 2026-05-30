@@ -1,5 +1,5 @@
 import { Mic, Check, Scan } from 'lucide-react';
-import { ViewMode, WelderStep } from '@/types/weldcloud';
+import { ViewMode, WelderStep, Weld, Part } from '@/types/weldcloud';
 
 interface VoicePanelProps {
   viewMode: ViewMode;
@@ -7,6 +7,8 @@ interface VoicePanelProps {
   isRecording: boolean;
   setIsRecording: (v: boolean) => void;
   voiceCommand: string;
+  selectedWeld: Weld | null;
+  parts: Part[];
 }
 
 const commandMap: Record<string, string[]> = {
@@ -36,9 +38,22 @@ const micLabels: Record<string, string> = {
   supervisor: 'Press to speak',
 };
 
-export function VoicePanel({ viewMode, step, isRecording, setIsRecording, voiceCommand }: VoicePanelProps) {
+export function VoicePanel({ viewMode, step, isRecording, setIsRecording, voiceCommand, selectedWeld, parts }: VoicePanelProps) {
   const key = viewMode === 'supervisor' ? 'supervisor' : step;
-  const commands = commandMap[key] || [];
+  let commands = commandMap[key] || [];
+  
+  // Add other weld commands when in pre-weld check
+  if (viewMode === 'welder' && step === 'preWeldCheck' && selectedWeld && parts.length > 0) {
+    const currentPart = parts.find(p => p.id === selectedWeld.partNumber);
+    if (currentPart) {
+      const otherWelds = currentPart.welds.filter(w => w.id !== selectedWeld.id);
+      if (otherWelds.length > 0) {
+        const weldCommands = otherWelds.map(w => `"start ${w.id}"`);
+        commands = [...weldCommands, ...commands];
+      }
+    }
+  }
+  
   const title = panelTitles[key] || 'SAY ONE OF';
   const micLabel = micLabels[key] || 'Press to speak';
 
