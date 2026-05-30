@@ -1,7 +1,7 @@
-import { useState } from 'react';
-import { ImageOff, AlertTriangle } from 'lucide-react';
+import { AlertTriangle } from 'lucide-react';
 import { Weld, Part } from '@/types/weldcloud';
 import { gasSpec } from '@/data/mockData';
+import { DrawingWithHighlight } from './DrawingWithHighlight';
 
 interface PreWeldCheckProps {
   onVerify: (id: string) => void;
@@ -12,22 +12,20 @@ interface PreWeldCheckProps {
   onSelectWeld: (weld: Weld) => void;
 }
 
-export function PreWeldCheck({ 
-  onVerify, 
-  onStart, 
+export function PreWeldCheck({
+  onVerify,
+  onStart,
   allVerified,
   selectedWeld,
   parts,
   onSelectWeld
 }: PreWeldCheckProps) {
-  const [imageError, setImageError] = useState(false);
-  
-  const currentPart = selectedWeld 
-    ? parts.find(p => p.id === selectedWeld.partNumber) 
+  const currentPart = selectedWeld
+    ? parts.find(p => p.id === selectedWeld.partNumber)
     : undefined;
   
-  const otherWelds = currentPart 
-    ? currentPart.welds.filter(w => w.id !== selectedWeld?.id) 
+  const otherWelds = currentPart
+    ? currentPart.welds.filter(w => w.id !== selectedWeld?.id)
     : [];
 
   return (
@@ -78,27 +76,7 @@ export function PreWeldCheck({
         <div className="text-[10px] uppercase tracking-wider text-gray-500 mb-2">
           Part Drawing · {currentPart?.id || '—'}
         </div>
-        <div className="bg-white rounded-xl border border-[#2a2a2a] overflow-hidden">
-          {!imageError ? (
-            <img 
-              src="/.dyad/media/91d0dd50d18370a2fe22dec401e802b5ba0fe0d7a7b3d51d20842996537eba11.png"
-              alt={`Drawing for ${currentPart?.id || 'part'}`}
-              className="w-full h-auto max-h-80 object-contain mx-auto"
-              onError={() => setImageError(true)}
-            />
-          ) : (
-            <div className="w-full h-64 flex flex-col items-center justify-center gap-3 bg-[#f5f5f5]">
-              <ImageOff className="w-10 h-10 text-gray-400" />
-              <span className="text-sm text-gray-500">Part drawing for {currentPart?.id}</span>
-              <span className="text-xs text-gray-400">CAD view · Section B</span>
-            </div>
-          )}
-        </div>
-        <div className="mt-2 flex items-center gap-2 flex-wrap">
-          <span className="text-sm text-white font-medium">{currentPart?.id}</span>
-          <span className="text-sm text-gray-400">· {currentPart?.name}</span>
-          <span className="text-xs text-gray-500">· {currentPart?.description}</span>
-        </div>
+        <DrawingWithHighlight selectedWeld={selectedWeld} currentPart={currentPart} />
       </div>
 
       {/* Other welds on this part */}

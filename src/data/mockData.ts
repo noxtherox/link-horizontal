@@ -1,10 +1,10 @@
 import { Weld, Part, Consumable, Station, Alert } from '@/types/weldcloud';
 
 export const welds: Weld[] = [
-  { id: 'W-014', partNumber: 'P-4471-B', jointType: 'Butt joint 3G', wps: 'WPS-A36-3G', duration: 8, priority: true, process: 'GMAW' },
-  { id: 'W-015', partNumber: 'P-4471-B', jointType: 'Fillet 2F', wps: 'WPS-A36-2F', duration: 5, process: 'FCAW' },
-  { id: 'W-016', partNumber: 'P-4471-C', jointType: 'Fillet 2F', wps: 'WPS-A36-2F', duration: 5, process: 'GTAW' },
-  { id: 'W-017', partNumber: 'P-4471-C', jointType: 'Fillet 2F', wps: 'WPS-A36-2F', duration: 5, process: 'SMAW' },
+  { id: 'W-014', partNumber: 'P-4471-B', jointType: 'Butt joint 3G', wps: 'WPS-A36-3G', duration: 8, priority: true, process: 'GMAW', drawingPosition: { x: 35, y: 42 } },
+  { id: 'W-015', partNumber: 'P-4471-B', jointType: 'Fillet 2F', wps: 'WPS-A36-2F', duration: 5, process: 'FCAW', drawingPosition: { x: 62, y: 58 } },
+  { id: 'W-016', partNumber: 'P-4471-C', jointType: 'Fillet 2F', wps: 'WPS-A36-2F', duration: 5, process: 'GTAW', drawingPosition: { x: 48, y: 35 } },
+  { id: 'W-017', partNumber: 'P-4471-C', jointType: 'Fillet 2F', wps: 'WPS-A36-2F', duration: 5, process: 'SMAW', drawingPosition: { x: 72, y: 65 } },
 ];
 
 export const parts: Part[] = [
@@ -13,8 +13,8 @@ export const parts: Part[] = [
     name: 'Piping Spool 001',
     description: 'Pressure Header — Section B',
     welds: [
-      { id: 'W-014', partNumber: 'P-4471-B', jointType: 'Butt joint 3G', wps: 'WPS-A36-3G', duration: 8, priority: true, process: 'GMAW' },
-      { id: 'W-015', partNumber: 'P-4471-B', jointType: 'Fillet 2F', wps: 'WPS-A36-2F', duration: 5, process: 'FCAW' },
+      { id: 'W-014', partNumber: 'P-4471-B', jointType: 'Butt joint 3G', wps: 'WPS-A36-3G', duration: 8, priority: true, process: 'GMAW', drawingPosition: { x: 35, y: 42 } },
+      { id: 'W-015', partNumber: 'P-4471-B', jointType: 'Fillet 2F', wps: 'WPS-A36-2F', duration: 5, process: 'FCAW', drawingPosition: { x: 62, y: 58 } },
     ],
   },
   {
@@ -22,8 +22,8 @@ export const parts: Part[] = [
     name: 'Piping Spool 002',
     description: 'Pressure Header — Section C',
     welds: [
-      { id: 'W-016', partNumber: 'P-4471-C', jointType: 'Fillet 2F', wps: 'WPS-A36-2F', duration: 5, process: 'GTAW' },
-      { id: 'W-017', partNumber: 'P-4471-C', jointType: 'Fillet 2F', wps: 'WPS-A36-2F', duration: 5, process: 'SMAW' },
+      { id: 'W-016', partNumber: 'P-4471-C', jointType: 'Fillet 2F', wps: 'WPS-A36-2F', duration: 5, process: 'GTAW', drawingPosition: { x: 48, y: 35 } },
+      { id: 'W-017', partNumber: 'P-4471-C', jointType: 'Fillet 2F', wps: 'WPS-A36-2F', duration: 5, process: 'SMAW', drawingPosition: { x: 72, y: 65 } },
     ],
   },
 ];

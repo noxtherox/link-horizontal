@@ -6,6 +6,7 @@ export interface Weld {
   duration: number;
   priority?: boolean;
   process: 'GTAW' | 'GMAW' | 'SMAW' | 'FCAW';
+  drawingPosition?: { x: number; y: number };
 }
 
 export interface Part {

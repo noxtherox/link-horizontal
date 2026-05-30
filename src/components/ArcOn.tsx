@@ -1,14 +1,21 @@
 import { useEffect, useState } from 'react';
 import { AlertTriangle } from 'lucide-react';
+import { Weld, Part } from '@/types/weldcloud';
 import { machineSpec } from '@/data/mockData';
+import { DrawingWithHighlight } from './DrawingWithHighlight';
 
 interface ArcOnProps {
   arcTime: number;
   onPause: () => void;
   onComplete: () => void;
+  selectedWeld: Weld | null;
+  parts: Part[];
 }
 
-export function ArcOn({ arcTime, onPause, onComplete }: ArcOnProps) {
+export function ArcOn({ arcTime, onPause, onComplete, selectedWeld, parts }: ArcOnProps) {
+  const currentPart = selectedWeld
+    ? parts.find(p => p.id === selectedWeld.partNumber)
+    : undefined;
   const [readings, setReadings] = useState({
     voltage: 23.8,
     current: 212,
@@ -36,6 +43,11 @@ export function ArcOn({ arcTime, onPause, onComplete }: ArcOnProps) {
 
   return (
     <div className="p-4 md:p-6">
+      {/* Compact Drawing */}
+      <div className="mb-6">
+        <DrawingWithHighlight selectedWeld={selectedWeld} currentPart={currentPart} compact />
+      </div>
+
       <div className="mb-6 text-center">
         <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-green-500/10 border-2 border-green-500 mb-3">
           <div className="w-6 h-6 rounded-full bg-green-500 animate-pulse" />

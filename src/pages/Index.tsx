@@ -58,6 +58,8 @@ export default function Index() {
               arcTime={flow.arcTime}
               onPause={flow.pauseArc}
               onComplete={flow.completeWeld}
+              selectedWeld={flow.selectedWeld}
+              parts={flow.parts}
             />
           )}
 
