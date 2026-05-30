@@ -136,6 +136,9 @@ export function TaskQueue({ parts, onSelectWeld }: TaskQueueProps) {
                               <span className="text-[10px] text-gray-500 bg-[#1a1a1a] px-2 py-0.5 rounded">
                                 {weld.duration} min
                               </span>
+                              <span className="text-[10px] text-yellow-500 bg-yellow-500/10 px-2 py-0.5 rounded font-mono">
+                                {weld.process}
+                              </span>
                               {weld.priority && (
                                 <Badge className="bg-red-500/10 text-red-400 border-red-500/20 text-[10px]">
                                   Priority

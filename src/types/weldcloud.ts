@@ -5,6 +5,7 @@ export interface Weld {
   wps: string;
   duration: number;
   priority?: boolean;
+  process: 'GTAW' | 'GMAW' | 'SMAW' | 'FCAW';
 }
 
 export interface Part {
