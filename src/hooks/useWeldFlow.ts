@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect, useRef } from 'react';
+import { useState, useCallback, useEffect, useRef, useMemo } from 'react';
 import { WelderStep, ViewMode, Weld, Consumable, Part } from '@/types/weldcloud';
 import { parts as initialParts, consumables as initialConsumables } from '@/data/mockData';
 
@@ -17,6 +17,27 @@ export function useWeldFlow() {
   const [confirmAction, setConfirmAction] = useState<(() => void) | null>(null);
   const [confirmMessage, setConfirmMessage] = useState('');
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
+
+  const nextWeld = useMemo(() => {
+    if (!selectedWeld) return null;
+    
+    const currentPart = parts.find(p => p.id === selectedWeld.partNumber);
+    if (!currentPart) return null;
+    
+    const currentIndex = currentPart.welds.findIndex(w => w.id === selectedWeld.id);
+    if (currentIndex >= 0 && currentIndex < currentPart.welds.length - 1) {
+      return currentPart.welds[currentIndex + 1];
+    }
+    
+    const currentPartIndex = parts.findIndex(p => p.id === currentPart.id);
+    for (let i = currentPartIndex + 1; i < parts.length; i++) {
+      if (parts[i].welds.length > 0) {
+        return parts[i].welds[0];
+      }
+    }
+    
+    return null;
+  }, [selectedWeld, parts]);
 
   const startArcTimer = useCallback(() => {
     if (timerRef.current) clearInterval(timerRef.current);
@@ -117,6 +138,7 @@ export function useWeldFlow() {
     workflowStep,
     parts,
     selectedWeld,
+    nextWeld,
     consumables,
     arcTime,
     deviationText,

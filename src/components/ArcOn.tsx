@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { AlertTriangle } from 'lucide-react';
+import { AlertTriangle, ArrowRight, Zap } from 'lucide-react';
 import { Weld, Part } from '@/types/weldcloud';
 import { machineSpec } from '@/data/mockData';
 import { DrawingWithHighlight } from './DrawingWithHighlight';
@@ -9,10 +9,11 @@ interface ArcOnProps {
   onPause: () => void;
   onComplete: () => void;
   selectedWeld: Weld | null;
+  nextWeld: Weld | null;
   parts: Part[];
 }
 
-export function ArcOn({ arcTime, onPause, onComplete, selectedWeld, parts }: ArcOnProps) {
+export function ArcOn({ arcTime, onPause, onComplete, selectedWeld, nextWeld, parts }: ArcOnProps) {
   const currentPart = selectedWeld
     ? parts.find(p => p.id === selectedWeld.partNumber)
     : undefined;
@@ -94,6 +95,75 @@ export function ArcOn({ arcTime, onPause, onComplete, selectedWeld, parts }: Arc
           </p>
         </div>
       )}
+
+      {/* Current Weld + Next-up */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-6">
+        {/* Current Weld */}
+        <div className="bg-[#1a1a1a] border border-yellow-500/30 rounded-xl p-5 relative overflow-hidden">
+          <div className="absolute top-0 left-0 w-1 h-full bg-yellow-500" />
+          <div className="flex items-center gap-2 mb-3">
+            <Zap className="w-4 h-4 text-yellow-500" />
+            <span className="text-[10px] uppercase tracking-wider text-yellow-500 font-semibold">Current Weld</span>
+          </div>
+          {selectedWeld ? (
+            <div className="space-y-2">
+              <div className="flex items-center gap-2 flex-wrap">
+                <span className="text-lg font-bold text-white">{selectedWeld.id}</span>
+                <span className="text-xs text-yellow-500 bg-yellow-500/10 px-2 py-0.5 rounded font-mono border border-yellow-500/20">
+                  {selectedWeld.process}
+                </span>
+              </div>
+              <div className="text-sm text-gray-300">{selectedWeld.jointType}</div>
+              <div className="flex items-center gap-2 flex-wrap">
+                <span className="text-xs text-gray-500 bg-[#141414] px-2 py-1 rounded border border-[#2a2a2a]">
+                  {selectedWeld.wps}
+                </span>
+                <span className="text-xs text-gray-500 bg-[#141414] px-2 py-1 rounded border border-[#2a2a2a]">
+                  {selectedWeld.duration} min
+                </span>
+                <span className="text-xs text-gray-500 bg-[#141414] px-2 py-1 rounded border border-[#2a2a2a]">
+                  {selectedWeld.partNumber}
+                </span>
+              </div>
+            </div>
+          ) : (
+            <p className="text-sm text-gray-500">No weld selected</p>
+          )}
+        </div>
+
+        {/* Next-up */}
+        <div className="bg-[#1a1a1a] border border-[#2a2a2a] rounded-xl p-5 relative overflow-hidden">
+          <div className="absolute top-0 left-0 w-1 h-full bg-gray-600" />
+          <div className="flex items-center gap-2 mb-3">
+            <ArrowRight className="w-4 h-4 text-gray-400" />
+            <span className="text-[10px] uppercase tracking-wider text-gray-400 font-semibold">Next-up</span>
+          </div>
+          {nextWeld ? (
+            <div className="space-y-2">
+              <div className="flex items-center gap-2 flex-wrap">
+                <span className="text-lg font-bold text-gray-200">{nextWeld.id}</span>
+                <span className="text-xs text-gray-400 bg-[#1f1f1f] px-2 py-0.5 rounded font-mono border border-[#2a2a2a]">
+                  {nextWeld.process}
+                </span>
+              </div>
+              <div className="text-sm text-gray-400">{nextWeld.jointType}</div>
+              <div className="flex items-center gap-2 flex-wrap">
+                <span className="text-xs text-gray-500 bg-[#141414] px-2 py-1 rounded border border-[#2a2a2a]">
+                  {nextWeld.wps}
+                </span>
+                <span className="text-xs text-gray-500 bg-[#141414] px-2 py-1 rounded border border-[#2a2a2a]">
+                  {nextWeld.duration} min
+                </span>
+                <span className="text-xs text-gray-500 bg-[#141414] px-2 py-1 rounded border border-[#2a2a2a]">
+                  {nextWeld.partNumber}
+                </span>
+              </div>
+            </div>
+          ) : (
+            <p className="text-sm text-gray-500">Queue complete — no more welds</p>
+          )}
+        </div>
+      </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div className="lg:col-span-2">

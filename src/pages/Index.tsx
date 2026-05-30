@@ -59,6 +59,7 @@ export default function Index() {
               onPause={flow.pauseArc}
               onComplete={flow.completeWeld}
               selectedWeld={flow.selectedWeld}
+              nextWeld={flow.nextWeld}
               parts={flow.parts}
             />
           )}
