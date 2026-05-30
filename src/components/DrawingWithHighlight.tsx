@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { ImageOff } from 'lucide-react';
+import { ImageOff, Maximize2, Minimize2 } from 'lucide-react';
 import { Weld, Part } from '@/types/weldcloud';
 
 interface DrawingWithHighlightProps {
@@ -10,15 +10,27 @@ interface DrawingWithHighlightProps {
 
 export function DrawingWithHighlight({ selectedWeld, currentPart, compact = false }: DrawingWithHighlightProps) {
   const [imageError, setImageError] = useState(false);
+  const [isExpanded, setIsExpanded] = useState(false);
   const pos = selectedWeld?.drawingPosition;
+
 
   return (
     <div>
       <div
-        className={`relative bg-white rounded-xl border border-[#2a2a2a] overflow-hidden ${
-          compact ? 'max-h-48' : 'max-h-80'
+        onClick={() => setIsExpanded(!isExpanded)}
+        className={`relative bg-white rounded-xl border border-[#2a2a2a] overflow-hidden cursor-pointer group transition-all duration-300 ${
+          isExpanded ? '' : compact ? 'max-h-48' : 'max-h-80'
         }`}
       >
+        {/* Expand/collapse button */}
+        <div className="absolute top-3 right-3 z-10 p-1.5 bg-black/50 hover:bg-black/70 rounded-md backdrop-blur-sm transition-colors">
+          {isExpanded ? (
+            <Minimize2 className="w-4 h-4 text-white" />
+          ) : (
+            <Maximize2 className="w-4 h-4 text-white" />
+          )}
+        </div>
+
         {!imageError ? (
           <img
             src="/.dyad/media/91d0dd50d18370a2fe22dec401e802b5ba0fe0d7a7b3d51d20842996537eba11.png"
