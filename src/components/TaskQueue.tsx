@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { ChevronDown, ChevronUp, Package, BadgeCheck } from 'lucide-react';
+import { ChevronDown, ChevronUp, Package, Play, BadgeCheck } from 'lucide-react';
 import { Part, Weld } from '@/types/weldcloud';
 import { Badge } from '@/components/ui/badge';
 
@@ -14,8 +14,15 @@ export function TaskQueue({ parts, onSelectWeld }: TaskQueueProps) {
   const totalWelds = parts.reduce((sum, part) => sum + part.welds.length, 0);
   const nextWeld = parts[0]?.welds[0];
 
-  const togglePart = (partId: string) => {
+  const togglePart = (e: React.MouseEvent, partId: string) => {
+    e.stopPropagation();
     setExpandedPartId((current) => (current === partId ? null : partId));
+  };
+
+  const startPart = (part: Part) => {
+    if (part.welds.length > 0) {
+      onSelectWeld(part.welds[0]);
+    }
   };
 
   return (
@@ -29,7 +36,7 @@ export function TaskQueue({ parts, onSelectWeld }: TaskQueueProps) {
         </h1>
       </div>
 
-      <div className="space-y-3">
+      <div className="space-y-4">
         {parts.map((part, partIndex) => {
           const isExpanded = expandedPartId === part.id;
           const hasPriority = part.welds.some((w) => w.priority);
@@ -38,65 +45,93 @@ export function TaskQueue({ parts, onSelectWeld }: TaskQueueProps) {
           return (
             <div
               key={part.id}
-              className="bg-[#1a1a1a] border border-[#2a2a2a] rounded-lg overflow-hidden transition-colors"
+              className="bg-[#1a1a1a] border border-[#2a2a2a] rounded-xl overflow-hidden transition-colors"
             >
-              <button
-                onClick={() => togglePart(part.id)}
-                className="w-full text-left p-4 hover:bg-[#1f1f1f] transition-colors"
-              >
-                <div className="flex items-start justify-between">
-                  <div className="flex items-start gap-3">
+              <div className="p-4">
+                <div className="flex items-start gap-4">
+                  <div className="flex items-start gap-3 flex-1 min-w-0">
                     <div
-                      className={`w-10 h-10 rounded-full flex items-center justify-center text-sm font-bold shrink-0 ${
+                      className={`w-12 h-12 rounded-xl flex items-center justify-center text-sm font-bold shrink-0 ${
                         partIndex === 0
                           ? 'bg-yellow-500 text-black'
                           : 'bg-[#2a2a2a] text-gray-400'
                       }`}
                     >
-                      <Package className="w-5 h-5" />
+                      <Package className="w-6 h-6" />
                     </div>
-                    <div>
-                      <div className="flex items-center gap-2">
-                        <span className="text-white font-semibold">{part.id}</span>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-2 flex-wrap">
+                        <span className="text-white font-semibold text-base">{part.id}</span>
                         <span className="text-sm text-gray-400">· {part.name}</span>
                       </div>
                       <div className="text-sm text-gray-400 mt-0.5">
                         {part.description}
                       </div>
-                      <div className="flex items-center gap-2 mt-2">
+                      <div className="flex items-center gap-2 mt-2 flex-wrap">
                         <span className="text-xs text-gray-500 bg-[#141414] px-2 py-0.5 rounded">
-                          {part.welds.length} weld{part.welds.length !== 1 ? 's' : ''}
-                        </span>
-                        <span className="text-xs text-gray-500 bg-[#141414] px-2 py-0.5 rounded">
-                          {totalDuration} min total
+                          {totalDuration} min
                         </span>
                         {hasPriority && (
                           <Badge className="bg-red-500/10 text-red-400 border-red-500/20 text-xs">
                             Priority
                           </Badge>
                         )}
+                        {partIndex === 0 && (
+                          <span className="text-xs font-medium text-yellow-500 uppercase tracking-wider">
+                            Next up
+                          </span>
+                        )}
                       </div>
                     </div>
                   </div>
-                  <div className="flex items-center gap-2">
-                    {partIndex === 0 && (
-                      <span className="text-xs font-medium text-yellow-500 uppercase tracking-wider">
-                        Next up
-                      </span>
-                    )}
-                    {isExpanded ? (
-                      <ChevronUp className="w-5 h-5 text-gray-400" />
-                    ) : (
-                      <ChevronDown className="w-5 h-5 text-gray-400" />
-                    )}
-                  </div>
+
+                  <button
+                    onClick={() => startPart(part)}
+                    className={`shrink-0 w-14 h-14 rounded-full flex items-center justify-center transition-all ${
+                      partIndex === 0
+                        ? 'bg-yellow-500 hover:bg-yellow-400 hover:scale-105 shadow-lg shadow-yellow-500/20'
+                        : 'bg-[#2a2a2a] hover:bg-[#333333]'
+                    }`}
+                  >
+                    <Play className={`w-6 h-6 ${partIndex === 0 ? 'text-black' : 'text-white'} ml-0.5`} />
+                  </button>
                 </div>
-              </button>
+
+                <button
+                  onClick={(e) => togglePart(e, part.id)}
+                  className="w-full mt-4 pt-3 border-t border-[#2a2a2a]"
+                >
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2 flex-wrap">
+                      {part.welds.map((weld) => (
+                        <span
+                          key={weld.id}
+                          className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-mono border ${
+                            weld.priority
+                              ? 'bg-red-500/10 text-red-400 border-red-500/20'
+                              : 'bg-[#1f1f1f] text-gray-400 border-[#2a2a2a]'
+                          }`}
+                        >
+                          {weld.id}
+                        </span>
+                      ))}
+                    </div>
+                    <div className="flex items-center gap-1.5 text-xs text-gray-500 shrink-0 ml-2">
+                      <span>{isExpanded ? 'Hide welds' : 'View welds'}</span>
+                      {isExpanded ? (
+                        <ChevronUp className="w-4 h-4" />
+                      ) : (
+                        <ChevronDown className="w-4 h-4" />
+                      )}
+                    </div>
+                  </div>
+                </button>
+              </div>
 
               {isExpanded && (
-                <div className="border-t border-[#2a2a2a] px-4 pb-4 pt-2">
-                  <div className="text-[10px] uppercase tracking-wider text-gray-500 mb-2 mt-2">
-                    Welds assigned
+                <div className="border-t border-[#2a2a2a] px-4 pb-4 pt-3 bg-[#141414]/50">
+                  <div className="text-[10px] uppercase tracking-wider text-gray-500 mb-3">
+                    Welds assigned — tap one to start
                   </div>
                   <div className="space-y-2">
                     {part.welds.map((weld, weldIndex) => {
@@ -108,7 +143,7 @@ export function TaskQueue({ parts, onSelectWeld }: TaskQueueProps) {
                           className={`w-full text-left flex items-center gap-3 p-3 rounded-lg border transition-colors group ${
                             isFirstWeld
                               ? 'bg-yellow-500/5 border-yellow-500/20 hover:bg-yellow-500/10'
-                              : 'bg-[#141414] border-[#2a2a2a] hover:bg-[#1f1f1f]'
+                              : 'bg-[#1a1a1a] border-[#2a2a2a] hover:bg-[#1f1f1f]'
                           }`}
                         >
                           <div
@@ -120,8 +155,8 @@ export function TaskQueue({ parts, onSelectWeld }: TaskQueueProps) {
                           >
                             {weldIndex + 1}
                           </div>
-                          <div className="flex-1">
-                            <div className="flex items-center gap-2">
+                          <div className="flex-1 min-w-0">
+                            <div className="flex items-center gap-2 flex-wrap">
                               <span className="text-sm font-medium text-white">
                                 {weld.id}
                               </span>
@@ -129,11 +164,11 @@ export function TaskQueue({ parts, onSelectWeld }: TaskQueueProps) {
                                 {weld.jointType}
                               </span>
                             </div>
-                            <div className="flex items-center gap-2 mt-1">
-                              <span className="text-[10px] text-gray-500 bg-[#1a1a1a] px-2 py-0.5 rounded">
+                            <div className="flex items-center gap-2 mt-1 flex-wrap">
+                              <span className="text-[10px] text-gray-500 bg-[#141414] px-2 py-0.5 rounded">
                                 {weld.wps}
                               </span>
-                              <span className="text-[10px] text-gray-500 bg-[#1a1a1a] px-2 py-0.5 rounded">
+                              <span className="text-[10px] text-gray-500 bg-[#141414] px-2 py-0.5 rounded">
                                 {weld.duration} min
                               </span>
                               <span className="text-[10px] text-yellow-500 bg-yellow-500/10 px-2 py-0.5 rounded font-mono">
@@ -147,7 +182,7 @@ export function TaskQueue({ parts, onSelectWeld }: TaskQueueProps) {
                             </div>
                           </div>
                           {isFirstWeld && (
-                            <span className="text-[10px] font-medium text-yellow-500 uppercase tracking-wider">
+                            <span className="text-[10px] font-medium text-yellow-500 uppercase tracking-wider shrink-0">
                               Next
                             </span>
                           )}
@@ -163,7 +198,7 @@ export function TaskQueue({ parts, onSelectWeld }: TaskQueueProps) {
       </div>
 
       {nextWeld && (
-        <div className="mt-6 p-4 bg-[#1a1a1a] border border-[#2a2a2a] rounded-lg">
+        <div className="mt-6 p-4 bg-[#1a1a1a] border border-[#2a2a2a] rounded-xl">
           <div className="flex items-center gap-2 text-xs text-gray-400 mb-3">
             <span className="text-yellow-500">🎤</span>
             <span className="font-mono">

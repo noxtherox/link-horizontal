@@ -11,7 +11,7 @@ import { FloorStatus } from '@/components/FloorStatus';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 
 const statusHints: Record<string, string> = {
-  taskQueue: 'Voice: say "start [weld ID]" · Touch: expand a part, then tap a weld · Scan: scan work order QR',
+  taskQueue: 'Voice: say "start [weld ID]" · Tap play button on part to start first weld · Tap weld pills to expand · Scan: scan work order QR',
   preWeldCheck: 'Voice: "gas confirmed" · Touch: confirm tile per item · Scan: scan consumable barcode',
   arcOn: 'Minimal screen — eyes on arc · Touch: 3 big command tiles · Voice: PTT commands',
   deviationFlag: 'Voice: describe then confirm · Touch: pick category tile first · Scan: assign to inspector by scan',
