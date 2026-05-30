@@ -44,7 +44,6 @@ export default function Index() {
 
           {flow.viewMode === 'welder' && flow.step === 'preWeldCheck' && (
             <PreWeldCheck
-              consumables={flow.consumables}
               onVerify={flow.verifyConsumable}
               onStart={flow.startArc}
               allVerified={flow.allConsumablesVerified}

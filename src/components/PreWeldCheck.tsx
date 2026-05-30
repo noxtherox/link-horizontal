@@ -1,10 +1,9 @@
 import { useState } from 'react';
 import { Check, Scan, ImageOff } from 'lucide-react';
-import { Consumable, Weld, Part } from '@/types/weldcloud';
+import { Weld, Part } from '@/types/weldcloud';
 import { gasSpec } from '@/data/mockData';
 
 interface PreWeldCheckProps {
-  consumables: Consumable[];
   onVerify: (id: string) => void;
   onStart: () => void;
   allVerified: boolean;
@@ -14,7 +13,6 @@ interface PreWeldCheckProps {
 }
 
 export function PreWeldCheck({ 
-  consumables, 
   onVerify, 
   onStart, 
   allVerified,
@@ -34,13 +32,42 @@ export function PreWeldCheck({
 
   return (
     <div className="p-4 md:p-6">
+      {/* Top header with weld info + WPS badges + Start Arc */}
       <div className="mb-6">
         <div className="text-[10px] uppercase tracking-wider text-gray-500 mb-1">
           Pre-weld · {selectedWeld?.id || '—'} · {currentPart?.id || '—'} · {selectedWeld?.wps || '—'}
         </div>
-        <h1 className="text-2xl md:text-3xl font-bold text-white">
-          {selectedWeld?.id || 'Select a weld'} · {selectedWeld?.jointType || '—'}
-        </h1>
+        
+        <div className="flex items-start justify-between flex-wrap gap-4">
+          <h1 className="text-2xl md:text-3xl font-bold text-white">
+            {selectedWeld?.id || '—'} · {selectedWeld?.jointType || '—'}
+          </h1>
+          
+          <div className="flex items-center gap-2 flex-wrap">
+            <span className="text-xs text-gray-400 bg-[#1a1a1a] px-3 py-1.5 rounded border border-[#2a2a2a]">
+              {selectedWeld?.wps}
+            </span>
+            <span className="text-xs text-yellow-500 bg-yellow-500/10 px-3 py-1.5 rounded border border-yellow-500/20 font-mono">
+              {selectedWeld?.process}
+            </span>
+            <span className="text-xs text-gray-500 bg-[#1a1a1a] px-3 py-1.5 rounded border border-[#2a2a2a]">
+              {selectedWeld?.duration} min
+            </span>
+            {selectedWeld?.priority && (
+              <span className="text-xs text-red-400 bg-red-500/10 px-3 py-1.5 rounded border border-red-500/20">
+                Priority
+              </span>
+            )}
+            {allVerified && (
+              <button
+                onClick={onStart}
+                className="px-5 py-2 bg-yellow-500 hover:bg-yellow-400 text-black font-bold rounded-lg transition-colors text-sm"
+              >
+                Start Arc
+              </button>
+            )}
+          </div>
+        </div>
       </div>
 
       {/* Part Drawing */}
@@ -110,51 +137,10 @@ export function PreWeldCheck({
         </div>
       )}
 
+      {/* Bottom: Gas confirmed + Gas spec */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <div className="lg:col-span-2 space-y-3">
-          {consumables.map((c, i) => (
-            <button
-              key={c.id}
-              onClick={() => onVerify(c.id)}
-              className={`w-full text-left flex items-center justify-between p-4 rounded-lg border transition-colors ${
-                c.verified
-                  ? 'bg-[#1a2a1a] border-green-500/30'
-                  : i === 3
-                  ? 'bg-[#2a1a1a] border-yellow-500/30'
-                  : 'bg-[#1a1a1a] border-[#2a2a2a] hover:bg-[#1f1f1f]'
-              }`}
-            >
-              <div className="flex items-center gap-3">
-                <div
-                  className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 ${
-                    c.verified ? 'bg-green-500 text-black' : 'bg-[#2a2a2a] text-gray-400'
-                  }`}
-                >
-                  {c.verified ? <Check className="w-4 h-4" /> : <span className="text-sm">{i + 1}</span>}
-                </div>
-                <div>
-                  <div className={`text-sm font-medium ${c.verified ? 'text-green-400' : 'text-white'}`}>
-                    {c.name} · {c.lot}
-                  </div>
-                </div>
-              </div>
-              <div className="flex items-center gap-2">
-                {c.verified && c.method === 'scan' && (
-                  <span className="text-[10px] text-gray-500 flex items-center gap-1">
-                    <Scan className="w-3 h-3" /> Scan
-                  </span>
-                )}
-                {c.verified && c.method === 'auto' && (
-                  <span className="text-[10px] text-gray-500">Auto</span>
-                )}
-                {!c.verified && (
-                  <span className="text-[10px] text-yellow-500">Pending</span>
-                )}
-              </div>
-            </button>
-          ))}
-
-          <div className="mt-4 p-4 bg-[#1a1a1a] border border-[#2a2a2a] rounded-lg">
+        <div className="lg:col-span-2">
+          <div className="p-4 bg-[#1a1a1a] border border-[#2a2a2a] rounded-lg">
             <div className="flex items-center gap-2 text-xs text-gray-400 mb-3">
               <span className="text-yellow-500">🎤</span>
               <span className="font-mono">"gas confirmed"</span>
@@ -182,7 +168,7 @@ export function PreWeldCheck({
           </div>
         </div>
 
-        <div className="space-y-4">
+        <div>
           <div className="p-4 bg-[#1a1a1a] border border-[#2a2a2a] rounded-lg">
             <div className="text-[10px] uppercase tracking-wider text-gray-500 mb-3">WPS-A36-3G · Gas Spec</div>
             <div className="space-y-3">
@@ -200,15 +186,6 @@ export function PreWeldCheck({
               </div>
             </div>
           </div>
-
-          {allVerified && (
-            <button
-              onClick={onStart}
-              className="w-full p-4 bg-yellow-500 hover:bg-yellow-400 text-black font-bold rounded-lg transition-colors"
-            >
-              Start Arc
-            </button>
-          )}
         </div>
       </div>
     </div>
