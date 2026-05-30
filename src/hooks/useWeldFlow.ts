@@ -140,6 +140,58 @@ export function useWeldFlow() {
     setWorkflowStep('taskQueue');
   }, [selectedWeld]);
 
+  const finishAndStartNext = useCallback(() => {
+    if (!selectedWeld) return;
+    
+    const currentPart = parts.find(p => p.id === selectedWeld.partNumber);
+    const currentIndex = currentPart?.welds.findIndex(w => w.id === selectedWeld.id) ?? -1;
+    let nextWeldObj: Weld | null = null;
+    
+    if (currentPart && currentIndex >= 0 && currentIndex < currentPart.welds.length - 1) {
+      nextWeldObj = currentPart.welds[currentIndex + 1];
+    } else {
+      const currentPartIndex = parts.findIndex(p => p.id === currentPart?.id);
+      for (let i = currentPartIndex + 1; i < parts.length; i++) {
+        if (parts[i].welds.length > 0) {
+          nextWeldObj = parts[i].welds[0];
+          break;
+        }
+      }
+    }
+    
+    setParts((prev) =>
+      prev
+        .map((part) => ({
+          ...part,
+          welds: part.welds.filter((w) => w.id !== selectedWeld.id),
+        }))
+        .filter((part) => part.welds.length > 0)
+    );
+    
+    if (nextWeldObj) {
+      setSelectedWeld(nextWeldObj);
+      setStep('preWeldCheck');
+      setWorkflowStep('preWeldCheck');
+    } else {
+      setSelectedWeld(null);
+      setStep('taskQueue');
+      setWorkflowStep('taskQueue');
+    }
+    setArcTime(0);
+    setIsArcPaused(false);
+    stopArcTimer();
+  }, [selectedWeld, parts, stopArcTimer]);
+
+  const chooseDifferentWeld = useCallback(() => {
+    stopArcTimer();
+    setIsArcPaused(false);
+    setSelectedWeld(null);
+    setStep('taskQueue');
+    setWorkflowStep('taskQueue');
+    setArcTime(0);
+    setDeviationText('');
+  }, [stopArcTimer]);
+
   const resumeStep = useCallback(() => {
     setStep(workflowStep);
   }, [workflowStep]);
@@ -179,6 +231,8 @@ export function useWeldFlow() {
     saveDeviation,
     completeWeld,
     signWeld,
+    finishAndStartNext,
+    chooseDifferentWeld,
     resumeStep,
     handleVoice,
   };
