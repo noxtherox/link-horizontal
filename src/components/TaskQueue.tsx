@@ -1,16 +1,14 @@
 import { useState } from 'react';
 import { ChevronDown, ChevronUp, Package, Play, BadgeCheck } from 'lucide-react';
-import { Part, Weld, CompletedWeld } from '@/types/weldcloud';
+import { Part, Weld } from '@/types/weldcloud';
 import { Badge } from '@/components/ui/badge';
-import { CompletedWelds } from './CompletedWelds';
 
 interface TaskQueueProps {
   parts: Part[];
   onSelectWeld: (weld: Weld) => void;
-  completedWelds?: CompletedWeld[];
 }
 
-export function TaskQueue({ parts, onSelectWeld, completedWelds = [] }: TaskQueueProps) {
+export function TaskQueue({ parts, onSelectWeld }: TaskQueueProps) {
   const [expandedPartId, setExpandedPartId] = useState<string | null>(null);
 
   const totalWelds = parts.reduce((sum, part) => sum + part.welds.length, 0);
@@ -229,8 +227,6 @@ export function TaskQueue({ parts, onSelectWeld, completedWelds = [] }: TaskQueu
           </div>
         </div>
       )}
-
-      <CompletedWelds completedWelds={completedWelds} />
     </div>
   );
 }
