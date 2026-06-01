@@ -49,5 +49,5 @@ export interface Alert {
   acknowledged: boolean;
 }
 
-export type WelderStep = 'taskQueue' | 'preWeldCheck' | 'arcOn' | 'deviationFlag' | 'completeSign';
+export type WelderStep = 'taskQueue' | 'weldActive' | 'reviewAndSign';
 export type ViewMode = 'welder' | 'supervisor';

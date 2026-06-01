@@ -4,6 +4,7 @@ import { ViewMode, WelderStep, Weld, Part, Consumable } from '@/types/weldcloud'
 interface VoicePanelProps {
   viewMode: ViewMode;
   step: WelderStep;
+  weldActiveMode?: 'setup' | 'arc';
   isRecording: boolean;
   setIsRecording: (v: boolean) => void;
   voiceCommand: string;
@@ -16,37 +17,42 @@ interface VoicePanelProps {
 
 const commandMap: Record<string, string[]> = {
   taskQueue: ['"start [weld ID]"', '"skip [weld ID]"', '"status"', '"help"'],
-  preWeldCheck: ['"gas confirmed"', '"scan bottle"', '"gas missing"', '"skip"'],
-  arcOn: ['"pause"', '"deviation [description]"', '"complete"'],
-  deviationFlag: ['"deviation [description]"', '"redo"', '"cancel deviation"', '"yes resume"'],
-  completeSign: ['"yes sign"', '"no"', '"review"'],
+  weldActiveSetup: ['"gas confirmed"', '"scan bottle"', '"gas missing"', '"skip"', '"start [weld ID]"'],
+  weldActiveArc: ['"pause"', '"deviation [description]"', '"complete"'],
+  reviewAndSign: ['"yes sign"', '"no"', '"review"'],
   supervisor: ['"status cell [ID]"', '"alert welder [name]"', '"page [name]"', '"overview"'],
 };
 
 const panelTitles: Record<string, string> = {
   taskQueue: 'SAY ONE OF',
-  preWeldCheck: 'SAY ONE OF',
-  arcOn: 'SAY ONE OF',
-  deviationFlag: 'SAY ONE OF',
-  completeSign: 'SAY ONE OF',
+  weldActiveSetup: 'SAY ONE OF',
+  weldActiveArc: 'SAY ONE OF',
+  reviewAndSign: 'SAY ONE OF',
   supervisor: 'SAY ONE OF',
 };
 
 const micLabels: Record<string, string> = {
   taskQueue: 'Press to speak',
-  preWeldCheck: 'Press to speak',
-  arcOn: 'Press to speak',
-  deviationFlag: 'Press to speak',
-  completeSign: 'Press to speak',
+  weldActiveSetup: 'Press to speak',
+  weldActiveArc: 'Press to speak',
+  reviewAndSign: 'Press to speak',
   supervisor: 'Press to speak',
 };
 
-export function VoicePanel({ viewMode, step, isRecording, setIsRecording, voiceCommand, selectedWeld, nextWeld, parts, consumables, onVerify }: VoicePanelProps) {
-  const key = viewMode === 'supervisor' ? 'supervisor' : step;
+export function VoicePanel({ viewMode, step, weldActiveMode = 'setup', isRecording, setIsRecording, voiceCommand, selectedWeld, nextWeld, parts, consumables, onVerify }: VoicePanelProps) {
+  let key: string;
+  if (viewMode === 'supervisor') {
+    key = 'supervisor';
+  } else if (step === 'weldActive') {
+    key = weldActiveMode === 'setup' ? 'weldActiveSetup' : 'weldActiveArc';
+  } else {
+    key = step;
+  }
+  
   let commands = commandMap[key] || [];
   
   // Add other weld commands when in pre-weld check
-  if (viewMode === 'welder' && step === 'preWeldCheck' && selectedWeld && parts.length > 0) {
+  if (key === 'weldActiveSetup' && selectedWeld && parts.length > 0) {
     const currentPart = parts.find(p => p.id === selectedWeld.partNumber);
     if (currentPart) {
       const otherWelds = currentPart.welds.filter(w => w.id !== selectedWeld.id);
@@ -60,11 +66,11 @@ export function VoicePanel({ viewMode, step, isRecording, setIsRecording, voiceC
   const title = panelTitles[key] || 'SAY ONE OF';
   const micLabel = micLabels[key] || 'Press to speak';
 
-  const isPreWeldScan = viewMode === 'welder' && step === 'preWeldCheck' && consumables && onVerify;
+  const isPreWeldScan = key === 'weldActiveSetup' && consumables && onVerify;
 
   return (
     <aside className="w-full lg:w-72 bg-[#141414] border-t lg:border-l lg:border-t-0 border-[#2a2a2a] flex flex-col shrink-0">
-      {viewMode === 'welder' && step === 'completeSign' && (
+      {viewMode === 'welder' && step === 'reviewAndSign' && (
         <div className="p-4 border-b border-[#2a2a2a]">
           <div className="text-[10px] uppercase tracking-wider text-gray-500 mb-2">2-Input Rule</div>
           <p className="text-xs text-gray-400 leading-relaxed">
@@ -97,10 +103,10 @@ export function VoicePanel({ viewMode, step, isRecording, setIsRecording, voiceC
         <div className="p-4 border-b border-[#2a2a2a] flex-1 overflow-y-auto">
           <div className="text-[10px] uppercase tracking-wider text-gray-500 mb-3">Scan Consumables</div>
           <div className="space-y-3">
-            {consumables.map((c, i) => (
+            {consumables!.map((c, i) => (
               <button
                 key={c.id}
-                onClick={() => onVerify(c.id)}
+                onClick={() => onVerify!(c.id)}
                 className={`w-full text-left p-3 rounded-lg border transition-colors ${
                   c.verified
                     ? 'bg-green-500/10 border-green-500/30'
@@ -146,7 +152,7 @@ export function VoicePanel({ viewMode, step, isRecording, setIsRecording, voiceC
             </div>
           </div>
         </div>
-      ) : viewMode === 'welder' && step === 'arcOn' ? (
+      ) : key === 'weldActiveArc' ? (
         <>
           <div className="p-4 border-b border-[#2a2a2a] space-y-3">
             {/* Current Weld */}

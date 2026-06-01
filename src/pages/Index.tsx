@@ -3,19 +3,15 @@ import { Header } from '@/components/Header';
 import { VoicePanel } from '@/components/VoicePanel';
 import { StatusBar } from '@/components/StatusBar';
 import { TaskQueue } from '@/components/TaskQueue';
-import { PreWeldCheck } from '@/components/PreWeldCheck';
-import { ArcOn } from '@/components/ArcOn';
-import { DeviationFlag } from '@/components/DeviationFlag';
-import { CompleteSign } from '@/components/CompleteSign';
+import { WeldActive } from '@/components/WeldActive';
+import { ReviewAndSign } from '@/components/ReviewAndSign';
 import { FloorStatus } from '@/components/FloorStatus';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 
 const statusHints: Record<string, string> = {
   taskQueue: 'Voice: say "start [weld ID]" · Tap play button on part to start first weld · Tap weld pills to expand · Scan: scan work order QR',
-  preWeldCheck: 'Voice: "gas confirmed" · Touch: confirm tile per item · Scan: scan consumable barcode',
-  arcOn: 'Minimal screen — eyes on arc · Touch: 3 big command tiles · Voice: PTT commands',
-  deviationFlag: 'Voice: describe then confirm · Touch: pick category tile first · Scan: assign to inspector by scan',
-  completeSign: '2-input rule: always requires badge · voice/touch/scan sets the second factor · irreversible',
+  weldActive: 'Setup: Voice "gas confirmed" · Touch confirm tiles · Scan consumables. Arc: minimal screen — eyes on arc · Touch command tiles · Voice PTT',
+  reviewAndSign: '2-input rule: always requires badge · voice/touch/scan sets the second factor · irreversible. Add deviation notes before signing.',
   supervisor: 'Heat map strip + cell list · Touch adds alert/assign buttons per station · Voice alerts push to earpiece',
 };
 
@@ -42,48 +38,42 @@ export default function Index() {
             <TaskQueue parts={flow.parts} onSelectWeld={flow.selectWeld} />
           )}
 
-          {flow.viewMode === 'welder' && flow.step === 'preWeldCheck' && (
-            <PreWeldCheck
+          {flow.viewMode === 'welder' && flow.step === 'weldActive' && (
+            <WeldActive
+              mode={flow.weldActiveMode}
+              onStartArc={flow.startArc}
+              onTogglePause={flow.toggleArcPause}
+              onComplete={flow.completeWeld}
+              onDoneNext={flow.finishAndStartNext}
+              onChooseDifferent={flow.chooseDifferentWeld}
               onVerify={flow.verifyConsumable}
-              onStart={flow.startArc}
               allVerified={flow.allConsumablesVerified}
               selectedWeld={flow.selectedWeld}
               parts={flow.parts}
               onSelectWeld={flow.selectWeld}
-            />
-          )}
-
-          {flow.viewMode === 'welder' && flow.step === 'arcOn' && (
-            <ArcOn
               arcTime={flow.arcTime}
-              isStopped={flow.isArcPaused}
-              onToggleStop={flow.toggleArcPause}
-              onStop={flow.pauseArc}
-              onComplete={flow.completeWeld}
-              onDoneNext={flow.finishAndStartNext}
-              onChooseDifferent={flow.chooseDifferentWeld}
-              selectedWeld={flow.selectedWeld}
-              parts={flow.parts}
+              isPaused={flow.isArcPaused}
+              nextWeld={flow.nextWeld}
             />
           )}
 
-          {flow.viewMode === 'welder' && flow.step === 'deviationFlag' && (
-            <DeviationFlag
+          {flow.viewMode === 'welder' && flow.step === 'reviewAndSign' && (
+            <ReviewAndSign
+              onSign={flow.signWeld}
+              arcTime={flow.arcTime}
               deviationText={flow.deviationText}
               setDeviationText={flow.setDeviationText}
-              onSave={flow.saveDeviation}
-              arcTime={flow.arcTime}
+              onSaveDeviation={flow.saveDeviation}
+              deviations={flow.deviations}
+              selectedWeld={flow.selectedWeld}
             />
-          )}
-
-          {flow.viewMode === 'welder' && flow.step === 'completeSign' && (
-            <CompleteSign onSign={flow.signWeld} arcTime={flow.arcTime} />
           )}
         </main>
 
         <VoicePanel
           viewMode={flow.viewMode}
           step={flow.step}
+          weldActiveMode={flow.weldActiveMode}
           isRecording={flow.isRecording}
           setIsRecording={flow.setIsRecording}
           voiceCommand={flow.voiceCommand}

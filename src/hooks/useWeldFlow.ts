@@ -6,11 +6,13 @@ export function useWeldFlow() {
   const [viewMode, setViewMode] = useState<ViewMode>('welder');
   const [step, setStep] = useState<WelderStep>('taskQueue');
   const [workflowStep, setWorkflowStep] = useState<WelderStep>('taskQueue');
+  const [weldActiveMode, setWeldActiveMode] = useState<'setup' | 'arc'>('setup');
   const [parts, setParts] = useState<Part[]>(initialParts);
   const [selectedWeld, setSelectedWeld] = useState<Weld | null>(null);
   const [consumables, setConsumables] = useState<Consumable[]>(initialConsumables);
   const [arcTime, setArcTime] = useState(0);
   const [deviationText, setDeviationText] = useState('');
+  const [deviations, setDeviations] = useState<string[]>([]);
   const [isRecording, setIsRecording] = useState(false);
   const [voiceCommand, setVoiceCommand] = useState('');
   const [showConfirm, setShowConfirm] = useState(false);
@@ -74,10 +76,12 @@ export function useWeldFlow() {
 
   const selectWeld = useCallback((weld: Weld) => {
     setSelectedWeld(weld);
-    setStep('preWeldCheck');
-    setWorkflowStep('preWeldCheck');
+    setStep('weldActive');
+    setWorkflowStep('weldActive');
+    setWeldActiveMode('setup');
     setArcTime(0);
     setIsArcPaused(false);
+    setDeviationText('');
   }, []);
 
   const verifyConsumable = useCallback((id: string) => {
@@ -89,37 +93,27 @@ export function useWeldFlow() {
   const allConsumablesVerified = consumables.every((c) => c.verified);
 
   const startArc = useCallback(() => {
-    setStep('arcOn');
-    setWorkflowStep('arcOn');
+    setWeldActiveMode('arc');
     setIsArcPaused(false);
     startArcTimer();
   }, [startArcTimer]);
 
   const pauseArc = useCallback(() => {
-    stopArcTimer();
-    setIsArcPaused(true);
-    setStep('deviationFlag');
-    setWorkflowStep('deviationFlag');
-  }, [stopArcTimer]);
+    toggleArcPause();
+  }, [toggleArcPause]);
 
   const saveDeviation = useCallback(() => {
-    setShowConfirm(true);
-    setConfirmMessage('Save deviation note and resume arc?');
-    setConfirmAction(() => () => {
-      setShowConfirm(false);
+    if (deviationText.trim()) {
+      setDeviations((prev) => [...prev, deviationText.trim()]);
       setDeviationText('');
-      setIsArcPaused(false);
-      setStep('arcOn');
-      setWorkflowStep('arcOn');
-      startArcTimer();
-    });
-  }, [startArcTimer]);
+    }
+  }, [deviationText]);
 
   const completeWeld = useCallback(() => {
     stopArcTimer();
     setIsArcPaused(false);
-    setStep('completeSign');
-    setWorkflowStep('completeSign');
+    setStep('reviewAndSign');
+    setWorkflowStep('reviewAndSign');
   }, [stopArcTimer]);
 
   const signWeld = useCallback(() => {
@@ -136,6 +130,8 @@ export function useWeldFlow() {
     setArcTime(0);
     setIsArcPaused(false);
     setDeviationText('');
+    setDeviations([]);
+    setWeldActiveMode('setup');
     setStep('taskQueue');
     setWorkflowStep('taskQueue');
   }, [selectedWeld]);
@@ -170,8 +166,9 @@ export function useWeldFlow() {
     
     if (nextWeldObj) {
       setSelectedWeld(nextWeldObj);
-      setStep('preWeldCheck');
-      setWorkflowStep('preWeldCheck');
+      setStep('weldActive');
+      setWorkflowStep('weldActive');
+      setWeldActiveMode('setup');
     } else {
       setSelectedWeld(null);
       setStep('taskQueue');
@@ -179,6 +176,8 @@ export function useWeldFlow() {
     }
     setArcTime(0);
     setIsArcPaused(false);
+    setDeviationText('');
+    setDeviations([]);
     stopArcTimer();
   }, [selectedWeld, parts, stopArcTimer]);
 
@@ -189,7 +188,9 @@ export function useWeldFlow() {
     setStep('taskQueue');
     setWorkflowStep('taskQueue');
     setArcTime(0);
+    setWeldActiveMode('setup');
     setDeviationText('');
+    setDeviations([]);
   }, [stopArcTimer]);
 
   const resumeStep = useCallback(() => {
@@ -207,6 +208,8 @@ export function useWeldFlow() {
     step,
     setStep,
     workflowStep,
+    weldActiveMode,
+    setWeldActiveMode,
     parts,
     selectedWeld,
     nextWeld,
@@ -214,6 +217,7 @@ export function useWeldFlow() {
     arcTime,
     deviationText,
     setDeviationText,
+    deviations,
     isRecording,
     setIsRecording,
     voiceCommand,

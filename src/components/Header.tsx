@@ -13,10 +13,8 @@ interface HeaderProps {
 
 const welderSteps: { key: WelderStep; label: string; num: string }[] = [
   { key: 'taskQueue', label: 'Task queue', num: '01' },
-  { key: 'preWeldCheck', label: 'Pre-weld check', num: '02' },
-  { key: 'arcOn', label: 'Arc on', num: '03' },
-  { key: 'deviationFlag', label: 'Deviation flag', num: '04' },
-  { key: 'completeSign', label: 'Complete · sign', num: '05' },
+  { key: 'weldActive', label: 'Weld Active', num: '02' },
+  { key: 'reviewAndSign', label: 'Review and Sign', num: '03' },
 ];
 
 export function Header({ viewMode, setViewMode, step, workflowStep, setStep, onResume }: HeaderProps) {

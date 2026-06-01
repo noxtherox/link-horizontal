@@ -1,11 +1,26 @@
-import { Check, AlertTriangle } from 'lucide-react';
+import { useState } from 'react';
+import { Check, AlertTriangle, Save, FileText } from 'lucide-react';
+import { Weld } from '@/types/weldcloud';
 
-interface CompleteSignProps {
+interface ReviewAndSignProps {
   onSign: () => void;
   arcTime: number;
+  deviationText: string;
+  setDeviationText: (t: string) => void;
+  onSaveDeviation: () => void;
+  deviations: string[];
+  selectedWeld: Weld | null;
 }
 
-export function CompleteSign({ onSign, arcTime }: CompleteSignProps) {
+export function ReviewAndSign({
+  onSign,
+  arcTime,
+  deviationText,
+  setDeviationText,
+  onSaveDeviation,
+  deviations,
+  selectedWeld,
+}: ReviewAndSignProps) {
   const formatTime = (seconds: number) => {
     const mins = Math.floor(seconds / 60);
     const secs = seconds % 60;
@@ -16,12 +31,13 @@ export function CompleteSign({ onSign, arcTime }: CompleteSignProps) {
     <div className="p-4 md:p-6">
       <div className="mb-6">
         <div className="text-[10px] uppercase tracking-wider text-gray-500 mb-1">
-          W-014 · Complete · Review and sign
+          {selectedWeld?.id || '—'} · Review and Sign
         </div>
-        <h1 className="text-2xl md:text-3xl font-bold text-white">Weld complete — sign to close</h1>
+        <h1 className="text-2xl md:text-3xl font-bold text-white">Review weld — sign to close</h1>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-6">
+        {/* Arc Summary */}
         <div className="p-4 bg-[#1a1a1a] border border-[#2a2a2a] rounded-lg">
           <div className="text-[10px] uppercase tracking-wider text-gray-500 mb-3">Arc Summary</div>
           <div className="space-y-3">
@@ -44,6 +60,7 @@ export function CompleteSign({ onSign, arcTime }: CompleteSignProps) {
           </div>
         </div>
 
+        {/* Open Items */}
         <div className="p-4 bg-[#1a1a1a] border border-[#2a2a2a] rounded-lg">
           <div className="text-[10px] uppercase tracking-wider text-gray-500 mb-3">Open Items</div>
           <div className="space-y-2">
@@ -57,10 +74,64 @@ export function CompleteSign({ onSign, arcTime }: CompleteSignProps) {
               <Check className="w-4 h-4 text-green-500 shrink-0 mt-0.5" />
               <span className="text-green-400">Deviation note saved</span>
             </div>
+            {deviations.map((d, i) => (
+              <div key={i} className="flex items-start gap-2 text-sm">
+                <FileText className="w-4 h-4 text-blue-400 shrink-0 mt-0.5" />
+                <span className="text-blue-400">{d}</span>
+              </div>
+            ))}
           </div>
         </div>
       </div>
 
+      {/* Add Deviation Note */}
+      <div className="mb-6">
+        <div className="text-[10px] uppercase tracking-wider text-gray-500 mb-3">Add Deviation Note</div>
+        <div className="p-4 bg-[#1a1a1a] border border-[#2a2a2a] rounded-lg">
+          <div className="flex items-center gap-2 text-xs text-gray-400 mb-3">
+            <span className="text-yellow-500">🎤</span>
+            <span className="font-mono">"deviation — heat input high, travel speed dropped on root"</span>
+          </div>
+
+          <textarea
+            value={deviationText}
+            onChange={(e) => setDeviationText(e.target.value)}
+            placeholder="Describe any deviation observed during welding..."
+            className="w-full bg-[#141414] border border-[#2a2a2a] rounded-lg p-3 text-sm text-white placeholder:text-gray-600 focus:outline-none focus:border-yellow-500/50 resize-none mb-3"
+            rows={3}
+          />
+
+          <div className="space-y-1.5 mb-4">
+            <div className="flex items-center gap-2 text-xs text-green-400">
+              <Check className="w-3 h-3" />
+              <span>Parameter auto-attached: heat input 1.04 kJ/mm at {formatTime(arcTime)}</span>
+            </div>
+            <div className="flex items-center gap-2 text-xs text-green-400">
+              <Check className="w-3 h-3" />
+              <span>WPS limit auto-attached: 1.00 kJ/mm max</span>
+            </div>
+            <div className="flex items-center gap-2 text-xs text-green-400">
+              <Check className="w-3 h-3" />
+              <span>Draft routed to Inspector A. Lehmann</span>
+            </div>
+          </div>
+
+          <button
+            onClick={onSaveDeviation}
+            disabled={!deviationText.trim()}
+            className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+              deviationText.trim()
+                ? 'bg-yellow-500 hover:bg-yellow-400 text-black'
+                : 'bg-[#2a2a2a] text-gray-500 cursor-not-allowed'
+            }`}
+          >
+            <Save className="w-4 h-4" />
+            Save deviation note
+          </button>
+        </div>
+      </div>
+
+      {/* Sign to Close */}
       <div className="max-w-3xl">
         <div className="p-4 bg-[#1a1a1a] border border-[#2a2a2a] rounded-lg mb-4">
           <div className="flex items-center gap-2 text-xs text-gray-400 mb-3">
@@ -70,7 +141,7 @@ export function CompleteSign({ onSign, arcTime }: CompleteSignProps) {
 
           <div className="bg-[#141414] rounded-lg p-4">
             <p className="text-sm text-white font-medium mb-3">
-              Sign W-014 and route to Inspector A. Lehmann?
+              Sign {selectedWeld?.id || 'weld'} and route to Inspector A. Lehmann?
             </p>
             <div className="grid grid-cols-2 gap-3">
               <button
@@ -92,7 +163,7 @@ export function CompleteSign({ onSign, arcTime }: CompleteSignProps) {
 
         <div className="p-3 bg-[#1a1a1a] border border-[#2a2a2a] rounded-lg">
           <p className="text-xs text-gray-500">
-            After sign: W-015 · P-4471-B · fillet 2F will auto-load
+            After sign: next weld will auto-load or return to task queue
           </p>
         </div>
       </div>
