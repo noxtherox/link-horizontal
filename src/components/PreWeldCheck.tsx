@@ -32,10 +32,6 @@ export function PreWeldCheck({
     <div className="p-4 md:p-6">
       {/* Top header with weld info + WPS badges + Start Arc */}
       <div className="mb-6">
-        <div className="text-[10px] uppercase tracking-wider text-gray-500 mb-1">
-          Pre-weld · {selectedWeld?.id || '—'} · {currentPart?.id || '—'} · {selectedWeld?.wps || '—'}
-        </div>
-        
         <div className="flex items-start justify-between flex-wrap gap-4">
           <h1 className="text-2xl md:text-3xl font-bold text-white">
             {selectedWeld?.id || '—'} · {selectedWeld?.jointType || '—'}
@@ -48,14 +44,6 @@ export function PreWeldCheck({
             <span className="text-xs text-yellow-500 bg-yellow-500/10 px-3 py-1.5 rounded border border-yellow-500/20 font-mono">
               {selectedWeld?.process}
             </span>
-            <span className="text-xs text-gray-500 bg-[#1a1a1a] px-3 py-1.5 rounded border border-[#2a2a2a]">
-              {selectedWeld?.duration} min
-            </span>
-            {selectedWeld?.priority && (
-              <span className="text-xs text-red-400 bg-red-500/10 px-3 py-1.5 rounded border border-red-500/20">
-                Priority
-              </span>
-            )}
             <button
               onClick={onStart}
               disabled={!allVerified}
@@ -73,9 +61,6 @@ export function PreWeldCheck({
 
       {/* Part Drawing */}
       <div className="mb-6">
-        <div className="text-[10px] uppercase tracking-wider text-gray-500 mb-2">
-          Part Drawing · {currentPart?.id || '—'}
-        </div>
         <DrawingWithHighlight selectedWeld={selectedWeld} currentPart={currentPart} />
       </div>
 
