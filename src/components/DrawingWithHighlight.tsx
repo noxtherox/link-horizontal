@@ -59,6 +59,12 @@ export function DrawingWithHighlight({ selectedWeld, currentPart, compact = fals
         )}
       </div>
 
+      <div className="mt-2 flex items-center gap-2 flex-wrap">
+        <span className="text-sm text-white font-medium">{currentPart?.id}</span>
+        <span className="text-sm text-gray-400">· {currentPart?.name}</span>
+        <span className="text-xs text-gray-500">· {currentPart?.description}</span>
+      </div>
+
       <style>{`
         @keyframes breathe {
           0%, 100% {
