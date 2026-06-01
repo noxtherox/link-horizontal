@@ -24,9 +24,7 @@ export function PreWeldCheck({
     ? parts.find(p => p.id === selectedWeld.partNumber)
     : undefined;
   
-  const otherWelds = currentPart
-    ? currentPart.welds.filter(w => w.id !== selectedWeld?.id)
-    : [];
+  const allWelds = currentPart?.welds || [];
 
   return (
     <div className="p-4 md:p-6">
@@ -64,50 +62,72 @@ export function PreWeldCheck({
         <DrawingWithHighlight selectedWeld={selectedWeld} currentPart={currentPart} />
       </div>
 
-      {/* Other welds on this part */}
-      {otherWelds.length > 0 && (
+      {/* All welds on this part */}
+      {allWelds.length > 0 && (
         <div className="mb-6">
           <div className="text-[10px] uppercase tracking-wider text-gray-500 mb-3">
-            Other welds on this part — tap to switch
+            Welds on this part — tap to switch
           </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-            {otherWelds.map((weld) => (
-              <button
-                key={weld.id}
-                onClick={() => onSelectWeld(weld)}
-                className="relative text-center p-5 bg-[#1a1a1a] hover:bg-[#1f1f1f] border border-[#2a2a2a] hover:border-yellow-500/30 rounded-xl transition-colors group"
-              >
-                {/* Process pill top-right */}
-                <span className="absolute top-3 right-3 text-[10px] text-yellow-500 bg-yellow-500/10 px-2 py-0.5 rounded-full font-mono border border-yellow-500/20">
-                  {weld.process}
-                </span>
-
-                {/* Large centered weld ID */}
-                <div className="text-3xl font-bold text-white mb-1">
-                  {weld.id}
-                </div>
-
-                {/* Subtext details */}
-                <div className="text-xs text-gray-400 mb-3">
-                  {weld.jointType}
-                </div>
-
-                {/* Bottom tags */}
-                <div className="flex items-center justify-center gap-2 flex-wrap">
-                  <span className="text-[10px] text-gray-500 bg-[#141414] px-2 py-0.5 rounded">
-                    {weld.wps}
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3">
+            {allWelds.map((weld) => {
+              const isCurrent = weld.id === selectedWeld?.id;
+              return (
+                <button
+                  key={weld.id}
+                  onClick={() => !isCurrent && onSelectWeld(weld)}
+                  disabled={isCurrent}
+                  className={`relative text-center p-4 rounded-xl transition-colors ${
+                    isCurrent
+                      ? 'bg-yellow-500/10 border border-yellow-500/40 cursor-default'
+                      : 'bg-[#1a1a1a] hover:bg-[#1f1f1f] border border-[#2a2a2a] hover:border-yellow-500/30 opacity-60 hover:opacity-100'
+                  }`}
+                >
+                  {/* Process pill top-right */}
+                  <span className={`absolute top-2 right-2 text-[9px] px-1.5 py-0.5 rounded-full font-mono border ${
+                    isCurrent
+                      ? 'text-yellow-500 bg-yellow-500/10 border-yellow-500/20'
+                      : 'text-gray-500 bg-[#141414] border-[#2a2a2a]'
+                  }`}>
+                    {weld.process}
                   </span>
-                  <span className="text-[10px] text-gray-500 bg-[#141414] px-2 py-0.5 rounded">
-                    {weld.duration} min
-                  </span>
-                  {weld.priority && (
-                    <span className="text-[10px] text-red-400 bg-red-500/10 px-2 py-0.5 rounded">
-                      Priority
+
+                  {/* Large centered weld ID */}
+                  <div className={`text-3xl font-bold mb-1 ${
+                    isCurrent ? 'text-white' : 'text-gray-400'
+                  }`}>
+                    {weld.id}
+                  </div>
+
+                  {/* Subtext details */}
+                  <div className={`text-[11px] mb-3 ${
+                    isCurrent ? 'text-gray-300' : 'text-gray-500'
+                  }`}>
+                    {weld.jointType}
+                  </div>
+
+                  {/* Bottom tags */}
+                  <div className="flex items-center justify-center gap-2 flex-wrap">
+                    <span className={`text-[9px] px-2 py-0.5 rounded ${
+                      isCurrent ? 'text-gray-400 bg-[#141414]' : 'text-gray-600 bg-[#141414]'
+                    }`}>
+                      {weld.wps}
                     </span>
-                  )}
-                </div>
-              </button>
-            ))}
+                    <span className={`text-[9px] px-2 py-0.5 rounded ${
+                      isCurrent ? 'text-gray-400 bg-[#141414]' : 'text-gray-600 bg-[#141414]'
+                    }`}>
+                      {weld.duration} min
+                    </span>
+                    {weld.priority && (
+                      <span className={`text-[9px] px-2 py-0.5 rounded ${
+                        isCurrent ? 'text-red-400 bg-red-500/10' : 'text-red-900 bg-red-500/5'
+                      }`}>
+                        Priority
+                      </span>
+                    )}
+                  </div>
+                </button>
+              );
+            })}
           </div>
         </div>
       )}
