@@ -168,18 +168,24 @@ export function useWeldFlow() {
       setSelectedWeld(nextWeldObj);
       setStep('weldActive');
       setWorkflowStep('weldActive');
-      setWeldActiveMode('setup');
+      setWeldActiveMode('arc');
+      setConsumables(initialConsumables);
+      setArcTime(0);
+      setIsArcPaused(false);
+      setDeviationText('');
+      setDeviations([]);
+      startArcTimer();
     } else {
       setSelectedWeld(null);
       setStep('taskQueue');
       setWorkflowStep('taskQueue');
+      setArcTime(0);
+      setIsArcPaused(false);
+      setDeviationText('');
+      setDeviations([]);
+      stopArcTimer();
     }
-    setArcTime(0);
-    setIsArcPaused(false);
-    setDeviationText('');
-    setDeviations([]);
-    stopArcTimer();
-  }, [selectedWeld, parts, stopArcTimer]);
+  }, [selectedWeld, parts, stopArcTimer, startArcTimer]);
 
   const chooseDifferentWeld = useCallback(() => {
     stopArcTimer();

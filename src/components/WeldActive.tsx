@@ -366,7 +366,9 @@ function WeldActiveArc({
             className="w-full flex flex-col items-center justify-center gap-1 p-6 bg-yellow-500 hover:bg-yellow-400 active:bg-yellow-300 rounded-xl transition-colors"
           >
             <span className="text-black font-bold text-2xl">Done</span>
-            <span className="text-black/70 text-sm font-medium">Start next weld</span>
+            <span className="text-black/70 text-sm font-medium">
+              {nextWeld ? `Start ${nextWeld.id} · ${nextWeld.jointType}` : 'Return to queue'}
+            </span>
           </button>
           
           <button
