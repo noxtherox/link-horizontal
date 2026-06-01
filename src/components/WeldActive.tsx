@@ -1,8 +1,9 @@
 import { useState, useEffect } from 'react';
 import { AlertTriangle, Check, Play, ChevronDown, ChevronUp, Package, ArrowRight, Zap, ArrowLeft } from 'lucide-react';
-import { Weld, Part } from '@/types/weldcloud';
+import { Weld, Part, CompletedWeld } from '@/types/weldcloud';
 import { gasSpec, machineSpec } from '@/data/mockData';
 import { DrawingWithHighlight } from './DrawingWithHighlight';
+import { CompletedWelds } from './CompletedWelds';
 import { Badge } from '@/components/ui/badge';
 
 interface WeldActiveProps {
@@ -21,6 +22,7 @@ interface WeldActiveProps {
   arcTime: number;
   isPaused: boolean;
   nextWeld: Weld | null;
+  completedWelds?: CompletedWeld[];
 }
 
 export function WeldActive({
@@ -39,6 +41,7 @@ export function WeldActive({
   arcTime,
   isPaused,
   nextWeld,
+  completedWelds,
 }: WeldActiveProps) {
   if (mode === 'setup') {
     return (
@@ -50,6 +53,7 @@ export function WeldActive({
         parts={parts}
         onSelectWeld={onSelectWeld}
         onBackToQueue={onBackToQueue}
+        completedWelds={completedWelds}
       />
     );
   }
@@ -79,6 +83,7 @@ function WeldActiveSetup({
   parts,
   onSelectWeld,
   onBackToQueue,
+  completedWelds,
 }: Omit<WeldActiveProps, 'mode' | 'onTogglePause' | 'onComplete' | 'onDoneNext' | 'onChooseDifferent' | 'arcTime' | 'isPaused' | 'nextWeld'>) {
   const currentPart = selectedWeld
     ? parts.find(p => p.id === selectedWeld.partNumber)
@@ -204,6 +209,11 @@ function WeldActiveSetup({
         </div>
       )}
 
+      {/* Completed welds — moved here below the in-progress welds */}
+      {completedWelds && completedWelds.length > 0 && (
+        <CompletedWelds completedWelds={completedWelds} />
+      )}
+
       {/* Bottom: Gas confirmed + Gas spec */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div className="lg:col-span-2">
@@ -280,7 +290,7 @@ function WeldActiveArc({
   arcTime,
   isPaused,
   nextWeld,
-}: Omit<WeldActiveProps, 'mode' | 'onStartArc' | 'onVerify' | 'allVerified' | 'onSelectWeld' | 'onBackToQueue'>) {
+}: Omit<WeldActiveProps, 'mode' | 'onStartArc' | 'onVerify' | 'allVerified' | 'onSelectWeld' | 'onBackToQueue' | 'completedWelds'>) {
   const currentPart = selectedWeld
     ? parts.find(p => p.id === selectedWeld.partNumber)
     : undefined;

@@ -6,7 +6,6 @@ import { TaskQueue } from '@/components/TaskQueue';
 import { WeldActive } from '@/components/WeldActive';
 import { ReviewAndSign } from '@/components/ReviewAndSign';
 import { FloorStatus } from '@/components/FloorStatus';
-import { CompletedWelds } from '@/components/CompletedWelds';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 
 const statusHints: Record<string, string> = {
@@ -60,6 +59,7 @@ export default function Index() {
               arcTime={flow.arcTime}
               isPaused={flow.isArcPaused}
               nextWeld={flow.nextWeld}
+              completedWelds={flow.completedWelds}
             />
           )}
 
@@ -73,13 +73,6 @@ export default function Index() {
               deviations={flow.deviations}
               selectedWeld={flow.selectedWeld}
             />
-          )}
-
-          {/* Completed welds visible across all welder views */}
-          {flow.viewMode === 'welder' && flow.completedWelds.length > 0 && (
-            <div className="p-4 md:p-6 pt-0 md:pt-0">
-              <CompletedWelds completedWelds={flow.completedWelds} />
-            </div>
           )}
         </main>
 
