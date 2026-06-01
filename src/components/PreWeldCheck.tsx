@@ -75,24 +75,33 @@ export function PreWeldCheck({
               <button
                 key={weld.id}
                 onClick={() => onSelectWeld(weld)}
-                className="text-left p-4 bg-[#1a1a1a] hover:bg-[#1f1f1f] border border-[#2a2a2a] hover:border-yellow-500/30 rounded-xl transition-colors group"
+                className="relative text-center p-5 bg-[#1a1a1a] hover:bg-[#1f1f1f] border border-[#2a2a2a] hover:border-yellow-500/30 rounded-xl transition-colors group"
               >
-                <div className="flex items-center justify-between mb-1">
-                  <span className="text-xl font-bold text-white">{weld.id}</span>
-                  <span className="text-[10px] text-yellow-500 bg-yellow-500/10 px-2 py-0.5 rounded font-mono">
-                    {weld.process}
-                  </span>
+                {/* Process pill top-right */}
+                <span className="absolute top-3 right-3 text-[10px] text-yellow-500 bg-yellow-500/10 px-2 py-0.5 rounded-full font-mono border border-yellow-500/20">
+                  {weld.process}
+                </span>
+
+                {/* Large centered weld ID */}
+                <div className="text-3xl font-bold text-white mb-1">
+                  {weld.id}
                 </div>
-                <div className="text-[11px] text-gray-400">{weld.jointType}</div>
-                <div className="flex items-center gap-2 mt-3 flex-wrap">
-                  <span className="text-[9px] text-gray-500 bg-[#141414] px-2 py-0.5 rounded">
+
+                {/* Subtext details */}
+                <div className="text-xs text-gray-400 mb-3">
+                  {weld.jointType}
+                </div>
+
+                {/* Bottom tags */}
+                <div className="flex items-center justify-center gap-2 flex-wrap">
+                  <span className="text-[10px] text-gray-500 bg-[#141414] px-2 py-0.5 rounded">
                     {weld.wps}
                   </span>
-                  <span className="text-[9px] text-gray-500 bg-[#141414] px-2 py-0.5 rounded">
+                  <span className="text-[10px] text-gray-500 bg-[#141414] px-2 py-0.5 rounded">
                     {weld.duration} min
                   </span>
                   {weld.priority && (
-                    <span className="text-[9px] text-red-400 bg-red-500/10 px-2 py-0.5 rounded">
+                    <span className="text-[10px] text-red-400 bg-red-500/10 px-2 py-0.5 rounded">
                       Priority
                     </span>
                   )}
