@@ -65,6 +65,7 @@ export interface CompletedWeld {
   arcs: Arc[];
   method: 'done' | 'choose-different' | 'signed';
   locked?: boolean;
+  consumables?: Consumable[];
 }
 
 export type WelderStep = 'taskQueue' | 'weldActive' | 'reviewAndSign';

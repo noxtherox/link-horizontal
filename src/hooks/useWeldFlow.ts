@@ -103,7 +103,7 @@ export function useWeldFlow() {
     };
   }, []);
 
-  const addCompletedWeld = useCallback((weld: Weld, method: CompletedWeld['method'], weldArcs: Arc[]) => {
+  const addCompletedWeld = useCallback((weld: Weld, method: CompletedWeld['method'], weldArcs: Arc[], consumablesSnapshot: Consumable[]) => {
     setCompletedWelds((prev) => {
       if (prev.some((cw) => cw.weld.id === weld.id)) return prev;
       return [
@@ -113,6 +113,7 @@ export function useWeldFlow() {
           completedAt: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
           arcs: weldArcs,
           method,
+          consumables: consumablesSnapshot,
         },
       ];
     });
@@ -133,6 +134,26 @@ export function useWeldFlow() {
   const verifyConsumable = useCallback((id: string) => {
     setConsumables((prev) =>
       prev.map((c) => (c.id === id ? { ...c, verified: true, method: 'voice' as const } : c))
+    );
+  }, []);
+
+  const updateConsumable = useCallback((id: string, updates: Partial<Consumable>) => {
+    setConsumables((prev) =>
+      prev.map((c) => (c.id === id ? { ...c, ...updates } : c))
+    );
+  }, []);
+
+  const updateCompletedWeldConsumable = useCallback((weldId: string, consumableId: string, updates: Partial<Consumable>) => {
+    setCompletedWelds((prev) =>
+      prev.map((cw) => {
+        if (cw.weld.id !== weldId) return cw;
+        return {
+          ...cw,
+          consumables: (cw.consumables || []).map((c) =>
+            c.id === consumableId ? { ...c, ...updates } : c
+          ),
+        };
+      })
     );
   }, []);
 
@@ -171,7 +192,7 @@ export function useWeldFlow() {
   const signWeld = useCallback(() => {
     if (selectedWeld) {
       const finalArcs = buildFinalArcs();
-      addCompletedWeld(selectedWeld, 'signed', finalArcs);
+      addCompletedWeld(selectedWeld, 'signed', finalArcs, consumables);
     }
     
     // Compute remaining parts before updating state
@@ -201,7 +222,7 @@ export function useWeldFlow() {
       setStep('taskQueue');
       setWorkflowStep('taskQueue');
     }
-  }, [selectedWeld, addCompletedWeld, buildFinalArcs, parts]);
+  }, [selectedWeld, addCompletedWeld, buildFinalArcs, parts, consumables]);
 
   const sendToInspection = useCallback(() => {
     setCompletedWelds((prev) => prev.map((cw) => ({ ...cw, locked: true })));
@@ -212,7 +233,7 @@ export function useWeldFlow() {
     if (!selectedWeld) return;
     
     const finalArcs = buildFinalArcs();
-    addCompletedWeld(selectedWeld, 'done', finalArcs);
+    addCompletedWeld(selectedWeld, 'done', finalArcs, consumables);
     
     const currentPart = parts.find(p => p.id === selectedWeld.partNumber);
     const currentIndex = currentPart?.welds.findIndex(w => w.id === selectedWeld.id) ?? -1;
@@ -265,12 +286,12 @@ export function useWeldFlow() {
       setDeviations([]);
       stopArcTimer();
     }
-  }, [selectedWeld, parts, buildFinalArcs, stopArcTimer, startArcTimer, addCompletedWeld]);
+  }, [selectedWeld, parts, buildFinalArcs, stopArcTimer, startArcTimer, addCompletedWeld, consumables]);
 
   const chooseDifferentWeld = useCallback(() => {
     if (selectedWeld) {
       const finalArcs = buildFinalArcs();
-      addCompletedWeld(selectedWeld, 'done', finalArcs);
+      addCompletedWeld(selectedWeld, 'done', finalArcs, consumables);
     }
     stopArcTimer();
     setIsArcPaused(false);
@@ -280,7 +301,7 @@ export function useWeldFlow() {
     setWeldActiveMode('setup');
     setDeviationText('');
     setDeviations([]);
-  }, [selectedWeld, buildFinalArcs, stopArcTimer, addCompletedWeld]);
+  }, [selectedWeld, buildFinalArcs, stopArcTimer, addCompletedWeld, consumables]);
 
   const backToQueue = useCallback(() => {
     stopArcTimer();
@@ -339,6 +360,8 @@ export function useWeldFlow() {
     completedWelds,
     selectWeld,
     verifyConsumable,
+    updateConsumable,
+    updateCompletedWeldConsumable,
     startArc,
     pauseArc,
     toggleArcPause,
