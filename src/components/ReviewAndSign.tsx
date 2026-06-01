@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Check, ChevronDown, ChevronUp, Timer, BadgeCheck, CircleDashed } from 'lucide-react';
+import { ChevronDown, ChevronUp, Timer, BadgeCheck, CircleDashed } from 'lucide-react';
 import { Weld, CompletedWeld, Arc, Part } from '@/types/weldcloud';
 
 interface ReviewAndSignProps {
@@ -55,60 +55,66 @@ export function ReviewAndSign({
   const totalIncomplete = incompleteWelds.length;
   const totalIncompleteDuration = incompleteWelds.reduce((sum, w) => sum + w.duration, 0);
 
+  const hasActiveWeld = selectedWeld !== null && arcs.length > 0;
+
   return (
     <div className="p-4 md:p-6">
       <div className="mb-6">
         <div className="text-[10px] uppercase tracking-wider text-gray-500 mb-1">
-          {selectedWeld?.id || '—'} · Review and Sign
+          {selectedWeld?.id || 'Review'} · {hasActiveWeld ? 'Review and Sign' : 'Completed Welds'}
         </div>
-        <h1 className="text-2xl md:text-3xl font-bold text-white">Review weld — sign to close</h1>
+        <h1 className="text-2xl md:text-3xl font-bold text-white">
+          {hasActiveWeld ? 'Review weld — sign to close' : 'Review completed welds'}
+        </h1>
       </div>
 
-      {/* Arc Summary */}
-      <div className="mb-6">
-        <div className="p-4 bg-[#1a1a1a] border border-[#2a2a2a] rounded-lg">
-          <div className="text-[10px] uppercase tracking-wider text-gray-500 mb-3">Arc Summary</div>
-          <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
-            <div>
-              <div className="text-[10px] uppercase tracking-wider text-gray-500 mb-1">Arc time</div>
-              <div className="text-xl font-bold text-white font-mono">{formatTime(totalArcDuration)}</div>
+      {/* Arc Summary — only when actively reviewing a weld */}
+      {hasActiveWeld && (
+        <div className="mb-6">
+          <div className="p-4 bg-[#1a1a1a] border border-[#2a2a2a] rounded-lg">
+            <div className="text-[10px] uppercase tracking-wider text-gray-500 mb-3">Arc Summary</div>
+            <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
+              <div>
+                <div className="text-[10px] uppercase tracking-wider text-gray-500 mb-1">Arc time</div>
+                <div className="text-xl font-bold text-white font-mono">{formatTime(totalArcDuration)}</div>
+              </div>
+              <div>
+                <div className="text-[10px] uppercase tracking-wider text-gray-500 mb-1">Arcs completed</div>
+                <div className="text-xl font-bold text-white">{arcs.length || 1}</div>
+              </div>
+              <div>
+                <div className="text-[10px] uppercase tracking-wider text-gray-500 mb-1">Avg heat</div>
+                <div className="text-xl font-bold text-yellow-500">{avgHeat} <span className="text-sm text-gray-500 font-normal">kJ/mm</span></div>
+              </div>
+              <div>
+                <div className="text-[10px] uppercase tracking-wider text-gray-500 mb-1">WPS conformance</div>
+                <div className="text-xl font-bold text-white">{avgConformance}%</div>
+              </div>
+              <div>
+                <div className="text-[10px] uppercase tracking-wider text-gray-500 mb-1">Passes</div>
+                <div className="text-xl font-bold text-white">{allPasses}</div>
+              </div>
             </div>
-            <div>
-              <div className="text-[10px] uppercase tracking-wider text-gray-500 mb-1">Arcs completed</div>
-              <div className="text-xl font-bold text-white">{arcs.length || 1}</div>
-            </div>
-            <div>
-              <div className="text-[10px] uppercase tracking-wider text-gray-500 mb-1">Avg heat</div>
-              <div className="text-xl font-bold text-yellow-500">{avgHeat} <span className="text-sm text-gray-500 font-normal">kJ/mm</span></div>
-            </div>
-            <div>
-              <div className="text-[10px] uppercase tracking-wider text-gray-500 mb-1">WPS conformance</div>
-              <div className="text-xl font-bold text-white">{avgConformance}%</div>
-            </div>
-            <div>
-              <div className="text-[10px] uppercase tracking-wider text-gray-500 mb-1">Passes</div>
-              <div className="text-xl font-bold text-white">{allPasses}</div>
-            </div>
+
+            {/* Current weld arcs detail */}
+            {arcs.length > 0 && (
+              <div className="mt-4 pt-4 border-t border-[#2a2a2a] space-y-2">
+                <div className="text-[10px] uppercase tracking-wider text-gray-500 mb-2">Arc breakdown</div>
+                {arcs.map((arc, i) => (
+                  <div key={arc.id} className="flex items-center gap-3 text-xs">
+                    <span className="text-gray-500 font-medium w-12">Arc {i + 1}</span>
+                    <Timer className="w-3 h-3 text-gray-500" />
+                    <span className="text-white font-mono">{formatTime(arc.duration)}</span>
+                    <span className="text-yellow-500">{arc.avgHeat} kJ/mm</span>
+                    <span className="text-gray-400">{arc.wpsConformance}%</span>
+                    <span className="text-gray-500 text-[10px]">{arc.passes.join(' · ')}</span>
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
-
-          {/* Current weld arcs detail */}
-          {arcs.length > 0 && (
-            <div className="mt-4 pt-4 border-t border-[#2a2a2a] space-y-2">
-              <div className="text-[10px] uppercase tracking-wider text-gray-500 mb-2">Arc breakdown</div>
-              {arcs.map((arc, i) => (
-                <div key={arc.id} className="flex items-center gap-3 text-xs">
-                  <span className="text-gray-500 font-medium w-12">Arc {i + 1}</span>
-                  <Timer className="w-3 h-3 text-gray-500" />
-                  <span className="text-white font-mono">{formatTime(arc.duration)}</span>
-                  <span className="text-yellow-500">{arc.avgHeat} kJ/mm</span>
-                  <span className="text-gray-400">{arc.wpsConformance}%</span>
-                  <span className="text-gray-500 text-[10px]">{arc.passes.join(' · ')}</span>
-                </div>
-              ))}
-            </div>
-          )}
         </div>
-      </div>
+      )}
 
       {/* Completed Welds Review */}
       {completedWelds.length > 0 && (
@@ -236,42 +242,44 @@ export function ReviewAndSign({
         </div>
       )}
 
-      {/* Sign to Close */}
-      <div className="max-w-3xl">
-        <div className="p-4 bg-[#1a1a1a] border border-[#2a2a2a] rounded-lg mb-4">
-          <div className="flex items-center gap-2 text-xs text-gray-400 mb-3">
-            <span className="text-yellow-500">🎤</span>
-            <span className="font-mono">"confirm complete"</span>
-          </div>
+      {/* Sign to Close — only when actively reviewing a weld */}
+      {hasActiveWeld && (
+        <div className="max-w-3xl">
+          <div className="p-4 bg-[#1a1a1a] border border-[#2a2a2a] rounded-lg mb-4">
+            <div className="flex items-center gap-2 text-xs text-gray-400 mb-3">
+              <span className="text-yellow-500">🎤</span>
+              <span className="font-mono">"confirm complete"</span>
+            </div>
 
-          <div className="bg-[#141414] rounded-lg p-4">
-            <p className="text-sm text-white font-medium mb-3">
-              Sign {selectedWeld?.id || 'weld'} and route to Inspector A. Lehmann?
-            </p>
-            <div className="grid grid-cols-2 gap-3">
-              <button
-                onClick={onSign}
-                className="flex flex-col items-center justify-center gap-1 p-4 bg-yellow-600 hover:bg-yellow-500 rounded-lg transition-colors"
-              >
-                <span className="text-white text-lg">✓</span>
-                <span className="text-white font-medium">Yes</span>
-                <span className="text-[10px] text-yellow-200">"yes sign" or re-tap badge — irreversible</span>
-              </button>
-              <button className="flex flex-col items-center justify-center gap-1 p-4 bg-[#2a2a2a] hover:bg-[#333333] rounded-lg transition-colors">
-                <span className="text-white text-lg">✕</span>
-                <span className="text-white font-medium">No</span>
-                <span className="text-[10px] text-gray-400">"no" to go back</span>
-              </button>
+            <div className="bg-[#141414] rounded-lg p-4">
+              <p className="text-sm text-white font-medium mb-3">
+                Sign {selectedWeld?.id || 'weld'} and route to Inspector A. Lehmann?
+              </p>
+              <div className="grid grid-cols-2 gap-3">
+                <button
+                  onClick={onSign}
+                  className="flex flex-col items-center justify-center gap-1 p-4 bg-yellow-600 hover:bg-yellow-500 rounded-lg transition-colors"
+                >
+                  <span className="text-white text-lg">✓</span>
+                  <span className="text-white font-medium">Yes</span>
+                  <span className="text-[10px] text-yellow-200">"yes sign" or re-tap badge — irreversible</span>
+                </button>
+                <button className="flex flex-col items-center justify-center gap-1 p-4 bg-[#2a2a2a] hover:bg-[#333333] rounded-lg transition-colors">
+                  <span className="text-white text-lg">✕</span>
+                  <span className="text-white font-medium">No</span>
+                  <span className="text-[10px] text-gray-400">"no" to go back</span>
+                </button>
+              </div>
             </div>
           </div>
-        </div>
 
-        <div className="p-3 bg-[#1a1a1a] border border-[#2a2a2a] rounded-lg">
-          <p className="text-xs text-gray-500">
-            After sign: next weld will auto-load or return to task queue
-          </p>
+          <div className="p-3 bg-[#1a1a1a] border border-[#2a2a2a] rounded-lg">
+            <p className="text-xs text-gray-500">
+              After sign: next weld will auto-load or return to task queue
+            </p>
+          </div>
         </div>
-      </div>
+      )}
     </div>
   );
 }

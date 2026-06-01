@@ -280,6 +280,11 @@ export function useWeldFlow() {
     setDeviations([]);
   }, [stopArcTimer]);
 
+  const goToReview = useCallback(() => {
+    setStep('reviewAndSign');
+    setWorkflowStep('reviewAndSign');
+  }, []);
+
   const resumeStep = useCallback(() => {
     setStep(workflowStep);
   }, [workflowStep]);
@@ -327,6 +332,7 @@ export function useWeldFlow() {
     finishAndStartNext,
     chooseDifferentWeld,
     backToQueue,
+    goToReview,
     resumeStep,
     handleVoice,
   };

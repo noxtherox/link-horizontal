@@ -39,6 +39,7 @@ export default function Index() {
               parts={flow.parts} 
               onSelectWeld={flow.selectWeld}
               completedWelds={flow.completedWelds}
+              onReviewAndSign={flow.goToReview}
             />
           )}
 
