@@ -210,7 +210,7 @@ export function useWeldFlow() {
 
   const chooseDifferentWeld = useCallback(() => {
     if (selectedWeld) {
-      addCompletedWeld(selectedWeld, 'choose-different', arcTime);
+      addCompletedWeld(selectedWeld, 'done', arcTime);
     }
     stopArcTimer();
     setIsArcPaused(false);
