@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { ChevronDown, ChevronUp, Play, BadgeCheck, Check } from 'lucide-react';
+import { ChevronDown, ChevronUp, Play, BadgeCheck, Check, Package } from 'lucide-react';
 import { Part, Weld, CompletedWeld } from '@/types/weldcloud';
 import { Badge } from '@/components/ui/badge';
 import { initialParts } from '@/data/mockData';
