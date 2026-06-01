@@ -1,5 +1,5 @@
 import { useState, useCallback, useEffect, useRef, useMemo } from 'react';
-import { WelderStep, ViewMode, Weld, Consumable, Part, CompletedWeld } from '@/types/weldcloud';
+import { WelderStep, ViewMode, Weld, Consumable, Part, CompletedWeld, Arc } from '@/types/weldcloud';
 import { parts as initialParts, consumables as initialConsumables } from '@/data/mockData';
 
 export function useWeldFlow() {
@@ -11,6 +11,8 @@ export function useWeldFlow() {
   const [selectedWeld, setSelectedWeld] = useState<Weld | null>(null);
   const [consumables, setConsumables] = useState<Consumable[]>(initialConsumables);
   const [arcTime, setArcTime] = useState(0);
+  const [arcs, setArcs] = useState<Arc[]>([]);
+  const [arcStartOffset, setArcStartOffset] = useState(0);
   const [deviationText, setDeviationText] = useState('');
   const [deviations, setDeviations] = useState<string[]>([]);
   const [isRecording, setIsRecording] = useState(false);
@@ -57,17 +59,42 @@ export function useWeldFlow() {
     }
   }, []);
 
+  const createArc = useCallback((duration: number, index: number): Arc => {
+    const passOptions = [['Root'], ['Root', 'Fill'], ['Root', 'Fill', 'Cap']];
+    return {
+      id: `arc-${Date.now()}-${index}`,
+      duration,
+      startedAt: new Date(Date.now() - duration * 1000).toISOString(),
+      completedAt: new Date().toISOString(),
+      avgHeat: Number((0.95 + Math.random() * 0.1).toFixed(2)),
+      wpsConformance: Math.floor(82 + Math.random() * 12),
+      passes: passOptions[Math.min(index, 2)],
+    };
+  }, []);
+
+  const buildFinalArcs = useCallback(() => {
+    const finalArcs = [...arcs];
+    const duration = arcTime - arcStartOffset;
+    if (duration > 0) {
+      finalArcs.push(createArc(duration, finalArcs.length));
+    }
+    return finalArcs;
+  }, [arcs, arcTime, arcStartOffset, createArc]);
+
   const toggleArcPause = useCallback(() => {
-    setIsArcPaused((prev) => {
-      const next = !prev;
-      if (next) {
-        stopArcTimer();
-      } else {
-        startArcTimer();
+    const nextPaused = !isArcPaused;
+    if (nextPaused) {
+      const duration = arcTime - arcStartOffset;
+      if (duration > 0) {
+        setArcs(prev => [...prev, createArc(duration, prev.length)]);
       }
-      return next;
-    });
-  }, [startArcTimer, stopArcTimer]);
+      setArcStartOffset(arcTime);
+      stopArcTimer();
+    } else {
+      startArcTimer();
+    }
+    setIsArcPaused(nextPaused);
+  }, [isArcPaused, arcTime, arcStartOffset, createArc, startArcTimer, stopArcTimer]);
 
   useEffect(() => {
     return () => {
@@ -75,7 +102,7 @@ export function useWeldFlow() {
     };
   }, []);
 
-  const addCompletedWeld = useCallback((weld: Weld, method: CompletedWeld['method'], time: number) => {
+  const addCompletedWeld = useCallback((weld: Weld, method: CompletedWeld['method'], weldArcs: Arc[]) => {
     setCompletedWelds((prev) => {
       if (prev.some((cw) => cw.weld.id === weld.id)) return prev;
       return [
@@ -83,7 +110,7 @@ export function useWeldFlow() {
         {
           weld,
           completedAt: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-          arcTime: time,
+          arcs: weldArcs,
           method,
         },
       ];
@@ -96,6 +123,8 @@ export function useWeldFlow() {
     setWorkflowStep('weldActive');
     setWeldActiveMode('setup');
     setArcTime(0);
+    setArcs([]);
+    setArcStartOffset(0);
     setIsArcPaused(false);
     setDeviationText('');
   }, []);
@@ -111,6 +140,7 @@ export function useWeldFlow() {
   const startArc = useCallback(() => {
     setWeldActiveMode('arc');
     setIsArcPaused(false);
+    setArcStartOffset(0);
     startArcTimer();
   }, [startArcTimer]);
 
@@ -126,15 +156,21 @@ export function useWeldFlow() {
   }, [deviationText]);
 
   const completeWeld = useCallback(() => {
+    const duration = arcTime - arcStartOffset;
+    if (duration > 0) {
+      setArcs(prev => [...prev, createArc(duration, prev.length)]);
+      setArcStartOffset(arcTime);
+    }
     stopArcTimer();
     setIsArcPaused(false);
     setStep('reviewAndSign');
     setWorkflowStep('reviewAndSign');
-  }, [stopArcTimer]);
+  }, [stopArcTimer, arcTime, arcStartOffset, createArc]);
 
   const signWeld = useCallback(() => {
     if (selectedWeld) {
-      addCompletedWeld(selectedWeld, 'signed', arcTime);
+      const finalArcs = buildFinalArcs();
+      addCompletedWeld(selectedWeld, 'signed', finalArcs);
     }
     setParts((prev) =>
       prev
@@ -147,18 +183,21 @@ export function useWeldFlow() {
     setSelectedWeld(null);
     setConsumables(initialConsumables);
     setArcTime(0);
+    setArcs([]);
+    setArcStartOffset(0);
     setIsArcPaused(false);
     setDeviationText('');
     setDeviations([]);
     setWeldActiveMode('setup');
     setStep('taskQueue');
     setWorkflowStep('taskQueue');
-  }, [selectedWeld, arcTime, addCompletedWeld]);
+  }, [selectedWeld, addCompletedWeld, buildFinalArcs]);
 
   const finishAndStartNext = useCallback(() => {
     if (!selectedWeld) return;
     
-    addCompletedWeld(selectedWeld, 'done', arcTime);
+    const finalArcs = buildFinalArcs();
+    addCompletedWeld(selectedWeld, 'done', finalArcs);
     
     const currentPart = parts.find(p => p.id === selectedWeld.partNumber);
     const currentIndex = currentPart?.welds.findIndex(w => w.id === selectedWeld.id) ?? -1;
@@ -192,6 +231,8 @@ export function useWeldFlow() {
       setWeldActiveMode('arc');
       setConsumables(initialConsumables);
       setArcTime(0);
+      setArcs([]);
+      setArcStartOffset(0);
       setIsArcPaused(false);
       setDeviationText('');
       setDeviations([]);
@@ -201,24 +242,29 @@ export function useWeldFlow() {
       setStep('taskQueue');
       setWorkflowStep('taskQueue');
       setArcTime(0);
+      setArcs([]);
+      setArcStartOffset(0);
       setIsArcPaused(false);
       setDeviationText('');
       setDeviations([]);
       stopArcTimer();
     }
-  }, [selectedWeld, parts, arcTime, stopArcTimer, startArcTimer, addCompletedWeld]);
+  }, [selectedWeld, parts, buildFinalArcs, stopArcTimer, startArcTimer, addCompletedWeld]);
 
   const chooseDifferentWeld = useCallback(() => {
     if (selectedWeld) {
-      addCompletedWeld(selectedWeld, 'done', arcTime);
+      const finalArcs = buildFinalArcs();
+      addCompletedWeld(selectedWeld, 'done', finalArcs);
     }
     stopArcTimer();
     setIsArcPaused(false);
     setArcTime(0);
+    setArcs([]);
+    setArcStartOffset(0);
     setWeldActiveMode('setup');
     setDeviationText('');
     setDeviations([]);
-  }, [selectedWeld, arcTime, stopArcTimer, addCompletedWeld]);
+  }, [selectedWeld, buildFinalArcs, stopArcTimer, addCompletedWeld]);
 
   const backToQueue = useCallback(() => {
     stopArcTimer();
@@ -227,6 +273,8 @@ export function useWeldFlow() {
     setStep('taskQueue');
     setWorkflowStep('taskQueue');
     setArcTime(0);
+    setArcs([]);
+    setArcStartOffset(0);
     setWeldActiveMode('setup');
     setDeviationText('');
     setDeviations([]);
@@ -254,6 +302,7 @@ export function useWeldFlow() {
     nextWeld,
     consumables,
     arcTime,
+    arcs,
     deviationText,
     setDeviationText,
     deviations,

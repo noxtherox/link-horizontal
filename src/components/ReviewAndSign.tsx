@@ -1,30 +1,51 @@
 import { useState } from 'react';
-import { Check, AlertTriangle, Save, FileText } from 'lucide-react';
-import { Weld } from '@/types/weldcloud';
+import { Check, AlertTriangle, Save, FileText, ChevronDown, ChevronUp, Timer, BadgeCheck } from 'lucide-react';
+import { Weld, CompletedWeld, Arc } from '@/types/weldcloud';
 
 interface ReviewAndSignProps {
   onSign: () => void;
   arcTime: number;
+  arcs: Arc[];
   deviationText: string;
   setDeviationText: (t: string) => void;
   onSaveDeviation: () => void;
   deviations: string[];
   selectedWeld: Weld | null;
+  completedWelds: CompletedWeld[];
 }
 
 export function ReviewAndSign({
   onSign,
   arcTime,
+  arcs,
   deviationText,
   setDeviationText,
   onSaveDeviation,
   deviations,
   selectedWeld,
+  completedWelds,
 }: ReviewAndSignProps) {
+  const [expandedWeldId, setExpandedWeldId] = useState<string | null>(null);
+
   const formatTime = (seconds: number) => {
     const mins = Math.floor(seconds / 60);
     const secs = seconds % 60;
     return `${mins}:${secs.toString().padStart(2, '0')}`;
+  };
+
+  const totalArcDuration = arcs.reduce((sum, a) => sum + a.duration, 0) || arcTime;
+  const avgHeat = arcs.length > 0 
+    ? (arcs.reduce((sum, a) => sum + a.avgHeat, 0) / arcs.length).toFixed(2) 
+    : '1.02';
+  const avgConformance = arcs.length > 0
+    ? Math.floor(arcs.reduce((sum, a) => sum + a.wpsConformance, 0) / arcs.length)
+    : 87;
+  const allPasses = arcs.length > 0
+    ? [...new Set(arcs.flatMap(a => a.passes))].join(' · ')
+    : 'Root · Fill · Cap';
+
+  const toggleWeld = (weldId: string) => {
+    setExpandedWeldId(current => current === weldId ? null : weldId);
   };
 
   return (
@@ -43,21 +64,42 @@ export function ReviewAndSign({
           <div className="space-y-3">
             <div className="flex justify-between text-sm border-b border-[#2a2a2a] pb-2">
               <span className="text-gray-400">Arc time</span>
-              <span className="text-white font-medium">{formatTime(arcTime)}</span>
+              <span className="text-white font-medium">{formatTime(totalArcDuration)}</span>
+            </div>
+            <div className="flex justify-between text-sm border-b border-[#2a2a2a] pb-2">
+              <span className="text-gray-400">Arcs completed</span>
+              <span className="text-white font-medium">{arcs.length || 1}</span>
             </div>
             <div className="flex justify-between text-sm border-b border-[#2a2a2a] pb-2">
               <span className="text-gray-400">Avg heat</span>
-              <span className="text-yellow-500 font-medium">1.02 kJ/mm</span>
+              <span className="text-yellow-500 font-medium">{avgHeat} kJ/mm</span>
             </div>
             <div className="flex justify-between text-sm border-b border-[#2a2a2a] pb-2">
               <span className="text-gray-400">WPS conformance</span>
-              <span className="text-white font-medium">87%</span>
+              <span className="text-white font-medium">{avgConformance}%</span>
             </div>
             <div className="flex justify-between text-sm">
               <span className="text-gray-400">Passes</span>
-              <span className="text-white font-medium">Root · Fill · Cap</span>
+              <span className="text-white font-medium">{allPasses}</span>
             </div>
           </div>
+
+          {/* Current weld arcs detail */}
+          {arcs.length > 0 && (
+            <div className="mt-4 pt-4 border-t border-[#2a2a2a] space-y-2">
+              <div className="text-[10px] uppercase tracking-wider text-gray-500 mb-2">Arc breakdown</div>
+              {arcs.map((arc, i) => (
+                <div key={arc.id} className="flex items-center gap-3 text-xs">
+                  <span className="text-gray-500 font-medium w-12">Arc {i + 1}</span>
+                  <Timer className="w-3 h-3 text-gray-500" />
+                  <span className="text-white font-mono">{formatTime(arc.duration)}</span>
+                  <span className="text-yellow-500">{arc.avgHeat} kJ/mm</span>
+                  <span className="text-gray-400">{arc.wpsConformance}%</span>
+                  <span className="text-gray-500 text-[10px]">{arc.passes.join(' · ')}</span>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
 
         {/* Open Items */}
@@ -84,6 +126,93 @@ export function ReviewAndSign({
         </div>
       </div>
 
+      {/* Completed Welds Review */}
+      {completedWelds.length > 0 && (
+        <div className="mb-6">
+          <div className="text-[10px] uppercase tracking-wider text-gray-500 mb-3">
+            Completed Welds — tap to review arcs
+          </div>
+          <div className="space-y-2">
+            {completedWelds.map((cw, idx) => {
+              const weldId = `${cw.weld.id}-${idx}`;
+              const isExpanded = expandedWeldId === weldId;
+              const totalDuration = cw.arcs.reduce((sum, a) => sum + a.duration, 0);
+              return (
+                <button
+                  key={weldId}
+                  onClick={() => toggleWeld(weldId)}
+                  className="w-full text-left p-4 bg-[#1a1a1a] border border-[#2a2a2a] rounded-lg hover:bg-[#1f1f1f] transition-colors"
+                >
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-3 flex-wrap">
+                      <div className="w-8 h-8 rounded-full bg-green-500/10 flex items-center justify-center shrink-0">
+                        <BadgeCheck className="w-4 h-4 text-green-400" />
+                      </div>
+                      <div>
+                        <div className="flex items-center gap-2 flex-wrap">
+                          <span className="text-sm font-bold text-white">{cw.weld.id}</span>
+                          <span className="text-xs text-gray-400">{cw.weld.jointType}</span>
+                          <span className="text-[10px] text-yellow-500 bg-yellow-500/10 px-2 py-0.5 rounded font-mono border border-yellow-500/20">
+                            {cw.weld.process}
+                          </span>
+                        </div>
+                        <div className="flex items-center gap-2 mt-1">
+                          <span className="text-xs text-gray-500">{cw.weld.partNumber}</span>
+                          <span className="text-[10px] text-gray-500">
+                            {cw.arcs.length} arc{cw.arcs.length !== 1 ? 's' : ''}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-3 shrink-0">
+                      <div className="text-right">
+                        <div className="text-sm text-white font-mono">{formatTime(totalDuration)}</div>
+                        <div className="text-[10px] text-gray-500">{cw.completedAt}</div>
+                      </div>
+                      {isExpanded ? (
+                        <ChevronUp className="w-4 h-4 text-gray-500" />
+                      ) : (
+                        <ChevronDown className="w-4 h-4 text-gray-500" />
+                      )}
+                    </div>
+                  </div>
+
+                  {isExpanded && (
+                    <div className="mt-4 pt-4 border-t border-[#2a2a2a]">
+                      <div className="text-[10px] uppercase tracking-wider text-gray-500 mb-3">Arc Sessions</div>
+                      <div className="space-y-2">
+                        {cw.arcs.map((arc, i) => (
+                          <div
+                            key={arc.id}
+                            className="flex items-center gap-3 p-3 bg-[#141414] rounded-lg border border-[#2a2a2a]"
+                          >
+                            <span className="text-xs font-bold text-gray-500 w-14 shrink-0">
+                              Arc {i + 1}
+                            </span>
+                            <div className="flex items-center gap-2 text-xs text-gray-400 shrink-0">
+                              <Timer className="w-3 h-3" />
+                              <span className="text-white font-mono">{formatTime(arc.duration)}</span>
+                            </div>
+                            <div className="flex items-center gap-2 text-xs shrink-0">
+                              <span className="text-yellow-500">{arc.avgHeat} kJ/mm</span>
+                              <span className="text-gray-400">{arc.wpsConformance}%</span>
+                            </div>
+                            <div className="flex items-center gap-1 text-xs text-gray-500 ml-auto">
+                              <span className="text-[10px] uppercase tracking-wider text-gray-600">Passes:</span>
+                              <span className="text-gray-400">{arc.passes.join(' · ')}</span>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </button>
+              );
+            })}
+          </div>
+        </div>
+      )}
+
       {/* Add Deviation Note */}
       <div className="mb-6">
         <div className="text-[10px] uppercase tracking-wider text-gray-500 mb-3">Add Deviation Note</div>
@@ -104,7 +233,7 @@ export function ReviewAndSign({
           <div className="space-y-1.5 mb-4">
             <div className="flex items-center gap-2 text-xs text-green-400">
               <Check className="w-3 h-3" />
-              <span>Parameter auto-attached: heat input 1.04 kJ/mm at {formatTime(arcTime)}</span>
+              <span>Parameter auto-attached: heat input {avgHeat} kJ/mm at {formatTime(totalArcDuration)}</span>
             </div>
             <div className="flex items-center gap-2 text-xs text-green-400">
               <Check className="w-3 h-3" />

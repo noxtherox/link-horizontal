@@ -49,7 +49,11 @@ export function CompletedWelds({ completedWelds }: CompletedWeldsProps) {
         </div>
         <div className="flex items-center gap-2">
           <span className="text-xs text-gray-500">
-            Total arc time {formatTime(completedWelds.reduce((sum, cw) => sum + cw.arcTime, 0))}
+            {completedWelds.reduce((sum, cw) => sum + cw.arcs.reduce((a, arc) => a + arc.duration, 0), 0) > 0 && (
+              <>
+                Total arc time {formatTime(completedWelds.reduce((sum, cw) => sum + cw.arcs.reduce((a, arc) => a + arc.duration, 0), 0))}
+              </>
+            )}
           </span>
           {isExpanded ? (
             <ChevronUp className="w-4 h-4 text-gray-500" />
@@ -63,6 +67,7 @@ export function CompletedWelds({ completedWelds }: CompletedWeldsProps) {
         <div className="mt-3 space-y-2">
           {completedWelds.map((cw, index) => {
             const meta = methodLabel(cw.method);
+            const totalDuration = cw.arcs.reduce((sum, arc) => sum + arc.duration, 0);
             return (
               <div
                 key={`${cw.weld.id}-${index}`}
@@ -85,6 +90,9 @@ export function CompletedWelds({ completedWelds }: CompletedWeldsProps) {
                     <span className="text-[10px] text-yellow-500 bg-yellow-500/10 px-2 py-0.5 rounded font-mono border border-yellow-500/20">
                       {cw.weld.process}
                     </span>
+                    <span className="text-[10px] text-gray-500">
+                      {cw.arcs.length} arc{cw.arcs.length !== 1 ? 's' : ''}
+                    </span>
                   </div>
                 </div>
                 <div className="text-right shrink-0">
@@ -93,7 +101,7 @@ export function CompletedWelds({ completedWelds }: CompletedWeldsProps) {
                     {meta.text}
                   </div>
                   <div className="text-[10px] text-gray-500 mt-1">
-                    Arc {formatTime(cw.arcTime)} · {cw.completedAt}
+                    Arc {formatTime(totalDuration)} · {cw.completedAt}
                   </div>
                 </div>
               </div>

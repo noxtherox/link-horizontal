@@ -1,3 +1,13 @@
+export interface Arc {
+  id: string;
+  duration: number;
+  startedAt: string;
+  completedAt: string;
+  avgHeat: number;
+  wpsConformance: number;
+  passes: string[];
+}
+
 export interface Weld {
   id: string;
   partNumber: string;
@@ -52,7 +62,7 @@ export interface Alert {
 export interface CompletedWeld {
   weld: Weld;
   completedAt: string;
-  arcTime: number;
+  arcs: Arc[];
   method: 'done' | 'choose-different' | 'signed';
 }
 

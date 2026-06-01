@@ -67,11 +67,13 @@ export default function Index() {
             <ReviewAndSign
               onSign={flow.signWeld}
               arcTime={flow.arcTime}
+              arcs={flow.arcs}
               deviationText={flow.deviationText}
               setDeviationText={flow.setDeviationText}
               onSaveDeviation={flow.saveDeviation}
               deviations={flow.deviations}
               selectedWeld={flow.selectedWeld}
+              completedWelds={flow.completedWelds}
             />
           )}
         </main>
