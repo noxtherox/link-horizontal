@@ -45,8 +45,8 @@ export function WeldActive({
   completedWelds,
   onGoToReview,
 }: WeldActiveProps) {
-  // All welds completed — show completion screen
-  if (!selectedWeld && parts.length === 0) {
+  // All welds completed for current selection — show completion screen
+  if (!selectedWeld) {
     return (
       <AllWeldsComplete
         completedWelds={completedWelds || []}
@@ -486,7 +486,7 @@ function WeldActiveArc({
           >
             <span className="text-black font-bold text-2xl">Done</span>
             <span className="text-black/70 text-sm font-medium">
-              {nextWeld ? `Start ${nextWeld.id} · ${nextWeld.jointType}` : 'Return to queue'}
+              {nextWeld ? `Start ${nextWeld.id} · ${nextWeld.jointType}` : 'Continue to next step'}
             </span>
           </button>
           
