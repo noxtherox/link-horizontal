@@ -31,6 +31,9 @@ export const parts: Part[] = [
   },
 ];
 
+// Deep clone of parts for tracking completion against original data
+export const initialParts: Part[] = JSON.parse(JSON.stringify(parts));
+
 export const consumables: Consumable[] = [
   { id: 'c1', name: 'Wire ER70S-6', lot: 'L24-08812', verified: true, method: 'scan' },
   { id: 'c2', name: 'Base A36', lot: 'heat 9F-21044', verified: true, method: 'scan' },
