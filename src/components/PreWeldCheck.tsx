@@ -75,24 +75,24 @@ export function PreWeldCheck({
               <button
                 key={weld.id}
                 onClick={() => onSelectWeld(weld)}
-                className="text-left p-3 bg-[#1a1a1a] hover:bg-[#1f1f1f] border border-[#2a2a2a] hover:border-yellow-500/30 rounded-lg transition-colors group"
+                className="text-left p-4 bg-[#1a1a1a] hover:bg-[#1f1f1f] border border-[#2a2a2a] hover:border-yellow-500/30 rounded-xl transition-colors group"
               >
                 <div className="flex items-center justify-between mb-1">
-                  <span className="text-sm font-bold text-white">{weld.id}</span>
+                  <span className="text-xl font-bold text-white">{weld.id}</span>
                   <span className="text-[10px] text-yellow-500 bg-yellow-500/10 px-2 py-0.5 rounded font-mono">
                     {weld.process}
                   </span>
                 </div>
-                <div className="text-xs text-gray-400">{weld.jointType}</div>
-                <div className="flex items-center gap-2 mt-2 flex-wrap">
-                  <span className="text-[10px] text-gray-500 bg-[#141414] px-2 py-0.5 rounded">
+                <div className="text-[11px] text-gray-400">{weld.jointType}</div>
+                <div className="flex items-center gap-2 mt-3 flex-wrap">
+                  <span className="text-[9px] text-gray-500 bg-[#141414] px-2 py-0.5 rounded">
                     {weld.wps}
                   </span>
-                  <span className="text-[10px] text-gray-500 bg-[#141414] px-2 py-0.5 rounded">
+                  <span className="text-[9px] text-gray-500 bg-[#141414] px-2 py-0.5 rounded">
                     {weld.duration} min
                   </span>
                   {weld.priority && (
-                    <span className="text-[10px] text-red-400 bg-red-500/10 px-2 py-0.5 rounded">
+                    <span className="text-[9px] text-red-400 bg-red-500/10 px-2 py-0.5 rounded">
                       Priority
                     </span>
                   )}
