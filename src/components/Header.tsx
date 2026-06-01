@@ -12,9 +12,9 @@ interface HeaderProps {
 }
 
 const welderSteps: { key: WelderStep; label: string; num: string }[] = [
-  { key: 'taskQueue', label: 'Task queue', num: '01' },
-  { key: 'weldActive', label: 'Weld Active', num: '02' },
-  { key: 'reviewAndSign', label: 'Review and Sign', num: '03' },
+  { key: 'taskQueue', label: 'TASKS', num: '01' },
+  { key: 'weldActive', label: 'WELD', num: '02' },
+  { key: 'reviewAndSign', label: 'REVIEW', num: '03' },
 ];
 
 export function Header({ viewMode, setViewMode, step, workflowStep, setStep, onResume }: HeaderProps) {
@@ -81,7 +81,6 @@ export function Header({ viewMode, setViewMode, step, workflowStep, setStep, onR
           {welderSteps.map((s, i) => {
             const isViewed = i === activeIndex;
             const isPast = i < workflowIndex;
-            const isFuture = i > workflowIndex;
             return (
               <button
                 key={s.key}
@@ -101,22 +100,13 @@ export function Header({ viewMode, setViewMode, step, workflowStep, setStep, onR
                 >
                   {s.num}
                 </span>
-                <div className="hidden lg:block">
-                  <div
-                    className={`text-xs font-medium ${
-                      isViewed ? 'text-white' : isPast ? 'text-gray-400' : 'text-gray-600'
-                    }`}
-                  >
-                    {s.label}
-                  </div>
-                  <div
-                    className={`text-[10px] uppercase tracking-wider ${
-                      isViewed ? 'text-yellow-500' : 'text-gray-600'
-                    }`}
-                  >
-                    {isFuture ? 'Preview' : 'Welder'}
-                  </div>
-                </div>
+                <span
+                  className={`text-xs font-medium ${
+                    isViewed ? 'text-white' : isPast ? 'text-gray-400' : 'text-gray-600'
+                  }`}
+                >
+                  {s.label}
+                </span>
               </button>
             );
           })}
@@ -132,10 +122,7 @@ export function Header({ viewMode, setViewMode, step, workflowStep, setStep, onR
             <span className="flex items-center justify-center w-6 h-6 rounded text-xs font-bold bg-[#2a2a2a] text-gray-600">
               01
             </span>
-            <div className="hidden lg:block">
-              <div className="text-xs font-medium text-gray-600">Task queue</div>
-              <div className="text-[10px] uppercase tracking-wider text-gray-600">Welder</div>
-            </div>
+            <span className="text-xs font-medium text-gray-600">TASKS</span>
           </button>
           <div className="flex-[5] flex items-center justify-center py-2.5">
             <span className="text-xs text-yellow-500 font-medium uppercase tracking-wider">
