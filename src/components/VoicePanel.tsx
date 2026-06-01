@@ -1,5 +1,6 @@
-import { Mic, Check, Scan, Zap, ArrowRight } from 'lucide-react';
+import { Mic, Check, Scan, Zap, ArrowRight, ChevronDown, ChevronUp } from 'lucide-react';
 import { ViewMode, WelderStep, Weld, Part, Consumable } from '@/types/weldcloud';
+import { useState } from 'react';
 
 interface VoicePanelProps {
   viewMode: ViewMode;
@@ -40,6 +41,8 @@ const micLabels: Record<string, string> = {
 };
 
 export function VoicePanel({ viewMode, step, weldActiveMode = 'setup', isRecording, setIsRecording, voiceCommand, selectedWeld, nextWeld, parts, consumables, onVerify }: VoicePanelProps) {
+  const [otherWeldsExpanded, setOtherWeldsExpanded] = useState(false);
+
   let key: string;
   if (viewMode === 'supervisor') {
     key = 'supervisor';
@@ -67,6 +70,17 @@ export function VoicePanel({ viewMode, step, weldActiveMode = 'setup', isRecordi
   const micLabel = micLabels[key] || 'Press to speak';
 
   const isPreWeldScan = key === 'weldActiveSetup' && consumables && onVerify;
+
+  // Compute other welds for arc mode
+  const otherWelds: Weld[] = [];
+  if (key === 'weldActiveArc' && selectedWeld) {
+    const currentPart = parts.find(p => p.id === selectedWeld.partNumber);
+    if (currentPart) {
+      otherWelds.push(...currentPart.welds.filter(
+        w => w.id !== selectedWeld.id && w.id !== nextWeld?.id
+      ));
+    }
+  }
 
   return (
     <aside className="w-full lg:w-72 bg-[#141414] border-t lg:border-l lg:border-t-0 border-[#2a2a2a] flex flex-col shrink-0">
@@ -220,6 +234,43 @@ export function VoicePanel({ viewMode, step, weldActiveMode = 'setup', isRecordi
                 <p className="text-xs text-gray-500">Queue complete</p>
               )}
             </div>
+
+            {/* Other welds */}
+            {otherWelds.length > 0 && (
+              <div className="bg-[#1a1a1a] border border-[#2a2a2a] rounded-lg p-3">
+                <button
+                  onClick={() => setOtherWeldsExpanded(!otherWeldsExpanded)}
+                  className="w-full flex items-center justify-between"
+                >
+                  <span className="text-[10px] uppercase tracking-wider text-gray-600 font-semibold">
+                    Other welds on this part
+                  </span>
+                  {otherWeldsExpanded ? (
+                    <ChevronUp className="w-3 h-3 text-gray-600" />
+                  ) : (
+                    <ChevronDown className="w-3 h-3 text-gray-600" />
+                  )}
+                </button>
+                {otherWeldsExpanded && (
+                  <div className="mt-3 space-y-2">
+                    {otherWelds.map((weld) => (
+                      <div
+                        key={weld.id}
+                        className="flex items-center justify-between p-2 bg-[#141414] rounded border border-[#2a2a2a]"
+                      >
+                        <div className="flex items-center gap-2 min-w-0">
+                          <span className="text-xs font-bold text-gray-400 shrink-0">{weld.id}</span>
+                          <span className="text-[10px] text-gray-500 truncate">{weld.jointType}</span>
+                        </div>
+                        <span className="text-[10px] text-gray-500 bg-[#1f1f1f] px-1.5 py-0.5 rounded font-mono border border-[#2a2a2a] shrink-0">
+                          {weld.process}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            )}
           </div>
 
           {voiceCommand && (
