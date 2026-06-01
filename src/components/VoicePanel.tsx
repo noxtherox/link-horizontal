@@ -1,5 +1,5 @@
-import { Mic, Check, Scan, Zap, ArrowRight, ChevronDown, ChevronUp } from 'lucide-react';
-import { ViewMode, WelderStep, Weld, Part, Consumable } from '@/types/weldcloud';
+import { Mic, Check, Scan, Zap, ArrowRight, ChevronDown, ChevronUp, ClipboardCheck } from 'lucide-react';
+import { ViewMode, WelderStep, Weld, Part, Consumable, CompletedWeld } from '@/types/weldcloud';
 import { useState } from 'react';
 
 interface VoicePanelProps {
@@ -13,7 +13,9 @@ interface VoicePanelProps {
   nextWeld: Weld | null;
   parts: Part[];
   consumables?: Consumable[];
+  completedWelds?: CompletedWeld[];
   onVerify?: (id: string) => void;
+  onSendToInspection?: () => void;
 }
 
 const commandMap: Record<string, string[]> = {
@@ -40,7 +42,7 @@ const micLabels: Record<string, string> = {
   supervisor: 'Press to speak',
 };
 
-export function VoicePanel({ viewMode, step, weldActiveMode = 'setup', isRecording, setIsRecording, voiceCommand, selectedWeld, nextWeld, parts, consumables, onVerify }: VoicePanelProps) {
+export function VoicePanel({ viewMode, step, weldActiveMode = 'setup', isRecording, setIsRecording, voiceCommand, selectedWeld, nextWeld, parts, consumables, completedWelds, onVerify, onSendToInspection }: VoicePanelProps) {
   const [otherWeldsExpanded, setOtherWeldsExpanded] = useState(false);
 
   let key: string;
@@ -82,17 +84,11 @@ export function VoicePanel({ viewMode, step, weldActiveMode = 'setup', isRecordi
     }
   }
 
+  const pendingInspectionCount = completedWelds?.filter(c => !c.locked).length || 0;
+  const allLocked = completedWelds && completedWelds.length > 0 && completedWelds.every(c => c.locked);
+
   return (
     <aside className="w-full lg:w-72 bg-[#141414] border-t lg:border-l lg:border-t-0 border-[#2a2a2a] flex flex-col shrink-0">
-      {viewMode === 'welder' && step === 'reviewAndSign' && (
-        <div className="p-4 border-b border-[#2a2a2a]">
-          <div className="text-[10px] uppercase tracking-wider text-gray-500 mb-2">2-Input Rule</div>
-          <p className="text-xs text-gray-400 leading-relaxed">
-            Signing is irreversible. Requires either: voice "yes sign" + badge re-tap, or touch confirm + badge tap, or two badge taps.
-          </p>
-        </div>
-      )}
-
       {viewMode === 'supervisor' && (
         <div className="p-4 border-b border-[#2a2a2a]">
           <div className="text-[10px] uppercase tracking-wider text-gray-500 mb-2">Alert Log</div>
@@ -270,6 +266,60 @@ export function VoicePanel({ viewMode, step, weldActiveMode = 'setup', isRecordi
                   </div>
                 )}
               </div>
+            )}
+          </div>
+
+          {voiceCommand && (
+            <div className="p-4 border-b border-[#2a2a2a] bg-[#1a1a1a]">
+              <div className="flex items-center gap-2 text-xs text-green-400">
+                <Check className="w-3 h-3" />
+                <span>Understood</span>
+              </div>
+              <p className="mt-1 text-sm text-white font-mono">{voiceCommand}</p>
+            </div>
+          )}
+        </>
+      ) : key === 'reviewAndSign' ? (
+        <>
+          <div className="p-4 border-b border-[#2a2a2a]">
+            <div className="text-[10px] uppercase tracking-wider text-gray-500 mb-3">Inspection</div>
+            
+            {allLocked ? (
+              <div className="flex items-center gap-3 p-3 bg-green-500/10 border border-green-500/30 rounded-lg">
+                <div className="w-10 h-10 rounded-full bg-green-500/20 flex items-center justify-center shrink-0">
+                  <Check className="w-5 h-5 text-green-400" />
+                </div>
+                <div>
+                  <div className="text-sm font-medium text-green-400">Sent to inspection</div>
+                  <div className="text-xs text-gray-500">All welds locked</div>
+                </div>
+              </div>
+            ) : (
+              <>
+                <button
+                  onClick={onSendToInspection}
+                  disabled={pendingInspectionCount === 0}
+                  className={`w-full flex flex-col items-center justify-center gap-2 p-4 rounded-xl transition-colors ${
+                    pendingInspectionCount > 0
+                      ? 'bg-yellow-500 hover:bg-yellow-400 text-black'
+                      : 'bg-[#2a2a2a] text-gray-500 cursor-not-allowed'
+                  }`}
+                >
+                  <ClipboardCheck className="w-6 h-6" />
+                  <span className="font-bold text-base">Send to inspection</span>
+                  {pendingInspectionCount > 0 && (
+                    <span className="text-xs text-yellow-900 font-medium">
+                      {pendingInspectionCount} weld{pendingInspectionCount !== 1 ? 's' : ''} pending
+                    </span>
+                  )}
+                </button>
+                
+                {completedWelds && completedWelds.length === 0 && (
+                  <p className="text-xs text-gray-500 mt-2 text-center">
+                    No completed welds to send
+                  </p>
+                )}
+              </>
             )}
           </div>
 

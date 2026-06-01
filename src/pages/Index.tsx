@@ -11,7 +11,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/u
 const statusHints: Record<string, string> = {
   taskQueue: 'Voice: say "start [weld ID]" · Tap play button on part to start first weld · Tap weld pills to expand · Scan: scan work order QR',
   weldActive: 'Setup: Voice "gas confirmed" · Touch confirm tiles · Scan consumables. Arc: minimal screen — eyes on arc · Touch command tiles · Voice PTT',
-  reviewAndSign: '2-input rule: always requires badge · voice/touch/scan sets the second factor · irreversible. Add deviation notes before signing.',
+  reviewAndSign: 'Review completed welds grouped by part number. Tap Send to inspection in the right panel to lock welds. Add deviation notes before sending.',
   supervisor: 'Heat map strip + cell list · Touch adds alert/assign buttons per station · Voice alerts push to earpiece',
 };
 
@@ -87,7 +87,9 @@ export default function Index() {
           nextWeld={flow.nextWeld}
           parts={flow.parts}
           consumables={flow.consumables}
+          completedWelds={flow.completedWelds}
           onVerify={flow.verifyConsumable}
+          onSendToInspection={flow.sendToInspection}
         />
       </div>
 

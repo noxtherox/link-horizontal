@@ -1,6 +1,7 @@
 import { useState, useCallback, useEffect, useRef, useMemo } from 'react';
 import { WelderStep, ViewMode, Weld, Consumable, Part, CompletedWeld, Arc } from '@/types/weldcloud';
 import { parts as initialParts, consumables as initialConsumables } from '@/data/mockData';
+import { showSuccess } from '@/utils/toast';
 
 export function useWeldFlow() {
   const [viewMode, setViewMode] = useState<ViewMode>('welder');
@@ -202,6 +203,11 @@ export function useWeldFlow() {
     }
   }, [selectedWeld, addCompletedWeld, buildFinalArcs, parts]);
 
+  const sendToInspection = useCallback(() => {
+    setCompletedWelds((prev) => prev.map((cw) => ({ ...cw, locked: true })));
+    showSuccess('All welds sent to inspection and locked');
+  }, []);
+
   const finishAndStartNext = useCallback(() => {
     if (!selectedWeld) return;
     
@@ -339,6 +345,7 @@ export function useWeldFlow() {
     saveDeviation,
     completeWeld,
     signWeld,
+    sendToInspection,
     finishAndStartNext,
     chooseDifferentWeld,
     backToQueue,

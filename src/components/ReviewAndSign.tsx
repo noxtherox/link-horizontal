@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { ChevronDown, ChevronUp, Timer, BadgeCheck, CircleDashed } from 'lucide-react';
+import { ChevronDown, ChevronUp, Timer, BadgeCheck, CircleDashed, Package, Lock } from 'lucide-react';
 import { Weld, CompletedWeld, Arc, Part } from '@/types/weldcloud';
 
 interface ReviewAndSignProps {
@@ -56,6 +56,14 @@ export function ReviewAndSign({
   const totalIncompleteDuration = incompleteWelds.reduce((sum, w) => sum + w.duration, 0);
 
   const hasActiveWeld = selectedWeld !== null && arcs.length > 0;
+
+  // Group completed welds by part number
+  const groupedByPart = completedWelds.reduce((acc, cw) => {
+    const pn = cw.weld.partNumber;
+    if (!acc[pn]) acc[pn] = [];
+    acc[pn].push(cw);
+    return acc;
+  }, {} as Record<string, CompletedWeld[]>);
 
   return (
     <div className="p-4 md:p-6">
@@ -116,90 +124,125 @@ export function ReviewAndSign({
         </div>
       )}
 
-      {/* Completed Welds Review */}
+      {/* Completed Welds Review — grouped by part number */}
       {completedWelds.length > 0 && (
         <div className="mb-6">
           <div className="text-[10px] uppercase tracking-wider text-gray-500 mb-3">
             Completed Welds — tap to review arcs
           </div>
-          <div className="space-y-2">
-            {completedWelds.map((cw, idx) => {
-              const weldId = `${cw.weld.id}-${idx}`;
-              const isExpanded = expandedWeldId === weldId;
-              const totalDuration = cw.arcs.reduce((sum, a) => sum + a.duration, 0);
-              return (
-                <button
-                  key={weldId}
-                  onClick={() => toggleWeld(weldId)}
-                  className="w-full text-left p-4 bg-[#1a1a1a] border border-[#2a2a2a] rounded-lg hover:bg-[#1f1f1f] transition-colors"
-                >
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-3 flex-wrap">
-                      <div className="w-8 h-8 rounded-full bg-green-500/10 flex items-center justify-center shrink-0">
-                        <BadgeCheck className="w-4 h-4 text-green-400" />
-                      </div>
-                      <div>
-                        <div className="flex items-center gap-2 flex-wrap">
-                          <span className="text-sm font-bold text-white">{cw.weld.id}</span>
-                          <span className="text-xs text-gray-400">{cw.weld.jointType}</span>
-                          <span className="text-[10px] text-yellow-500 bg-yellow-500/10 px-2 py-0.5 rounded font-mono border border-yellow-500/20">
-                            {cw.weld.process}
-                          </span>
-                        </div>
-                        <div className="flex items-center gap-2 mt-1">
-                          <span className="text-xs text-gray-500">{cw.weld.partNumber}</span>
-                          <span className="text-[10px] text-gray-500">
-                            {cw.arcs.length} arc{cw.arcs.length !== 1 ? 's' : ''}
-                          </span>
-                        </div>
-                      </div>
-                    </div>
-                    <div className="flex items-center gap-3 shrink-0">
-                      <div className="text-right">
-                        <div className="text-sm text-white font-mono">{formatTime(totalDuration)}</div>
-                        <div className="text-[10px] text-gray-500">{cw.completedAt}</div>
-                      </div>
-                      {isExpanded ? (
-                        <ChevronUp className="w-4 h-4 text-gray-500" />
-                      ) : (
-                        <ChevronDown className="w-4 h-4 text-gray-500" />
-                      )}
-                    </div>
-                  </div>
-
-                  {isExpanded && (
-                    <div className="mt-4 pt-4 border-t border-[#2a2a2a]">
-                      <div className="text-[10px] uppercase tracking-wider text-gray-500 mb-3">Arc Sessions</div>
-                      <div className="space-y-2">
-                        {cw.arcs.map((arc, i) => (
-                          <div
-                            key={arc.id}
-                            className="flex items-center gap-3 p-3 bg-[#141414] rounded-lg border border-[#2a2a2a]"
-                          >
-                            <span className="text-xs font-bold text-gray-500 w-14 shrink-0">
-                              Arc {i + 1}
-                            </span>
-                            <div className="flex items-center gap-2 text-xs text-gray-400 shrink-0">
-                              <Timer className="w-3 h-3" />
-                              <span className="text-white font-mono">{formatTime(arc.duration)}</span>
+          
+          {Object.entries(groupedByPart).map(([partNumber, partWelds]) => (
+            <div key={partNumber} className="mb-6">
+              <div className="flex items-center gap-3 mb-3 pb-3 border-b border-[#2a2a2a]">
+                <Package className="w-6 h-6 text-yellow-500" />
+                <h2 className="text-2xl md:text-3xl font-bold text-white tracking-tight">
+                  {partNumber}
+                </h2>
+                <span className="text-sm text-gray-500">
+                  {partWelds.length} weld{partWelds.length !== 1 ? 's' : ''}
+                </span>
+                {partWelds.every(cw => cw.locked) && (
+                  <span className="inline-flex items-center gap-1 text-xs text-green-400 bg-green-500/10 px-2 py-1 rounded border border-green-500/20">
+                    <Lock className="w-3 h-3" />
+                    Locked
+                  </span>
+                )}
+              </div>
+              
+              <div className="space-y-2">
+                {partWelds.map((cw, idx) => {
+                  const weldId = `${cw.weld.id}-${idx}`;
+                  const isExpanded = expandedWeldId === weldId;
+                  const totalDuration = cw.arcs.reduce((sum, a) => sum + a.duration, 0);
+                  return (
+                    <button
+                      key={weldId}
+                      onClick={() => toggleWeld(weldId)}
+                      className={`w-full text-left flex items-center gap-3 p-4 bg-[#1a1a1a] border rounded-lg hover:bg-[#1f1f1f] transition-colors group ${
+                        cw.locked ? 'border-green-500/20 opacity-70' : 'border-[#2a2a2a]'
+                      }`}
+                    >
+                      <div className="flex items-center justify-between w-full">
+                        <div className="flex items-center gap-3 flex-wrap">
+                          <div className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 ${
+                            cw.locked ? 'bg-green-500/10' : 'bg-green-500/10'
+                          }`}>
+                            {cw.locked ? (
+                              <Lock className="w-4 h-4 text-green-400" />
+                            ) : (
+                              <BadgeCheck className="w-4 h-4 text-green-400" />
+                            )}
+                          </div>
+                          <div>
+                            <div className="flex items-center gap-2 flex-wrap">
+                              <span className="text-sm font-bold text-white">{cw.weld.id}</span>
+                              <span className="text-xs text-gray-400">{cw.weld.jointType}</span>
+                              <span className="text-[10px] text-yellow-500 bg-yellow-500/10 px-2 py-0.5 rounded font-mono border border-yellow-500/20">
+                                {cw.weld.process}
+                              </span>
+                              {cw.locked && (
+                                <span className="inline-flex items-center gap-1 text-[10px] text-green-400 bg-green-500/10 px-2 py-0.5 rounded border border-green-500/20">
+                                  <Lock className="w-3 h-3" />
+                                  Locked
+                                </span>
+                              )}
                             </div>
-                            <div className="flex items-center gap-2 text-xs shrink-0">
-                              <span className="text-yellow-500">{arc.avgHeat} kJ/mm</span>
-                              <span className="text-gray-400">{arc.wpsConformance}%</span>
-                            </div>
-                            <div className="flex items-center gap-1 text-xs text-gray-500 ml-auto">
-                              <span className="text-[10px] uppercase tracking-wider text-gray-600">Passes:</span>
-                              <span className="text-gray-400">{arc.passes.join(' · ')}</span>
+                            <div className="flex items-center gap-2 mt-1">
+                              <span className="text-xs text-gray-500">{cw.weld.partNumber}</span>
+                              <span className="text-[10px] text-gray-500">
+                                {cw.arcs.length} arc{cw.arcs.length !== 1 ? 's' : ''}
+                              </span>
                             </div>
                           </div>
-                        ))}
+                        </div>
+                        <div className="flex items-center gap-3 shrink-0">
+                          <div className="text-right">
+                            <div className="text-sm text-white font-mono">{formatTime(totalDuration)}</div>
+                            <div className="text-[10px] text-gray-500">{cw.completedAt}</div>
+                          </div>
+                          {isExpanded ? (
+                            <ChevronUp className="w-4 h-4 text-gray-500" />
+                          ) : (
+                            <ChevronDown className="w-4 h-4 text-gray-500" />
+                          )}
+                        </div>
                       </div>
-                    </div>
-                  )}
-                </button>
-              );
-            })}
-          </div>
+
+                      {isExpanded && (
+                        <div className="mt-4 pt-4 border-t border-[#2a2a2a] w-full">
+                          <div className="text-[10px] uppercase tracking-wider text-gray-500 mb-3">Arc Sessions</div>
+                          <div className="space-y-2">
+                            {cw.arcs.map((arc, i) => (
+                              <div
+                                key={arc.id}
+                                className="flex items-center gap-3 p-3 bg-[#141414] rounded-lg border border-[#2a2a2a]"
+                              >
+                                <span className="text-xs font-bold text-gray-500 w-14 shrink-0">
+                                  Arc {i + 1}
+                                </span>
+                                <div className="flex items-center gap-2 text-xs text-gray-400 shrink-0">
+                                  <Timer className="w-3 h-3" />
+                                  <span className="text-white font-mono">{formatTime(arc.duration)}</span>
+                                </div>
+                                <div className="flex items-center gap-2 text-xs shrink-0">
+                                  <span className="text-yellow-500">{arc.avgHeat} kJ/mm</span>
+                                  <span className="text-gray-400">{arc.wpsConformance}%</span>
+                                </div>
+                                <div className="flex items-center gap-1 text-xs text-gray-500 ml-auto">
+                                  <span className="text-[10px] uppercase tracking-wider text-gray-600">Passes:</span>
+                                  <span className="text-gray-400">{arc.passes.join(' · ')}</span>
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+          ))}
         </div>
       )}
 
