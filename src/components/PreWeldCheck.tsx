@@ -30,52 +30,37 @@ export function PreWeldCheck({
 
   return (
     <div className="p-4 md:p-6">
-      {/* Top header with weld info + WPS badges + Start Arc */}
-      <div className="mb-6">
-        <div className="text-[10px] uppercase tracking-wider text-gray-500 mb-1">
-          Pre-weld · {selectedWeld?.id || '—'} · {currentPart?.id || '—'} · {selectedWeld?.wps || '—'}
-        </div>
-        
-        <div className="flex items-start justify-between flex-wrap gap-4">
-          <h1 className="text-2xl md:text-3xl font-bold text-white">
-            {selectedWeld?.id || '—'} · {selectedWeld?.jointType || '—'}
-          </h1>
-          
-          <div className="flex items-center gap-2 flex-wrap">
-            <span className="text-xs text-gray-400 bg-[#1a1a1a] px-3 py-1.5 rounded border border-[#2a2a2a]">
-              {selectedWeld?.wps}
-            </span>
-            <span className="text-xs text-yellow-500 bg-yellow-500/10 px-3 py-1.5 rounded border border-yellow-500/20 font-mono">
-              {selectedWeld?.process}
-            </span>
-            <span className="text-xs text-gray-500 bg-[#1a1a1a] px-3 py-1.5 rounded border border-[#2a2a2a]">
-              {selectedWeld?.duration} min
-            </span>
-            {selectedWeld?.priority && (
-              <span className="text-xs text-red-400 bg-red-500/10 px-3 py-1.5 rounded border border-red-500/20">
-                Priority
-              </span>
-            )}
-            <button
-              onClick={onStart}
-              disabled={!allVerified}
-              className={`px-5 py-2 rounded-lg font-bold text-sm transition-colors ${
-                allVerified
-                  ? 'bg-yellow-500 hover:bg-yellow-400 text-black'
-                  : 'bg-[#2a2a2a] text-gray-500 cursor-not-allowed'
-              }`}
-            >
-              Start Arc
-            </button>
-          </div>
-        </div>
+      {/* Top: badges + Start Arc only */}
+      <div className="flex items-center justify-end flex-wrap gap-2 mb-6">
+        <span className="text-xs text-gray-400 bg-[#1a1a1a] px-3 py-1.5 rounded border border-[#2a2a2a]">
+          {selectedWeld?.wps}
+        </span>
+        <span className="text-xs text-yellow-500 bg-yellow-500/10 px-3 py-1.5 rounded border border-yellow-500/20 font-mono">
+          {selectedWeld?.process}
+        </span>
+        <span className="text-xs text-gray-500 bg-[#1a1a1a] px-3 py-1.5 rounded border border-[#2a2a2a]">
+          {selectedWeld?.duration} min
+        </span>
+        {selectedWeld?.priority && (
+          <span className="text-xs text-red-400 bg-red-500/10 px-3 py-1.5 rounded border border-red-500/20">
+            Priority
+          </span>
+        )}
+        <button
+          onClick={onStart}
+          disabled={!allVerified}
+          className={`px-5 py-2 rounded-lg font-bold text-sm transition-colors ${
+            allVerified
+              ? 'bg-yellow-500 hover:bg-yellow-400 text-black'
+              : 'bg-[#2a2a2a] text-gray-500 cursor-not-allowed'
+          }`}
+        >
+          Start Arc
+        </button>
       </div>
 
-      {/* Part Drawing */}
+      {/* Part Drawing - no label */}
       <div className="mb-6">
-        <div className="text-[10px] uppercase tracking-wider text-gray-500 mb-2">
-          Part Drawing · {currentPart?.id || '—'}
-        </div>
         <DrawingWithHighlight selectedWeld={selectedWeld} currentPart={currentPart} />
       </div>
 
@@ -92,18 +77,18 @@ export function PreWeldCheck({
                 onClick={() => onSelectWeld(weld)}
                 className="text-left p-3 bg-[#1a1a1a] hover:bg-[#1f1f1f] border border-[#2a2a2a] hover:border-yellow-500/30 rounded-lg transition-colors group"
               >
-                <div className="flex items-center justify-between mb-1">
-                  <span className="text-sm font-bold text-white">{weld.id}</span>
-                  <span className="text-[10px] text-yellow-500 bg-yellow-500/10 px-2 py-0.5 rounded font-mono">
+                <div className="flex items-center justify-between mb-2">
+                  <span className="text-lg font-bold text-white">{weld.id}</span>
+                  <span className="text-[10px] text-yellow-500 bg-yellow-500/10 px-2 py-0.5 rounded font-mono border border-yellow-500/20">
                     {weld.process}
                   </span>
                 </div>
-                <div className="text-xs text-gray-400">{weld.jointType}</div>
-                <div className="flex items-center gap-2 mt-2 flex-wrap">
-                  <span className="text-[10px] text-gray-500 bg-[#141414] px-2 py-0.5 rounded">
+                <div className="text-xs text-gray-500 mb-2">{weld.jointType}</div>
+                <div className="flex items-center gap-2 flex-wrap">
+                  <span className="text-[10px] text-gray-600 bg-[#141414] px-2 py-0.5 rounded">
                     {weld.wps}
                   </span>
-                  <span className="text-[10px] text-gray-500 bg-[#141414] px-2 py-0.5 rounded">
+                  <span className="text-[10px] text-gray-600 bg-[#141414] px-2 py-0.5 rounded">
                     {weld.duration} min
                   </span>
                   {weld.priority && (
