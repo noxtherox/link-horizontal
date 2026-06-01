@@ -172,14 +172,17 @@ export function useWeldFlow() {
       const finalArcs = buildFinalArcs();
       addCompletedWeld(selectedWeld, 'signed', finalArcs);
     }
-    setParts((prev) =>
-      prev
-        .map((part) => ({
-          ...part,
-          welds: part.welds.filter((w) => w.id !== selectedWeld?.id),
-        }))
-        .filter((part) => part.welds.length > 0)
-    );
+    
+    // Compute remaining parts before updating state
+    const remainingParts = parts
+      .map((part) => ({
+        ...part,
+        welds: part.welds.filter((w) => w.id !== selectedWeld?.id),
+      }))
+      .filter((part) => part.welds.length > 0);
+    
+    setParts(remainingParts);
+    
     setSelectedWeld(null);
     setConsumables(initialConsumables);
     setArcTime(0);
@@ -189,9 +192,15 @@ export function useWeldFlow() {
     setDeviationText('');
     setDeviations([]);
     setWeldActiveMode('setup');
-    setStep('taskQueue');
-    setWorkflowStep('taskQueue');
-  }, [selectedWeld, addCompletedWeld, buildFinalArcs]);
+    
+    if (remainingParts.length === 0) {
+      // All welds done - stay in weldActive context to show completion
+      // Don't change step
+    } else {
+      setStep('taskQueue');
+      setWorkflowStep('taskQueue');
+    }
+  }, [selectedWeld, addCompletedWeld, buildFinalArcs, parts]);
 
   const finishAndStartNext = useCallback(() => {
     if (!selectedWeld) return;
@@ -215,19 +224,20 @@ export function useWeldFlow() {
       }
     }
     
-    setParts((prev) =>
-      prev
-        .map((part) => ({
-          ...part,
-          welds: part.welds.filter((w) => w.id !== selectedWeld.id),
-        }))
-        .filter((part) => part.welds.length > 0)
-    );
+    // Remove current weld and compute remaining parts
+    const remainingParts = parts
+      .map((part) => ({
+        ...part,
+        welds: part.welds.filter((w) => w.id !== selectedWeld.id),
+      }))
+      .filter((part) => part.welds.length > 0);
     
-    if (nextWeldObj) {
+    setParts(remainingParts);
+    
+    const nextWeldStillExists = nextWeldObj && remainingParts.some(p => p.welds.some(w => w.id === nextWeldObj?.id));
+    
+    if (nextWeldObj && nextWeldStillExists) {
       setSelectedWeld(nextWeldObj);
-      setStep('weldActive');
-      setWorkflowStep('weldActive');
       setWeldActiveMode('arc');
       setConsumables(initialConsumables);
       setArcTime(0);
@@ -238,9 +248,9 @@ export function useWeldFlow() {
       setDeviations([]);
       startArcTimer();
     } else {
+      // No more welds - stay in weldActive context to show completion
       setSelectedWeld(null);
-      setStep('taskQueue');
-      setWorkflowStep('taskQueue');
+      setConsumables(initialConsumables);
       setArcTime(0);
       setArcs([]);
       setArcStartOffset(0);

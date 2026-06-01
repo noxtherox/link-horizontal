@@ -39,7 +39,6 @@ export default function Index() {
               parts={flow.parts} 
               onSelectWeld={flow.selectWeld}
               completedWelds={flow.completedWelds}
-              onReviewAndSign={flow.goToReview}
             />
           )}
 
@@ -61,6 +60,7 @@ export default function Index() {
               isPaused={flow.isArcPaused}
               nextWeld={flow.nextWeld}
               completedWelds={flow.completedWelds}
+              onGoToReview={flow.goToReview}
             />
           )}
 

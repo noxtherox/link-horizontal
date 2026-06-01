@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { AlertTriangle, Check, Play, ChevronDown, ChevronUp, Package, ArrowRight, Zap, ArrowLeft } from 'lucide-react';
+import { AlertTriangle, Check, Play, ChevronDown, ChevronUp, Package, ArrowRight, Zap, ArrowLeft, CheckCircle2, ClipboardCheck } from 'lucide-react';
 import { Weld, Part, CompletedWeld } from '@/types/weldcloud';
 import { gasSpec, machineSpec } from '@/data/mockData';
 import { DrawingWithHighlight } from './DrawingWithHighlight';
@@ -23,6 +23,7 @@ interface WeldActiveProps {
   isPaused: boolean;
   nextWeld: Weld | null;
   completedWelds?: CompletedWeld[];
+  onGoToReview: () => void;
 }
 
 export function WeldActive({
@@ -42,7 +43,19 @@ export function WeldActive({
   isPaused,
   nextWeld,
   completedWelds,
+  onGoToReview,
 }: WeldActiveProps) {
+  // All welds completed — show completion screen
+  if (!selectedWeld && parts.length === 0) {
+    return (
+      <AllWeldsComplete
+        completedWelds={completedWelds || []}
+        onGoToReview={onGoToReview}
+        onBackToQueue={onBackToQueue}
+      />
+    );
+  }
+
   if (mode === 'setup') {
     return (
       <WeldActiveSetup
@@ -73,6 +86,90 @@ export function WeldActive({
   );
 }
 
+/* ───────── ALL WELDS COMPLETE ───────── */
+
+function AllWeldsComplete({
+  completedWelds,
+  onGoToReview,
+  onBackToQueue,
+}: {
+  completedWelds: CompletedWeld[];
+  onGoToReview: () => void;
+  onBackToQueue: () => void;
+}) {
+  const totalArcTime = completedWelds.reduce(
+    (sum, cw) => sum + cw.arcs.reduce((a, arc) => a + arc.duration, 0),
+    0
+  );
+
+  const uniqueParts = [...new Set(completedWelds.map((cw) => cw.weld.partNumber))];
+
+  const formatTime = (seconds: number) => {
+    const mins = Math.floor(seconds / 60);
+    const secs = seconds % 60;
+    return `${mins}:${secs.toString().padStart(2, '0')}`;
+  };
+
+  return (
+    <div className="p-4 md:p-6 flex flex-col items-center justify-center min-h-[60vh]">
+      <div className="max-w-md w-full text-center">
+        <div className="w-20 h-20 bg-green-500/10 rounded-full flex items-center justify-center mx-auto mb-6">
+          <CheckCircle2 className="w-10 h-10 text-green-400" />
+        </div>
+
+        <h1 className="text-2xl md:text-3xl font-bold text-white mb-2">
+          {uniqueParts.length === 1
+            ? `You've completed ${uniqueParts[0]}`
+            : "You've completed all assigned welds"}
+        </h1>
+
+        <p className="text-sm text-gray-400 mb-6">
+          {completedWelds.length} weld{completedWelds.length !== 1 ? 's' : ''} finished
+          {uniqueParts.length > 1 ? ` across ${uniqueParts.length} parts` : ''}
+          {' · '}
+          {formatTime(totalArcTime)} total arc time
+        </p>
+
+        <div className="space-y-3">
+          <button
+            onClick={onGoToReview}
+            className="w-full flex items-center justify-center gap-2 p-4 bg-yellow-500 hover:bg-yellow-400 active:bg-yellow-300 rounded-xl transition-colors text-black font-bold text-base"
+          >
+            <ClipboardCheck className="w-5 h-5" />
+            Review and sign welds
+          </button>
+
+          <button
+            onClick={onBackToQueue}
+            className="w-full flex items-center justify-center gap-2 p-4 bg-[#1a1a1a] hover:bg-[#1f1f1f] border border-[#2a2a2a] rounded-xl transition-colors text-gray-300 font-medium text-sm"
+          >
+            <ArrowLeft className="w-4 h-4" />
+            Back to task queue
+          </button>
+        </div>
+
+        <div className="mt-6 p-4 bg-[#1a1a1a] border border-[#2a2a2a] rounded-xl">
+          <div className="text-[10px] uppercase tracking-wider text-gray-500 mb-2">Completed Summary</div>
+          <div className="grid grid-cols-3 gap-4">
+            <div>
+              <div className="text-xl font-bold text-white">{completedWelds.length}</div>
+              <div className="text-xs text-gray-500">Welds</div>
+            </div>
+            <div>
+              <div className="text-xl font-bold text-white font-mono">{formatTime(totalArcTime)}</div>
+              <div className="text-xs text-gray-500">Arc Time</div>
+            </div>
+            <div>
+              <div className="text-xl font-bold text-white">{uniqueParts.length}</div>
+              <div className="text-xs text-gray-500">Parts</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 /* ───────── SETUP VIEW ───────── */
 
 function WeldActiveSetup({
@@ -84,7 +181,7 @@ function WeldActiveSetup({
   onSelectWeld,
   onBackToQueue,
   completedWelds,
-}: Omit<WeldActiveProps, 'mode' | 'onTogglePause' | 'onComplete' | 'onDoneNext' | 'onChooseDifferent' | 'arcTime' | 'isPaused' | 'nextWeld'>) {
+}: Omit<WeldActiveProps, 'mode' | 'onTogglePause' | 'onComplete' | 'onDoneNext' | 'onChooseDifferent' | 'arcTime' | 'isPaused' | 'nextWeld' | 'onGoToReview'>) {
   const currentPart = selectedWeld
     ? parts.find(p => p.id === selectedWeld.partNumber)
     : undefined;
@@ -292,7 +389,7 @@ function WeldActiveArc({
   arcTime,
   isPaused,
   nextWeld,
-}: Omit<WeldActiveProps, 'mode' | 'onStartArc' | 'onVerify' | 'allVerified' | 'onSelectWeld' | 'onBackToQueue' | 'completedWelds'>) {
+}: Omit<WeldActiveProps, 'mode' | 'onStartArc' | 'onVerify' | 'allVerified' | 'onSelectWeld' | 'onBackToQueue' | 'completedWelds' | 'onGoToReview'>) {
   const currentPart = selectedWeld
     ? parts.find(p => p.id === selectedWeld.partNumber)
     : undefined;

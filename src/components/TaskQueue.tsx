@@ -1,14 +1,15 @@
 import { useState } from 'react';
 import { ChevronDown, ChevronUp, Package, Play, BadgeCheck } from 'lucide-react';
-import { Part, Weld } from '@/types/weldcloud';
+import { Part, Weld, CompletedWeld } from '@/types/weldcloud';
 import { Badge } from '@/components/ui/badge';
 
 interface TaskQueueProps {
   parts: Part[];
   onSelectWeld: (weld: Weld) => void;
+  completedWelds: CompletedWeld[];
 }
 
-export function TaskQueue({ parts, onSelectWeld }: TaskQueueProps) {
+export function TaskQueue({ parts, onSelectWeld, completedWelds }: TaskQueueProps) {
   const [expandedPartId, setExpandedPartId] = useState<string | null>(null);
 
   const totalWelds = parts.reduce((sum, part) => sum + part.welds.length, 0);
@@ -51,13 +52,13 @@ export function TaskQueue({ parts, onSelectWeld }: TaskQueueProps) {
                 <div className="flex items-start gap-4">
                   <div className="flex items-start gap-3 flex-1 min-w-0">
                     <div
-                      className={`w-12 h-12 rounded-xl flex items-center justify-center text-lg font-bold shrink-0 ${
+                      className={`w-12 h-12 rounded-xl flex items-center justify-center text-sm font-bold shrink-0 ${
                         partIndex === 0
                           ? 'bg-yellow-500 text-black'
                           : 'bg-[#2a2a2a] text-gray-400'
                       }`}
                     >
-                      {partIndex + 1}
+                      <Package className="w-6 h-6" />
                     </div>
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2 flex-wrap">
