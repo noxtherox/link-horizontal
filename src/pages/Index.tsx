@@ -72,6 +72,8 @@ export default function Index() {
               selectedWeld={flow.selectedWeld}
               completedWelds={flow.completedWelds}
               parts={flow.parts}
+              consumables={flow.consumables}
+              onUpdateConsumable={flow.updateConsumable}
             />
           )}
         </main>

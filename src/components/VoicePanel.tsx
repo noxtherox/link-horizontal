@@ -85,7 +85,9 @@ export function VoicePanel({ viewMode, step, weldActiveMode = 'setup', isRecordi
   }
 
   const pendingInspectionCount = completedWelds?.filter(c => !c.locked).length || 0;
-  const allLocked = completedWelds && completedWelds.length > 0 && completedWelds.every(c => c.locked);
+  const lockedCount = completedWelds?.filter(c => c.locked).length || 0;
+  const totalCompleted = completedWelds?.length || 0;
+  const allLocked = totalCompleted > 0 && lockedCount === totalCompleted;
 
   return (
     <aside className="w-full lg:w-72 bg-[#141414] border-t lg:border-l lg:border-t-0 border-[#2a2a2a] flex flex-col shrink-0">
@@ -291,7 +293,7 @@ export function VoicePanel({ viewMode, step, weldActiveMode = 'setup', isRecordi
                 </div>
                 <div>
                   <div className="text-sm font-medium text-green-400">Sent to inspection</div>
-                  <div className="text-xs text-gray-500">All welds locked</div>
+                  <div className="text-xs text-gray-500">{lockedCount} weld{lockedCount !== 1 ? 's' : ''} locked</div>
                 </div>
               </div>
             ) : (
