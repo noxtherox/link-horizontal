@@ -90,7 +90,7 @@ function WeldActiveSetup({
 
   return (
     <div className="p-4 md:p-6">
-      {/* Top header with weld info + WPS badges + Start Arc */}
+      {/* Top header with weld info + WPS badges */}
       <div className="mb-6">
         <div className="flex items-start justify-between flex-wrap gap-4">
           <h1 className="text-2xl md:text-3xl font-bold text-white">
@@ -104,17 +104,6 @@ function WeldActiveSetup({
             <span className="text-xs text-yellow-500 bg-yellow-500/10 px-3 py-1.5 rounded border border-yellow-500/20 font-mono">
               {selectedWeld?.process}
             </span>
-            <button
-              onClick={onStartArc}
-              disabled={!allVerified}
-              className={`px-5 py-2 rounded-lg font-bold text-sm transition-colors ${
-                allVerified
-                  ? 'bg-yellow-500 hover:bg-yellow-400 text-black'
-                  : 'bg-[#2a2a2a] text-gray-500 cursor-not-allowed'
-              }`}
-            >
-              Start Arc
-            </button>
           </div>
         </div>
       </div>
@@ -122,6 +111,21 @@ function WeldActiveSetup({
       {/* Part Drawing */}
       <div className="mb-6">
         <DrawingWithHighlight selectedWeld={selectedWeld} currentPart={currentPart} />
+      </div>
+
+      {/* Start Arc button - centered below drawing */}
+      <div className="flex justify-center mb-6">
+        <button
+          onClick={onStartArc}
+          disabled={!allVerified}
+          className={`px-8 py-3 rounded-xl font-bold text-base transition-colors ${
+            allVerified
+              ? 'bg-yellow-500 hover:bg-yellow-400 text-black shadow-lg shadow-yellow-500/20'
+              : 'bg-[#2a2a2a] text-gray-500 cursor-not-allowed'
+          }`}
+        >
+          Start Arc
+        </button>
       </div>
 
       {/* All welds on this part */}
