@@ -190,6 +190,15 @@ export function useWeldFlow() {
   const chooseDifferentWeld = useCallback(() => {
     stopArcTimer();
     setIsArcPaused(false);
+    setArcTime(0);
+    setWeldActiveMode('setup');
+    setDeviationText('');
+    setDeviations([]);
+  }, [stopArcTimer]);
+
+  const backToQueue = useCallback(() => {
+    stopArcTimer();
+    setIsArcPaused(false);
     setSelectedWeld(null);
     setStep('taskQueue');
     setWorkflowStep('taskQueue');
@@ -243,6 +252,7 @@ export function useWeldFlow() {
     signWeld,
     finishAndStartNext,
     chooseDifferentWeld,
+    backToQueue,
     resumeStep,
     handleVoice,
   };

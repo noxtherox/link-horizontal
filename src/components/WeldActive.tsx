@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { AlertTriangle, Check, Play, ChevronDown, ChevronUp, Package, ArrowRight, Zap } from 'lucide-react';
+import { AlertTriangle, Check, Play, ChevronDown, ChevronUp, Package, ArrowRight, Zap, ArrowLeft } from 'lucide-react';
 import { Weld, Part } from '@/types/weldcloud';
 import { gasSpec, machineSpec } from '@/data/mockData';
 import { DrawingWithHighlight } from './DrawingWithHighlight';
@@ -12,6 +12,7 @@ interface WeldActiveProps {
   onComplete: () => void;
   onDoneNext: () => void;
   onChooseDifferent: () => void;
+  onBackToQueue: () => void;
   onVerify: (id: string) => void;
   allVerified: boolean;
   selectedWeld: Weld | null;
@@ -29,6 +30,7 @@ export function WeldActive({
   onComplete,
   onDoneNext,
   onChooseDifferent,
+  onBackToQueue,
   onVerify,
   allVerified,
   selectedWeld,
@@ -47,6 +49,7 @@ export function WeldActive({
         selectedWeld={selectedWeld}
         parts={parts}
         onSelectWeld={onSelectWeld}
+        onBackToQueue={onBackToQueue}
       />
     );
   }
@@ -75,7 +78,8 @@ function WeldActiveSetup({
   selectedWeld,
   parts,
   onSelectWeld,
-}: Omit<WeldActiveProps, 'mode' | 'onTogglePause' | 'onComplete' | 'onDoneNext' | 'arcTime' | 'isPaused' | 'nextWeld'>) {
+  onBackToQueue,
+}: Omit<WeldActiveProps, 'mode' | 'onTogglePause' | 'onComplete' | 'onDoneNext' | 'onChooseDifferent' | 'arcTime' | 'isPaused' | 'nextWeld'>) {
   const currentPart = selectedWeld
     ? parts.find(p => p.id === selectedWeld.partNumber)
     : undefined;
@@ -90,14 +94,20 @@ function WeldActiveSetup({
 
   return (
     <div className="p-4 md:p-6">
-      {/* Top header with weld info + WPS badges */}
+      {/* Top header with back button + weld info + WPS badges */}
       <div className="mb-6">
-        <div className="flex items-start justify-between flex-wrap gap-4">
+        <div className="flex items-center gap-3 mb-3">
+          <button
+            onClick={onBackToQueue}
+            className="flex items-center justify-center w-9 h-9 rounded-lg bg-[#1a1a1a] hover:bg-[#2a2a2a] border border-[#2a2a2a] transition-colors shrink-0"
+          >
+            <ArrowLeft className="w-4 h-4 text-gray-400" />
+          </button>
           <h1 className="text-2xl md:text-3xl font-bold text-white">
             {selectedWeld?.id || '—'} · {selectedWeld?.jointType || '—'}
           </h1>
           
-          <div className="flex items-center gap-2 flex-wrap">
+          <div className="flex items-center gap-2 flex-wrap ml-auto">
             <span className="text-xs text-gray-400 bg-[#1a1a1a] px-3 py-1.5 rounded border border-[#2a2a2a]">
               {selectedWeld?.wps}
             </span>
@@ -270,7 +280,7 @@ function WeldActiveArc({
   arcTime,
   isPaused,
   nextWeld,
-}: Omit<WeldActiveProps, 'mode' | 'onStartArc' | 'onVerify' | 'allVerified' | 'onSelectWeld'>) {
+}: Omit<WeldActiveProps, 'mode' | 'onStartArc' | 'onVerify' | 'allVerified' | 'onSelectWeld' | 'onBackToQueue'>) {
   const currentPart = selectedWeld
     ? parts.find(p => p.id === selectedWeld.partNumber)
     : undefined;

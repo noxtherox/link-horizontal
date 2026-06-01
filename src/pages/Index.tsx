@@ -46,6 +46,7 @@ export default function Index() {
               onComplete={flow.completeWeld}
               onDoneNext={flow.finishAndStartNext}
               onChooseDifferent={flow.chooseDifferentWeld}
+              onBackToQueue={flow.backToQueue}
               onVerify={flow.verifyConsumable}
               allVerified={flow.allConsumablesVerified}
               selectedWeld={flow.selectedWeld}
