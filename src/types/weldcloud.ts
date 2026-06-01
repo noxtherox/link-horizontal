@@ -49,5 +49,12 @@ export interface Alert {
   acknowledged: boolean;
 }
 
+export interface CompletedWeld {
+  weld: Weld;
+  completedAt: string;
+  arcTime: number;
+  method: 'done' | 'choose-different' | 'signed';
+}
+
 export type WelderStep = 'taskQueue' | 'weldActive' | 'reviewAndSign';
 export type ViewMode = 'welder' | 'supervisor';

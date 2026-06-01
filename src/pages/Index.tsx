@@ -35,7 +35,11 @@ export default function Index() {
           {flow.viewMode === 'supervisor' && <FloorStatus />}
 
           {flow.viewMode === 'welder' && flow.step === 'taskQueue' && (
-            <TaskQueue parts={flow.parts} onSelectWeld={flow.selectWeld} />
+            <TaskQueue 
+              parts={flow.parts} 
+              onSelectWeld={flow.selectWeld}
+              completedWelds={flow.completedWelds}
+            />
           )}
 
           {flow.viewMode === 'welder' && flow.step === 'weldActive' && (

@@ -1,5 +1,5 @@
 import { useState, useCallback, useEffect, useRef, useMemo } from 'react';
-import { WelderStep, ViewMode, Weld, Consumable, Part } from '@/types/weldcloud';
+import { WelderStep, ViewMode, Weld, Consumable, Part, CompletedWeld } from '@/types/weldcloud';
 import { parts as initialParts, consumables as initialConsumables } from '@/data/mockData';
 
 export function useWeldFlow() {
@@ -19,6 +19,7 @@ export function useWeldFlow() {
   const [confirmAction, setConfirmAction] = useState<(() => void) | null>(null);
   const [confirmMessage, setConfirmMessage] = useState('');
   const [isArcPaused, setIsArcPaused] = useState(false);
+  const [completedWelds, setCompletedWelds] = useState<CompletedWeld[]>([]);
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   const nextWeld = useMemo(() => {
@@ -74,6 +75,21 @@ export function useWeldFlow() {
     };
   }, []);
 
+  const addCompletedWeld = useCallback((weld: Weld, method: CompletedWeld['method'], time: number) => {
+    setCompletedWelds((prev) => {
+      if (prev.some((cw) => cw.weld.id === weld.id)) return prev;
+      return [
+        ...prev,
+        {
+          weld,
+          completedAt: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+          arcTime: time,
+          method,
+        },
+      ];
+    });
+  }, []);
+
   const selectWeld = useCallback((weld: Weld) => {
     setSelectedWeld(weld);
     setStep('weldActive');
@@ -117,6 +133,9 @@ export function useWeldFlow() {
   }, [stopArcTimer]);
 
   const signWeld = useCallback(() => {
+    if (selectedWeld) {
+      addCompletedWeld(selectedWeld, 'signed', arcTime);
+    }
     setParts((prev) =>
       prev
         .map((part) => ({
@@ -134,10 +153,12 @@ export function useWeldFlow() {
     setWeldActiveMode('setup');
     setStep('taskQueue');
     setWorkflowStep('taskQueue');
-  }, [selectedWeld]);
+  }, [selectedWeld, arcTime, addCompletedWeld]);
 
   const finishAndStartNext = useCallback(() => {
     if (!selectedWeld) return;
+    
+    addCompletedWeld(selectedWeld, 'done', arcTime);
     
     const currentPart = parts.find(p => p.id === selectedWeld.partNumber);
     const currentIndex = currentPart?.welds.findIndex(w => w.id === selectedWeld.id) ?? -1;
@@ -185,16 +206,19 @@ export function useWeldFlow() {
       setDeviations([]);
       stopArcTimer();
     }
-  }, [selectedWeld, parts, stopArcTimer, startArcTimer]);
+  }, [selectedWeld, parts, arcTime, stopArcTimer, startArcTimer, addCompletedWeld]);
 
   const chooseDifferentWeld = useCallback(() => {
+    if (selectedWeld) {
+      addCompletedWeld(selectedWeld, 'choose-different', arcTime);
+    }
     stopArcTimer();
     setIsArcPaused(false);
     setArcTime(0);
     setWeldActiveMode('setup');
     setDeviationText('');
     setDeviations([]);
-  }, [stopArcTimer]);
+  }, [selectedWeld, arcTime, stopArcTimer, addCompletedWeld]);
 
   const backToQueue = useCallback(() => {
     stopArcTimer();
@@ -242,6 +266,7 @@ export function useWeldFlow() {
     confirmMessage,
     allConsumablesVerified,
     isArcPaused,
+    completedWelds,
     selectWeld,
     verifyConsumable,
     startArc,
