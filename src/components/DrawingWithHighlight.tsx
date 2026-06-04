@@ -33,7 +33,7 @@ export function DrawingWithHighlight({ selectedWeld, currentPart, compact = fals
 
         {!imageError ? (
           <img
-            src="/.dyad/media/91d0dd50d18370a2fe22dec401e802b5ba0fe0d7a7b3d51d20842996537eba11.png"
+            src="/drawings/piping-spool.svg"
             alt={`Drawing for ${currentPart?.id || 'part'}`}
             className="w-full h-auto object-contain"
             onError={() => setImageError(true)}
