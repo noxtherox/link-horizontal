@@ -1,5 +1,5 @@
 import { ViewMode, WelderStep } from '@/types/weldcloud';
-import { Zap, ChevronDown, Wifi, RotateCcw } from 'lucide-react';
+import { Zap, ChevronDown, Wifi, WifiOff, RotateCcw } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 interface HeaderProps {
@@ -33,8 +33,9 @@ export function Header({ viewMode, setViewMode, step, workflowStep, setStep, onR
               WeldCloud<span className="text-yellow-500">Link</span>
             </span>
           </div>
-          <div className="hidden md:flex items-center gap-2 px-3 py-1.5 bg-[#1f1f1f] rounded-md text-xs text-gray-400">
-            <span>Booth 4 · Headset paired</span>
+          <div className="hidden md:flex items-center gap-2 px-4 py-2 bg-[#1f1f1f] rounded-md border border-[#2a2a2a]">
+            <span className="text-xs text-gray-400 uppercase tracking-wider">Station</span>
+            <span className="text-sm font-bold text-yellow-500">1</span>
           </div>
         </div>
 
@@ -69,9 +70,9 @@ export function Header({ viewMode, setViewMode, step, workflowStep, setStep, onR
             {viewMode === 'welder' ? 'Supervisor' : 'Welder'}
           </Button>
 
-          <div className="flex items-center gap-1.5 px-3 py-1.5 bg-[#1f1f1f] rounded-md text-xs text-green-400">
-            <Wifi className="w-3 h-3" />
-            <span>Online</span>
+          <div className="flex items-center gap-2 px-3 py-1.5 bg-[#1f1f1f] rounded-md border border-[#2a2a2a]">
+            <Wifi className="w-3 h-3 text-green-400" />
+            <span className="text-xs text-white font-medium">Warrior Edge 500</span>
           </div>
         </div>
       </div>
