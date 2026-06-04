@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { ChevronDown, ChevronUp, Play, BadgeCheck, Check, Package } from 'lucide-react';
+import { ChevronDown, ChevronUp, Package, Play, BadgeCheck, Check } from 'lucide-react';
 import { Part, Weld, CompletedWeld } from '@/types/weldcloud';
 import { Badge } from '@/components/ui/badge';
 import { initialParts } from '@/data/mockData';
@@ -76,13 +76,13 @@ export function TaskQueue({ parts, onSelectWeld, completedWelds }: TaskQueueProp
                 <div className="flex items-start gap-4">
                   <div className="flex items-start gap-3 flex-1 min-w-0">
                     <div
-                      className={`w-12 h-12 rounded-xl flex items-center justify-center text-sm font-bold shrink-0 ${
+                      className={`w-12 h-12 rounded-xl flex items-center justify-center text-lg font-bold shrink-0 ${
                         partIndex === 0
                           ? 'bg-yellow-500 text-black'
                           : 'bg-[#2a2a2a] text-gray-400'
                       }`}
                     >
-                      <Package className="w-6 h-6" />
+                      {partIndex + 1}
                     </div>
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2 flex-wrap">
