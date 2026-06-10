@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { ChevronDown, ChevronUp, Timer, BadgeCheck, CircleDashed, Package, Lock, Pencil, Check, AlertTriangle } from 'lucide-react';
+import { ChevronDown, ChevronUp, ChevronRight, Timer, BadgeCheck, CircleDashed, Package, Lock, Pencil, Check, AlertTriangle, Play } from 'lucide-react';
 import { Weld, CompletedWeld, Arc, Part, Consumable } from '@/types/weldcloud';
 import { initialParts } from '@/data/mockData';
 import { Button } from '@/components/ui/button';
@@ -11,6 +11,7 @@ interface ReviewAndSignProps {
   selectedWeld: Weld | null;
   completedWelds: CompletedWeld[];
   parts: Part[];
+  onSelectWeld: (weld: Weld) => void;
   consumables: Consumable[];
   onUpdateConsumable: (id: string, updates: Partial<Consumable>) => void;
   onUpdateCompletedWeldConsumable: (weldId: string, consumableId: string, updates: Partial<Consumable>) => void;
@@ -23,6 +24,7 @@ export function ReviewAndSign({
   selectedWeld,
   completedWelds,
   parts,
+  onSelectWeld,
   consumables,
   onUpdateConsumable,
   onUpdateCompletedWeldConsumable,
@@ -454,14 +456,24 @@ export function ReviewAndSign({
             {/* Incomplete welds */}
             {incomplete.length > 0 && (
               <div>
-                <div className="text-[10px] uppercase tracking-wider text-gray-500 mb-2">
-                  Incomplete — {incomplete.length} remaining · {totalIncompleteDuration} min
+                <div className="flex items-center justify-between gap-2 mb-2">
+                  <div className="text-[10px] uppercase tracking-wider text-gray-500">
+                    Incomplete — {incomplete.length} remaining · {totalIncompleteDuration} min
+                  </div>
+                  <button
+                    onClick={() => onSelectWeld(incomplete[0])}
+                    className="inline-flex items-center gap-1.5 text-xs font-medium text-black bg-yellow-500 hover:bg-yellow-400 active:bg-yellow-300 px-3 py-1.5 rounded-lg transition-colors shrink-0"
+                  >
+                    <Play className="w-3.5 h-3.5" />
+                    Open part
+                  </button>
                 </div>
                 <div className="space-y-2">
                   {incomplete.map((weld) => (
-                    <div
+                    <button
                       key={weld.id}
-                      className="flex items-center gap-3 p-4 bg-[#1a1a1a] border border-[#2a2a2a] rounded-lg"
+                      onClick={() => onSelectWeld(weld)}
+                      className="w-full text-left flex items-center gap-3 p-4 bg-[#1a1a1a] border border-[#2a2a2a] rounded-lg hover:bg-[#1f1f1f] hover:border-yellow-500/30 transition-colors group"
                     >
                       <div className="w-8 h-8 rounded-full bg-yellow-500/10 flex items-center justify-center shrink-0">
                         <CircleDashed className="w-4 h-4 text-yellow-500" />
@@ -484,7 +496,11 @@ export function ReviewAndSign({
                           )}
                         </div>
                       </div>
-                    </div>
+                      <span className="inline-flex items-center gap-1 text-[10px] font-medium text-gray-500 group-hover:text-yellow-500 uppercase tracking-wider shrink-0 transition-colors">
+                        Open
+                        <ChevronRight className="w-3.5 h-3.5" />
+                      </span>
+                    </button>
                   ))}
                 </div>
               </div>

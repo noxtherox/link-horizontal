@@ -61,6 +61,7 @@ export default function Index() {
               nextWeld={flow.nextWeld}
               completedWelds={flow.completedWelds}
               onGoToReview={flow.goToReview}
+              lastCompletedPartId={flow.lastCompletedPartId}
             />
           )}
 
@@ -72,6 +73,7 @@ export default function Index() {
               selectedWeld={flow.selectedWeld}
               completedWelds={flow.completedWelds}
               parts={flow.parts}
+              onSelectWeld={flow.selectWeld}
               consumables={flow.consumables}
               onUpdateConsumable={flow.updateConsumable}
               onUpdateCompletedWeldConsumable={flow.updateCompletedWeldConsumable}

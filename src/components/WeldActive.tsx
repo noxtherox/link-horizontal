@@ -24,6 +24,7 @@ interface WeldActiveProps {
   nextWeld: Weld | null;
   completedWelds?: CompletedWeld[];
   onGoToReview: () => void;
+  lastCompletedPartId?: string | null;
 }
 
 export function WeldActive({
@@ -44,14 +45,18 @@ export function WeldActive({
   nextWeld,
   completedWelds,
   onGoToReview,
+  lastCompletedPartId,
 }: WeldActiveProps) {
-  // All welds completed for current selection — show completion screen
+  // No active weld — show completion screen. This covers both "just finished a part,
+  // other parts still queued" and "all assigned welds done".
   if (!selectedWeld) {
     return (
       <AllWeldsComplete
         completedWelds={completedWelds || []}
         onGoToReview={onGoToReview}
         onBackToQueue={onBackToQueue}
+        remainingParts={parts}
+        lastCompletedPartId={lastCompletedPartId}
       />
     );
   }
@@ -92,23 +97,41 @@ function AllWeldsComplete({
   completedWelds,
   onGoToReview,
   onBackToQueue,
+  remainingParts,
+  lastCompletedPartId,
 }: {
   completedWelds: CompletedWeld[];
   onGoToReview: () => void;
   onBackToQueue: () => void;
+  remainingParts: Part[];
+  lastCompletedPartId?: string | null;
 }) {
-  const totalArcTime = completedWelds.reduce(
+  const hasRemainingParts = remainingParts.length > 0;
+
+  // When a single part was just completed (and more remain), scope the summary to that part.
+  const summaryWelds =
+    hasRemainingParts && lastCompletedPartId
+      ? completedWelds.filter((cw) => cw.weld.partNumber === lastCompletedPartId)
+      : completedWelds;
+
+  const totalArcTime = summaryWelds.reduce(
     (sum, cw) => sum + cw.arcs.reduce((a, arc) => a + arc.duration, 0),
     0
   );
 
-  const uniqueParts = [...new Set(completedWelds.map((cw) => cw.weld.partNumber))];
+  const uniqueParts = [...new Set(summaryWelds.map((cw) => cw.weld.partNumber))];
 
   const formatTime = (seconds: number) => {
     const mins = Math.floor(seconds / 60);
     const secs = seconds % 60;
     return `${mins}:${secs.toString().padStart(2, '0')}`;
   };
+
+  const heading = hasRemainingParts
+    ? `Part ${lastCompletedPartId ?? uniqueParts[0] ?? ''} complete`.trim()
+    : uniqueParts.length === 1
+    ? `You've completed ${uniqueParts[0]}`
+    : "You've completed all assigned welds";
 
   return (
     <div className="p-4 md:p-6 flex flex-col items-center justify-center min-h-[60vh]">
@@ -118,33 +141,45 @@ function AllWeldsComplete({
         </div>
 
         <h1 className="text-2xl md:text-3xl font-bold text-white mb-2">
-          {uniqueParts.length === 1
-            ? `You've completed ${uniqueParts[0]}`
-            : "You've completed all assigned welds"}
+          {heading}
         </h1>
 
         <p className="text-sm text-gray-400 mb-6">
-          {completedWelds.length} weld{completedWelds.length !== 1 ? 's' : ''} finished
-          {uniqueParts.length > 1 ? ` across ${uniqueParts.length} parts` : ''}
+          {summaryWelds.length} weld{summaryWelds.length !== 1 ? 's' : ''} finished
+          {!hasRemainingParts && uniqueParts.length > 1 ? ` across ${uniqueParts.length} parts` : ''}
           {' · '}
           {formatTime(totalArcTime)} total arc time
+          {hasRemainingParts && (
+            <>
+              {' · '}
+              {remainingParts.length} part{remainingParts.length !== 1 ? 's' : ''} still in queue
+            </>
+          )}
         </p>
 
         <div className="space-y-3">
           <button
-            onClick={onGoToReview}
-            className="w-full flex items-center justify-center gap-2 p-4 bg-yellow-500 hover:bg-yellow-400 active:bg-yellow-300 rounded-xl transition-colors text-black font-bold text-base"
+            onClick={onBackToQueue}
+            className={`w-full flex items-center justify-center gap-2 p-4 rounded-xl transition-colors ${
+              hasRemainingParts
+                ? 'bg-yellow-500 hover:bg-yellow-400 active:bg-yellow-300 text-black font-bold text-base'
+                : 'bg-[#1a1a1a] hover:bg-[#1f1f1f] border border-[#2a2a2a] text-gray-300 font-medium text-sm'
+            }`}
           >
-            <ClipboardCheck className="w-5 h-5" />
-            Review and sign welds
+            <ArrowLeft className={hasRemainingParts ? 'w-5 h-5' : 'w-4 h-4'} />
+            {hasRemainingParts ? 'Choose next task' : 'Back to task queue'}
           </button>
 
           <button
-            onClick={onBackToQueue}
-            className="w-full flex items-center justify-center gap-2 p-4 bg-[#1a1a1a] hover:bg-[#1f1f1f] border border-[#2a2a2a] rounded-xl transition-colors text-gray-300 font-medium text-sm"
+            onClick={onGoToReview}
+            className={`w-full flex items-center justify-center gap-2 p-4 rounded-xl transition-colors ${
+              hasRemainingParts
+                ? 'bg-[#1a1a1a] hover:bg-[#1f1f1f] border border-[#2a2a2a] text-gray-300 font-medium text-sm'
+                : 'bg-yellow-500 hover:bg-yellow-400 active:bg-yellow-300 text-black font-bold text-base'
+            }`}
           >
-            <ArrowLeft className="w-4 h-4" />
-            Back to task queue
+            <ClipboardCheck className={hasRemainingParts ? 'w-4 h-4' : 'w-5 h-5'} />
+            Review and sign welds
           </button>
         </div>
 
@@ -152,7 +187,7 @@ function AllWeldsComplete({
           <div className="text-[10px] uppercase tracking-wider text-gray-500 mb-2">Completed Summary</div>
           <div className="grid grid-cols-3 gap-4">
             <div>
-              <div className="text-xl font-bold text-white">{completedWelds.length}</div>
+              <div className="text-xl font-bold text-white">{summaryWelds.length}</div>
               <div className="text-xs text-gray-500">Welds</div>
             </div>
             <div>
@@ -160,8 +195,10 @@ function AllWeldsComplete({
               <div className="text-xs text-gray-500">Arc Time</div>
             </div>
             <div>
-              <div className="text-xl font-bold text-white">{uniqueParts.length}</div>
-              <div className="text-xs text-gray-500">Parts</div>
+              <div className="text-xl font-bold text-white">
+                {hasRemainingParts ? remainingParts.length : uniqueParts.length}
+              </div>
+              <div className="text-xs text-gray-500">{hasRemainingParts ? 'Remaining' : 'Parts'}</div>
             </div>
           </div>
         </div>
@@ -486,7 +523,7 @@ function WeldActiveArc({
           >
             <span className="text-black font-bold text-2xl">Done</span>
             <span className="text-black/70 text-sm font-medium">
-              {nextWeld ? `Start ${nextWeld.id} · ${nextWeld.jointType}` : 'Continue to next step'}
+              {nextWeld ? `Start ${nextWeld.id} · ${nextWeld.jointType}` : 'Mark part complete · choose next task'}
             </span>
           </button>
           

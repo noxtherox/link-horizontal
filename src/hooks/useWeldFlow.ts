@@ -23,26 +23,21 @@ export function useWeldFlow() {
   const [confirmMessage, setConfirmMessage] = useState('');
   const [isArcPaused, setIsArcPaused] = useState(false);
   const [completedWelds, setCompletedWelds] = useState<CompletedWeld[]>([]);
+  const [lastCompletedPartId, setLastCompletedPartId] = useState<string | null>(null);
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   const nextWeld = useMemo(() => {
     if (!selectedWeld) return null;
-    
+
     const currentPart = parts.find(p => p.id === selectedWeld.partNumber);
     if (!currentPart) return null;
-    
+
+    // Only suggest the next weld within the SAME part — never roll over into a new part
     const currentIndex = currentPart.welds.findIndex(w => w.id === selectedWeld.id);
     if (currentIndex >= 0 && currentIndex < currentPart.welds.length - 1) {
       return currentPart.welds[currentIndex + 1];
     }
-    
-    const currentPartIndex = parts.findIndex(p => p.id === currentPart.id);
-    for (let i = currentPartIndex + 1; i < parts.length; i++) {
-      if (parts[i].welds.length > 0) {
-        return parts[i].welds[0];
-      }
-    }
-    
+
     return null;
   }, [selectedWeld, parts]);
 
@@ -120,6 +115,7 @@ export function useWeldFlow() {
   }, []);
 
   const selectWeld = useCallback((weld: Weld) => {
+    setLastCompletedPartId(null);
     setSelectedWeld(weld);
     setStep('weldActive');
     setWorkflowStep('weldActive');
@@ -237,20 +233,13 @@ export function useWeldFlow() {
     
     const currentPart = parts.find(p => p.id === selectedWeld.partNumber);
     const currentIndex = currentPart?.welds.findIndex(w => w.id === selectedWeld.id) ?? -1;
+
+    // Only auto-advance to the next weld within the SAME part — never jump into a new part
     let nextWeldObj: Weld | null = null;
-    
     if (currentPart && currentIndex >= 0 && currentIndex < currentPart.welds.length - 1) {
       nextWeldObj = currentPart.welds[currentIndex + 1];
-    } else {
-      const currentPartIndex = parts.findIndex(p => p.id === currentPart?.id);
-      for (let i = currentPartIndex + 1; i < parts.length; i++) {
-        if (parts[i].welds.length > 0) {
-          nextWeldObj = parts[i].welds[0];
-          break;
-        }
-      }
     }
-    
+
     // Remove current weld and compute remaining parts
     const remainingParts = parts
       .map((part) => ({
@@ -258,33 +247,35 @@ export function useWeldFlow() {
         welds: part.welds.filter((w) => w.id !== selectedWeld.id),
       }))
       .filter((part) => part.welds.length > 0);
-    
+
     setParts(remainingParts);
-    
+
+    const resetWeldState = () => {
+      setConsumables(initialConsumables);
+      setArcTime(0);
+      setArcs([]);
+      setArcStartOffset(0);
+      setIsArcPaused(false);
+      setDeviationText('');
+      setDeviations([]);
+    };
+
     const nextWeldStillExists = nextWeldObj && remainingParts.some(p => p.welds.some(w => w.id === nextWeldObj?.id));
-    
+
     if (nextWeldObj && nextWeldStillExists) {
+      // More welds remain on this part — keep welding
       setSelectedWeld(nextWeldObj);
       setWeldActiveMode('arc');
-      setConsumables(initialConsumables);
-      setArcTime(0);
-      setArcs([]);
-      setArcStartOffset(0);
-      setIsArcPaused(false);
-      setDeviationText('');
-      setDeviations([]);
+      resetWeldState();
       startArcTimer();
     } else {
-      // No more welds - stay in weldActive context to show completion
-      setSelectedWeld(null);
-      setConsumables(initialConsumables);
-      setArcTime(0);
-      setArcs([]);
-      setArcStartOffset(0);
-      setIsArcPaused(false);
-      setDeviationText('');
-      setDeviations([]);
+      // Part complete — stay in the weldActive context to show the completion screen,
+      // which lets the welder go back to the task queue or move on to review.
+      // (remainingParts.length === 0 means every part is done.)
       stopArcTimer();
+      setLastCompletedPartId(currentPart?.id ?? null);
+      setSelectedWeld(null);
+      resetWeldState();
     }
   }, [selectedWeld, parts, buildFinalArcs, stopArcTimer, startArcTimer, addCompletedWeld, consumables]);
 
@@ -306,6 +297,7 @@ export function useWeldFlow() {
   const backToQueue = useCallback(() => {
     stopArcTimer();
     setIsArcPaused(false);
+    setLastCompletedPartId(null);
     setSelectedWeld(null);
     setStep('taskQueue');
     setWorkflowStep('taskQueue');
@@ -358,6 +350,7 @@ export function useWeldFlow() {
     allConsumablesVerified,
     isArcPaused,
     completedWelds,
+    lastCompletedPartId,
     selectWeld,
     verifyConsumable,
     updateConsumable,
