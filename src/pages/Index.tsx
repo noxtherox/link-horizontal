@@ -1,127 +1,155 @@
-import { useWeldFlow } from '@/hooks/useWeldFlow';
+import { useEffect, useState } from 'react';
+import { useOperatorFlow } from '@/hooks/useOperatorFlow';
+import { useSession } from '@/context/SessionContext';
 import { Header } from '@/components/Header';
 import { VoicePanel } from '@/components/VoicePanel';
 import { StatusBar } from '@/components/StatusBar';
-import { TaskQueue } from '@/components/TaskQueue';
+import { OperatorQueue } from '@/components/OperatorQueue';
 import { WeldActive } from '@/components/WeldActive';
-import { ReviewAndSign } from '@/components/ReviewAndSign';
+import { PartSession } from '@/components/PartSession';
+import { PartSignOff } from '@/components/PartSignOff';
 import { FloorStatus } from '@/components/FloorStatus';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { WorkOrderSetup } from '@/components/manager/WorkOrderSetup';
+import { BadgeIn } from '@/components/BadgeIn';
+import { InspectorQueue } from '@/components/InspectorQueue';
+import { FitterQueue } from '@/components/FitterQueue';
+import { ViewMode } from '@/types/weldcloud';
 
 const statusHints: Record<string, string> = {
-  taskQueue: 'Voice: say "start [weld ID]" · Tap play button on part to start first weld · Tap weld pills to expand · Scan: scan work order QR',
-  weldActive: 'Setup: Voice "gas confirmed" · Touch confirm tiles · Scan consumables. Arc: minimal screen — eyes on arc · Touch command tiles · Voice PTT',
-  reviewAndSign: 'Review completed welds grouped by part number. Tap Send to inspection in the right panel to lock welds. Add deviation notes before sending.',
+  taskQueue: 'Tasks grouped by work order — each carries its own traceability rules · Locked welds need a valid qualification · Tap play to start',
+  weldActive: 'Setup: verify consumables when required · Arc: minimal screen — eyes on arc · Part sessions bundle arcs automatically',
+  reviewAndSign: 'Sign-off appears only when the work order requires it · Per-weld: tap each weld · Batch: one signature per part',
   supervisor: 'Heat map strip + cell list · Touch adds alert/assign buttons per station · Voice alerts push to earpiece',
+  manager: 'Create work orders and pick an industry preset · Every traceability flag is overridable per work order · Tap a card to edit',
 };
 
 export default function Index() {
-  const flow = useWeldFlow();
-  const hint = statusHints[flow.viewMode === 'supervisor' ? 'supervisor' : flow.step];
+  const { currentUser, badgeOut, users } = useSession();
+  const [viewMode, setViewMode] = useState<ViewMode>('welder');
+  const flow = useOperatorFlow(currentUser);
+
+  // Badge-in routes each role to its home view
+  useEffect(() => {
+    if (!currentUser) return;
+    setViewMode(currentUser.role === 'manager' ? 'manager' : 'welder');
+  }, [currentUser?.id]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  if (!currentUser) return <BadgeIn />;
+
+  const isInspector = currentUser.role === 'inspector';
+  const isFitter = currentUser.role === 'fitter';
+  const hint =
+    isInspector && viewMode === 'welder'
+      ? 'Accept or reject each item · Reject requires a defect code · Rejections spawn a repair weld (W-xxx-R1) or a rework flag per the work order'
+      : isFitter && viewMode === 'welder'
+      ? 'Complete the fit-up checklist per joint · Mark ready releases the weld · Strictest mode routes fit-up to inspector sign-off first'
+      : statusHints[viewMode !== 'welder' ? viewMode : flow.step];
+
+  const signCurrentTarget = () => {
+    if (!flow.signTarget) return;
+    const ids = flow.completedWelds
+      .filter((cw) => cw.weld.partNumber === flow.signTarget!.part.id && !cw.signed)
+      .map((cw) => cw.weld.id);
+    flow.signWelds(ids);
+    flow.finishSignOff();
+  };
 
   return (
     <div className="min-h-screen bg-[#0f0f0f] flex flex-col">
-      <Header 
-        viewMode={flow.viewMode} 
-        setViewMode={flow.setViewMode} 
+      <Header
+        viewMode={viewMode}
+        setViewMode={setViewMode}
         step={flow.step}
         workflowStep={flow.workflowStep}
         setStep={flow.setStep}
         onResume={flow.resumeStep}
+        showSignStep={flow.showSignStep}
+        currentUser={currentUser}
+        onBadgeOut={badgeOut}
+        stepStripOverride={
+          isInspector
+            ? 'Inspector View — Inspection Queue'
+            : isFitter
+            ? 'Fitter View — Fit-up Tasks'
+            : undefined
+        }
       />
 
       <div className="flex-1 flex flex-col lg:flex-row overflow-hidden">
         <main className="flex-1 overflow-y-auto min-h-0">
-          {flow.viewMode === 'supervisor' && <FloorStatus />}
+          {viewMode === 'supervisor' && <FloorStatus />}
 
-          {flow.viewMode === 'welder' && flow.step === 'taskQueue' && (
-            <TaskQueue 
-              parts={flow.parts} 
-              onSelectWeld={flow.selectWeld}
-              completedWelds={flow.completedWelds}
-            />
+          {viewMode === 'manager' && <WorkOrderSetup />}
+
+          {viewMode === 'welder' && isInspector && (
+            <InspectorQueue flow={flow} currentUser={currentUser} users={users} />
           )}
 
-          {flow.viewMode === 'welder' && flow.step === 'weldActive' && (
-            <WeldActive
-              mode={flow.weldActiveMode}
-              onStartArc={flow.startArc}
-              onTogglePause={flow.toggleArcPause}
-              onComplete={flow.completeWeld}
-              onDoneNext={flow.finishAndStartNext}
-              onChooseDifferent={flow.chooseDifferentWeld}
-              onBackToQueue={flow.backToQueue}
-              onVerify={flow.verifyConsumable}
-              allVerified={flow.allConsumablesVerified}
-              selectedWeld={flow.selectedWeld}
-              parts={flow.parts}
-              onSelectWeld={flow.selectWeld}
-              arcTime={flow.arcTime}
-              isPaused={flow.isArcPaused}
-              nextWeld={flow.nextWeld}
-              completedWelds={flow.completedWelds}
-              onGoToReview={flow.goToReview}
-              lastCompletedPartId={flow.lastCompletedPartId}
-            />
+          {viewMode === 'welder' && isFitter && (
+            <FitterQueue flow={flow} currentUser={currentUser} />
           )}
 
-          {flow.viewMode === 'welder' && flow.step === 'reviewAndSign' && (
-            <ReviewAndSign
-              onSign={flow.signWeld}
-              arcTime={flow.arcTime}
-              arcs={flow.arcs}
-              selectedWeld={flow.selectedWeld}
-              completedWelds={flow.completedWelds}
-              parts={flow.parts}
-              onSelectWeld={flow.selectWeld}
-              consumables={flow.consumables}
-              onUpdateConsumable={flow.updateConsumable}
-              onUpdateCompletedWeldConsumable={flow.updateCompletedWeldConsumable}
-            />
+          {viewMode === 'welder' && !isFitter && !isInspector && (
+            <>
+              {flow.step === 'taskQueue' && <OperatorQueue flow={flow} currentUser={currentUser} />}
+
+              {flow.step === 'weldActive' &&
+                (flow.partSession ? (
+                  <PartSession flow={flow} />
+                ) : (
+                  <WeldActive
+                    mode={flow.weldActiveMode}
+                    onStartArc={flow.startArc}
+                    onTogglePause={flow.toggleArcPause}
+                    onComplete={flow.finishAndStartNext}
+                    onDoneNext={flow.finishAndStartNext}
+                    onChooseDifferent={flow.chooseDifferentWeld}
+                    onBackToQueue={flow.backToQueue}
+                    onVerify={flow.verifyConsumable}
+                    allVerified={flow.allConsumablesVerified}
+                    verificationNeeded={flow.verificationNeeded}
+                    selectedWeld={flow.selectedWeld}
+                    parts={flow.voiceParts}
+                    onSelectWeld={flow.selectWeldInQueue}
+                    arcTime={flow.arcTime}
+                    isPaused={flow.isArcPaused}
+                    nextWeld={flow.nextWeld}
+                    completedWelds={flow.completedWelds}
+                    onGoToReview={() => flow.setStep('reviewAndSign')}
+                    showSign={flow.showSignStep}
+                    lastCompletedPartId={flow.lastCompletedPartId}
+                  />
+                ))}
+
+              {flow.step === 'reviewAndSign' && <PartSignOff flow={flow} currentUser={currentUser} />}
+            </>
           )}
         </main>
 
-        <VoicePanel
-          viewMode={flow.viewMode}
-          step={flow.step}
-          weldActiveMode={flow.weldActiveMode}
-          isRecording={flow.isRecording}
-          setIsRecording={flow.setIsRecording}
-          voiceCommand={flow.voiceCommand}
-          selectedWeld={flow.selectedWeld}
-          nextWeld={flow.nextWeld}
-          parts={flow.parts}
-          consumables={flow.consumables}
-          completedWelds={flow.completedWelds}
-          onVerify={flow.verifyConsumable}
-          onSendToInspection={flow.sendToInspection}
-        />
+        {viewMode !== 'manager' && (
+          <VoicePanel
+            viewMode={viewMode}
+            step={flow.step}
+            weldActiveMode={flow.weldActiveMode}
+            isRecording={flow.isRecording}
+            setIsRecording={flow.setIsRecording}
+            voiceCommand={flow.voiceCommand}
+            selectedWeld={flow.selectedWeld}
+            nextWeld={flow.nextWeld}
+            parts={flow.voiceParts}
+            consumables={flow.verificationNeeded ? flow.consumables : undefined}
+            completedWelds={
+              flow.signTarget
+                ? flow.completedWelds.filter((cw) => cw.weld.partNumber === flow.signTarget!.part.id)
+                : flow.completedWelds
+            }
+            onVerify={flow.verifyConsumable}
+            onSendToInspection={signCurrentTarget}
+          />
+        )}
       </div>
 
       <StatusBar hint={hint} />
-
-      <Dialog open={flow.showConfirm} onOpenChange={flow.setShowConfirm}>
-        <DialogContent className="bg-[#1a1a1a] border-[#2a2a2a] text-white max-w-md">
-          <DialogHeader>
-            <DialogTitle className="text-lg">Confirm Action</DialogTitle>
-          </DialogHeader>
-          <p className="text-sm text-gray-400 mb-4">{flow.confirmMessage}</p>
-          <div className="grid grid-cols-2 gap-3">
-            <button
-              onClick={() => flow.confirmAction?.()}
-              className="p-4 bg-green-600 hover:bg-green-500 rounded-lg text-white font-medium transition-colors"
-            >
-              Yes
-            </button>
-            <button
-              onClick={() => flow.setShowConfirm(false)}
-              className="p-4 bg-[#2a2a2a] hover:bg-[#333333] rounded-lg text-white font-medium transition-colors"
-            >
-              No
-            </button>
-          </div>
-        </DialogContent>
-      </Dialog>
     </div>
   );
 }
