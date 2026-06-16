@@ -1,5 +1,5 @@
-import { Role, User, ViewMode, WelderStep } from '@/types/weldcloud';
-import { Zap, Wifi, RotateCcw, LogOut } from 'lucide-react';
+import { ViewMode, WelderStep } from '@/types/weldcloud';
+import { Zap, ChevronDown, Wifi, WifiOff, RotateCcw } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 interface HeaderProps {
@@ -9,41 +9,15 @@ interface HeaderProps {
   workflowStep: WelderStep;
   setStep: (s: WelderStep) => void;
   onResume: () => void;
-  /** Hide the SIGN step when the active work order doesn't require sign-off */
-  showSignStep: boolean;
-  currentUser: User;
-  onBadgeOut: () => void;
-  /** Work roles this user can switch between (selector shows when >1) */
-  availableRoles: Role[];
-  /** The work role the user is currently acting as */
-  activeRole: Role;
-  onSelectRole: (r: Role) => void;
-  /** Replaces the welder step tabs with a label strip (inspector/fitter views) */
-  stepStripOverride?: string;
 }
 
-const ALL_STEPS: { key: WelderStep; label: string; num: string }[] = [
+const welderSteps: { key: WelderStep; label: string; num: string }[] = [
   { key: 'taskQueue', label: 'TASKS', num: '01' },
   { key: 'weldActive', label: 'WELD', num: '02' },
-  { key: 'reviewAndSign', label: 'SIGN', num: '03' },
+  { key: 'reviewAndSign', label: 'REVIEW', num: '03' },
 ];
 
-export function Header({
-  viewMode,
-  setViewMode,
-  step,
-  workflowStep,
-  setStep,
-  onResume,
-  showSignStep,
-  currentUser,
-  onBadgeOut,
-  availableRoles,
-  activeRole,
-  onSelectRole,
-  stepStripOverride,
-}: HeaderProps) {
-  const welderSteps = showSignStep ? ALL_STEPS : ALL_STEPS.slice(0, 2);
+export function Header({ viewMode, setViewMode, step, workflowStep, setStep, onResume }: HeaderProps) {
   const activeIndex = welderSteps.findIndex((s) => s.key === step);
   const workflowIndex = welderSteps.findIndex((s) => s.key === workflowStep);
 
@@ -76,60 +50,25 @@ export function Header({
             </Button>
           )}
 
-          <button
-            onClick={onBadgeOut}
-            title="Badge out — switch user"
-            className="flex items-center gap-2 px-3 py-1.5 bg-[#1f1f1f] hover:bg-[#2a2a2a] rounded-md transition-colors group"
-          >
+          <div className="flex items-center gap-2 px-3 py-1.5 bg-[#1f1f1f] rounded-md">
             <div className="w-6 h-6 bg-yellow-500 rounded-full flex items-center justify-center text-xs font-bold text-black">
-              {currentUser.initials}
+              MC
             </div>
-            <div className="hidden sm:block text-xs text-left">
-              <div className="text-white font-medium">{currentUser.name}</div>
-              <div className="text-gray-500 capitalize">
-                {activeRole}
-                {availableRoles.length > 1 && <span className="text-gray-600"> · cross-trained</span>}
-              </div>
+            <div className="hidden sm:block text-xs">
+              <div className="text-white font-medium">M. Costa</div>
+              <div className="text-gray-500">Welder</div>
             </div>
-            <LogOut className="w-3 h-3 text-gray-500 group-hover:text-yellow-500" />
-          </button>
-
-          {availableRoles.length > 1 && (
-            <div
-              className="flex items-center bg-[#1f1f1f] border border-yellow-500/40 rounded-md p-0.5"
-              title="Switch which role you're working as"
-            >
-              {availableRoles.map((role) => (
-                <button
-                  key={role}
-                  onClick={() => onSelectRole(role)}
-                  className={`px-2.5 py-1 rounded text-xs font-medium capitalize transition-colors ${
-                    activeRole === role && viewMode === 'welder'
-                      ? 'bg-yellow-500 text-black'
-                      : 'text-gray-400 hover:text-white'
-                  }`}
-                >
-                  {role}
-                </button>
-              ))}
-            </div>
-          )}
-
-          <div className="flex items-center bg-[#1f1f1f] border border-[#2a2a2a] rounded-md p-0.5">
-            {(['welder', 'supervisor', 'manager'] as ViewMode[]).map((mode) => (
-              <button
-                key={mode}
-                onClick={() => setViewMode(mode)}
-                className={`px-2.5 py-1 rounded text-xs font-medium capitalize transition-colors ${
-                  viewMode === mode
-                    ? 'bg-yellow-500 text-black'
-                    : 'text-gray-400 hover:text-white'
-                }`}
-              >
-                {mode === 'welder' ? activeRole : mode}
-              </button>
-            ))}
+            <ChevronDown className="w-3 h-3 text-gray-500" />
           </div>
+
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => setViewMode(viewMode === 'welder' ? 'supervisor' : 'welder')}
+            className="border-[#2a2a2a] bg-[#1f1f1f] text-gray-300 hover:bg-[#2a2a2a] hover:text-white text-xs"
+          >
+            {viewMode === 'welder' ? 'Supervisor' : 'Welder'}
+          </Button>
 
           <div className="flex items-center gap-2 px-3 py-1.5 bg-[#1f1f1f] rounded-md border border-[#2a2a2a]">
             <Wifi className="w-3 h-3 text-green-400" />
@@ -138,15 +77,7 @@ export function Header({
         </div>
       </div>
 
-      {viewMode === 'welder' && stepStripOverride && (
-        <div className="flex border-t border-[#2a2a2a] items-center justify-center py-2.5">
-          <span className="text-xs text-yellow-500 font-medium uppercase tracking-wider">
-            {stepStripOverride}
-          </span>
-        </div>
-      )}
-
-      {viewMode === 'welder' && !stepStripOverride && (
+      {viewMode === 'welder' && (
         <div className="flex border-t border-[#2a2a2a] overflow-x-auto">
           {welderSteps.map((s, i) => {
             const isViewed = i === activeIndex;
@@ -183,7 +114,7 @@ export function Header({
         </div>
       )}
 
-      {viewMode !== 'welder' && (
+      {viewMode === 'supervisor' && (
         <div className="flex border-t border-[#2a2a2a]">
           <button
             onClick={() => setViewMode('welder')}
@@ -196,7 +127,7 @@ export function Header({
           </button>
           <div className="flex-[5] flex items-center justify-center py-2.5">
             <span className="text-xs text-yellow-500 font-medium uppercase tracking-wider">
-              {viewMode === 'supervisor' ? 'Supervisor View — Floor Status' : 'Manager View — Work Order Setup'}
+              Supervisor View — Floor Status
             </span>
           </div>
         </div>

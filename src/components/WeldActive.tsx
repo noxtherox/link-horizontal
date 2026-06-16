@@ -16,10 +16,6 @@ interface WeldActiveProps {
   onBackToQueue: () => void;
   onVerify: (id: string) => void;
   allVerified: boolean;
-  /** False when the work order's flags don't require consumable verification */
-  verificationNeeded?: boolean;
-  /** False when the work order has no sign-off step */
-  showSign?: boolean;
   selectedWeld: Weld | null;
   parts: Part[];
   onSelectWeld: (weld: Weld) => void;
@@ -41,8 +37,6 @@ export function WeldActive({
   onBackToQueue,
   onVerify,
   allVerified,
-  verificationNeeded = true,
-  showSign = true,
   selectedWeld,
   parts,
   onSelectWeld,
@@ -63,7 +57,6 @@ export function WeldActive({
         onBackToQueue={onBackToQueue}
         remainingParts={parts}
         lastCompletedPartId={lastCompletedPartId}
-        showSign={showSign}
       />
     );
   }
@@ -74,7 +67,6 @@ export function WeldActive({
         onStartArc={onStartArc}
         onVerify={onVerify}
         allVerified={allVerified}
-        verificationNeeded={verificationNeeded}
         selectedWeld={selectedWeld}
         parts={parts}
         onSelectWeld={onSelectWeld}
@@ -107,14 +99,12 @@ function AllWeldsComplete({
   onBackToQueue,
   remainingParts,
   lastCompletedPartId,
-  showSign,
 }: {
   completedWelds: CompletedWeld[];
   onGoToReview: () => void;
   onBackToQueue: () => void;
   remainingParts: Part[];
   lastCompletedPartId?: string | null;
-  showSign: boolean;
 }) {
   const hasRemainingParts = remainingParts.length > 0;
 
@@ -180,19 +170,17 @@ function AllWeldsComplete({
             {hasRemainingParts ? 'Choose next task' : 'Back to task queue'}
           </button>
 
-          {showSign && (
-            <button
-              onClick={onGoToReview}
-              className={`w-full flex items-center justify-center gap-2 p-4 rounded-xl transition-colors ${
-                hasRemainingParts
-                  ? 'bg-[#1a1a1a] hover:bg-[#1f1f1f] border border-[#2a2a2a] text-gray-300 font-medium text-sm'
-                  : 'bg-yellow-500 hover:bg-yellow-400 active:bg-yellow-300 text-black font-bold text-base'
-              }`}
-            >
-              <ClipboardCheck className={hasRemainingParts ? 'w-4 h-4' : 'w-5 h-5'} />
-              Review and sign welds
-            </button>
-          )}
+          <button
+            onClick={onGoToReview}
+            className={`w-full flex items-center justify-center gap-2 p-4 rounded-xl transition-colors ${
+              hasRemainingParts
+                ? 'bg-[#1a1a1a] hover:bg-[#1f1f1f] border border-[#2a2a2a] text-gray-300 font-medium text-sm'
+                : 'bg-yellow-500 hover:bg-yellow-400 active:bg-yellow-300 text-black font-bold text-base'
+            }`}
+          >
+            <ClipboardCheck className={hasRemainingParts ? 'w-4 h-4' : 'w-5 h-5'} />
+            Review and sign welds
+          </button>
         </div>
 
         <div className="mt-6 p-4 bg-[#1a1a1a] border border-[#2a2a2a] rounded-xl">
@@ -225,13 +213,12 @@ function WeldActiveSetup({
   onStartArc,
   onVerify,
   allVerified,
-  verificationNeeded = true,
   selectedWeld,
   parts,
   onSelectWeld,
   onBackToQueue,
   completedWelds,
-}: Omit<WeldActiveProps, 'mode' | 'onTogglePause' | 'onComplete' | 'onDoneNext' | 'onChooseDifferent' | 'arcTime' | 'isPaused' | 'nextWeld' | 'onGoToReview' | 'showSign'>) {
+}: Omit<WeldActiveProps, 'mode' | 'onTogglePause' | 'onComplete' | 'onDoneNext' | 'onChooseDifferent' | 'arcTime' | 'isPaused' | 'nextWeld' | 'onGoToReview'>) {
   const currentPart = selectedWeld
     ? parts.find(p => p.id === selectedWeld.partNumber)
     : undefined;
@@ -366,53 +353,37 @@ function WeldActiveSetup({
       {/* Bottom: Gas confirmed + Gas spec */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div className="lg:col-span-2">
-          {verificationNeeded ? (
-            <div className="p-4 bg-[#1a1a1a] border border-[#2a2a2a] rounded-lg">
-              <div className="flex items-center gap-2 text-xs text-gray-400 mb-3">
-                <span className="text-yellow-500">🎤</span>
-                <span className="font-mono">"gas confirmed"</span>
-              </div>
-              <div className="bg-[#141414] rounded-lg p-4">
-                <p className="text-sm text-white font-medium mb-3">
-                  Confirm Ar/CO₂ 80/20 shielding gas present and connected?
-                </p>
-                <div className="grid grid-cols-2 gap-3">
-                  <button
-                    onClick={() => onVerify('c4')}
-                    className="flex flex-col items-center justify-center gap-1 p-4 bg-green-600 hover:bg-green-500 rounded-lg transition-colors"
-                  >
-                    <span className="text-white text-lg">✓</span>
-                    <span className="text-white font-medium">Yes</span>
-                    <span className="text-[10px] text-green-200">Say 'yes' or tap</span>
-                  </button>
-                  <button className="flex flex-col items-center justify-center gap-1 p-4 bg-[#2a2a2a] hover:bg-[#333333] rounded-lg transition-colors">
-                    <span className="text-white text-lg">✕</span>
-                    <span className="text-white font-medium">No</span>
-                    <span className="text-[10px] text-gray-400">Say 'no' or tap</span>
-                  </button>
-                </div>
+          <div className="p-4 bg-[#1a1a1a] border border-[#2a2a2a] rounded-lg">
+            <div className="flex items-center gap-2 text-xs text-gray-400 mb-3">
+              <span className="text-yellow-500">🎤</span>
+              <span className="font-mono">"gas confirmed"</span>
+            </div>
+            <div className="bg-[#141414] rounded-lg p-4">
+              <p className="text-sm text-white font-medium mb-3">
+                Confirm Ar/CO₂ 80/20 shielding gas present and connected?
+              </p>
+              <div className="grid grid-cols-2 gap-3">
+                <button
+                  onClick={() => onVerify('c4')}
+                  className="flex flex-col items-center justify-center gap-1 p-4 bg-green-600 hover:bg-green-500 rounded-lg transition-colors"
+                >
+                  <span className="text-white text-lg">✓</span>
+                  <span className="text-white font-medium">Yes</span>
+                  <span className="text-[10px] text-green-200">Say 'yes' or tap</span>
+                </button>
+                <button className="flex flex-col items-center justify-center gap-1 p-4 bg-[#2a2a2a] hover:bg-[#333333] rounded-lg transition-colors">
+                  <span className="text-white text-lg">✕</span>
+                  <span className="text-white font-medium">No</span>
+                  <span className="text-[10px] text-gray-400">Say 'no' or tap</span>
+                </button>
               </div>
             </div>
-          ) : (
-            <div className="p-4 bg-[#1a1a1a] border border-[#2a2a2a] rounded-lg">
-              <div className="flex items-center gap-3">
-                <div className="w-8 h-8 rounded-full bg-green-500/10 flex items-center justify-center shrink-0">
-                  <Check className="w-4 h-4 text-green-400" />
-                </div>
-                <div>
-                  <p className="text-sm text-white font-medium">No consumable verification required</p>
-                  <p className="text-xs text-gray-500">
-                    This work order's traceability level doesn't require lot verification — ready to start.
-                  </p>
-                </div>
-              </div>
-            </div>
-          )}
+          </div>
         </div>
 
         <div>
           <div className="p-4 bg-[#1a1a1a] border border-[#2a2a2a] rounded-lg">
-            <div className="text-[10px] uppercase tracking-wider text-gray-500 mb-3">{selectedWeld?.wps} · Gas Spec</div>
+            <div className="text-[10px] uppercase tracking-wider text-gray-500 mb-3">WPS-A36-3G · Gas Spec</div>
             <div className="space-y-3">
               <div className="flex justify-between text-sm">
                 <span className="text-gray-400">Mix</span>
@@ -429,7 +400,7 @@ function WeldActiveSetup({
             </div>
           </div>
           
-          {verificationNeeded && !allVerified && (
+          {!allVerified && (
             <div className="mt-3 p-3 bg-yellow-500/10 border border-yellow-500/30 rounded-lg flex items-start gap-2">
               <AlertTriangle className="w-4 h-4 text-yellow-500 shrink-0 mt-0.5" />
               <p className="text-xs text-yellow-500">
@@ -540,9 +511,7 @@ function WeldActiveArc({
         <div className="text-5xl md:text-6xl font-bold text-white font-mono tracking-tight">
           {formatTime(arcTime)}
         </div>
-        <div className="text-sm text-gray-400 mt-2">
-          {selectedWeld?.id} · {selectedWeld?.jointType}
-        </div>
+        <div className="text-sm text-gray-400 mt-2">W-014 · 3G butt · fill pass</div>
       </div>
 
       {isPaused ? (
