@@ -164,7 +164,14 @@ export interface User {
   id: string;
   name: string;
   initials: string;
+  /** Primary/home role — used as the default view on badge-in */
   role: Role;
+  /**
+   * All roles this person can act as. Some operators are cross-trained
+   * (e.g. welder + inspector). When omitted, defaults to [role].
+   * A user with more than one work role gets a role selector in the header.
+   */
+  roles?: Role[];
   badgeId: string;
   qualifications: Qualification[];
 }

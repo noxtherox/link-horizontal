@@ -1,4 +1,4 @@
-import { User, ViewMode, WelderStep } from '@/types/weldcloud';
+import { Role, User, ViewMode, WelderStep } from '@/types/weldcloud';
 import { Zap, Wifi, RotateCcw, LogOut } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
@@ -13,6 +13,11 @@ interface HeaderProps {
   showSignStep: boolean;
   currentUser: User;
   onBadgeOut: () => void;
+  /** Work roles this user can switch between (selector shows when >1) */
+  availableRoles: Role[];
+  /** The work role the user is currently acting as */
+  activeRole: Role;
+  onSelectRole: (r: Role) => void;
   /** Replaces the welder step tabs with a label strip (inspector/fitter views) */
   stepStripOverride?: string;
 }
@@ -33,6 +38,9 @@ export function Header({
   showSignStep,
   currentUser,
   onBadgeOut,
+  availableRoles,
+  activeRole,
+  onSelectRole,
   stepStripOverride,
 }: HeaderProps) {
   const welderSteps = showSignStep ? ALL_STEPS : ALL_STEPS.slice(0, 2);
@@ -78,10 +86,34 @@ export function Header({
             </div>
             <div className="hidden sm:block text-xs text-left">
               <div className="text-white font-medium">{currentUser.name}</div>
-              <div className="text-gray-500 capitalize">{currentUser.role}</div>
+              <div className="text-gray-500 capitalize">
+                {activeRole}
+                {availableRoles.length > 1 && <span className="text-gray-600"> · cross-trained</span>}
+              </div>
             </div>
             <LogOut className="w-3 h-3 text-gray-500 group-hover:text-yellow-500" />
           </button>
+
+          {availableRoles.length > 1 && (
+            <div
+              className="flex items-center bg-[#1f1f1f] border border-yellow-500/40 rounded-md p-0.5"
+              title="Switch which role you're working as"
+            >
+              {availableRoles.map((role) => (
+                <button
+                  key={role}
+                  onClick={() => onSelectRole(role)}
+                  className={`px-2.5 py-1 rounded text-xs font-medium capitalize transition-colors ${
+                    activeRole === role && viewMode === 'welder'
+                      ? 'bg-yellow-500 text-black'
+                      : 'text-gray-400 hover:text-white'
+                  }`}
+                >
+                  {role}
+                </button>
+              ))}
+            </div>
+          )}
 
           <div className="flex items-center bg-[#1f1f1f] border border-[#2a2a2a] rounded-md p-0.5">
             {(['welder', 'supervisor', 'manager'] as ViewMode[]).map((mode) => (
@@ -94,7 +126,7 @@ export function Header({
                     : 'text-gray-400 hover:text-white'
                 }`}
               >
-                {mode}
+                {mode === 'welder' ? activeRole : mode}
               </button>
             ))}
           </div>

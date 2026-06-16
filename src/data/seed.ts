@@ -7,7 +7,9 @@ export const seedUsers: User[] = [
     id: 'u-costa',
     name: 'M. Costa',
     initials: 'MC',
+    // Cross-trained: welds and signs off inspections. Gets a role selector after badge-in.
     role: 'welder',
+    roles: ['welder', 'inspector'],
     badgeId: 'B-1024',
     qualifications: [
       { id: 'q1', process: 'GMAW', positions: ['1G', '2F', '3G'], materialGroup: 'Group 1 (C-steel)', expires: '2027-03-14' },

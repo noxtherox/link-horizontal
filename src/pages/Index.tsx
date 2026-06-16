@@ -13,7 +13,12 @@ import { WorkOrderSetup } from '@/components/manager/WorkOrderSetup';
 import { BadgeIn } from '@/components/BadgeIn';
 import { InspectorQueue } from '@/components/InspectorQueue';
 import { FitterQueue } from '@/components/FitterQueue';
-import { ViewMode } from '@/types/weldcloud';
+import { Role, User, ViewMode } from '@/types/weldcloud';
+
+/** All roles a user can act as (cross-trained users list extras in `roles`). */
+const userRoles = (u: User): Role[] => u.roles ?? [u.role];
+/** Work roles drive the main work view; `manager` has its own viewMode screen. */
+const workRoles = (u: User): Role[] => userRoles(u).filter((r) => r !== 'manager');
 
 const statusHints: Record<string, string> = {
   taskQueue: 'Tasks grouped by work order — each carries its own traceability rules · Locked welds need a valid qualification · Tap play to start',
@@ -26,18 +31,30 @@ const statusHints: Record<string, string> = {
 export default function Index() {
   const { currentUser, badgeOut, users } = useSession();
   const [viewMode, setViewMode] = useState<ViewMode>('welder');
+  // Which work role the operator is currently acting as. Cross-trained users
+  // (e.g. welder + inspector) can switch this from the header role selector.
+  const [activeRole, setActiveRole] = useState<Role>('welder');
   const flow = useOperatorFlow(currentUser);
 
-  // Badge-in routes each role to its home view
+  // Badge-in routes each user to their home view + primary work role
   useEffect(() => {
     if (!currentUser) return;
+    const primaryWorkRole = workRoles(currentUser)[0] ?? 'welder';
+    setActiveRole(primaryWorkRole);
     setViewMode(currentUser.role === 'manager' ? 'manager' : 'welder');
   }, [currentUser?.id]); // eslint-disable-line react-hooks/exhaustive-deps
 
   if (!currentUser) return <BadgeIn />;
 
-  const isInspector = currentUser.role === 'inspector';
-  const isFitter = currentUser.role === 'fitter';
+  // Switching roles always drops back to the work view for that role.
+  const selectRole = (r: Role) => {
+    setActiveRole(r);
+    setViewMode('welder');
+  };
+
+  const availableRoles = workRoles(currentUser);
+  const isInspector = activeRole === 'inspector';
+  const isFitter = activeRole === 'fitter';
   const hint =
     isInspector && viewMode === 'welder'
       ? 'Accept or reject each item · Reject requires a defect code · Rejections spawn a repair weld (W-xxx-R1) or a rework flag per the work order'
@@ -66,6 +83,9 @@ export default function Index() {
         showSignStep={flow.showSignStep}
         currentUser={currentUser}
         onBadgeOut={badgeOut}
+        availableRoles={availableRoles}
+        activeRole={activeRole}
+        onSelectRole={selectRole}
         stepStripOverride={
           isInspector
             ? 'Inspector View — Inspection Queue'
