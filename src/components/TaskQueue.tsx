@@ -60,8 +60,6 @@ export function TaskQueue({ parts, onSelectWeld, completedWelds }: TaskQueueProp
       <div className="space-y-4">
         {parts.map((part, partIndex) => {
           const isExpanded = expandedPartId === part.id;
-          const hasPriority = part.welds.some((w) => w.priority);
-          const totalDuration = part.welds.reduce((sum, w) => sum + w.duration, 0);
 
           // Show all original welds with completion status
           const originalPart = initialParts.find((p) => p.id === part.id);
@@ -74,7 +72,7 @@ export function TaskQueue({ parts, onSelectWeld, completedWelds }: TaskQueueProp
             >
               <div className="p-4">
                 <div className="flex items-start gap-4">
-                  <div className="flex items-start gap-3 flex-1 min-w-0">
+                  <div className="flex items-center gap-3 flex-1 min-w-0">
                     <div
                       className={`w-12 h-12 rounded-xl flex items-center justify-center text-lg font-bold shrink-0 ${
                         partIndex === 0
@@ -86,26 +84,10 @@ export function TaskQueue({ parts, onSelectWeld, completedWelds }: TaskQueueProp
                     </div>
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2 flex-wrap">
-                        <span className="text-white font-semibold text-base">{part.id}</span>
-                        <span className="text-sm text-gray-400">· {part.name}</span>
-                      </div>
-                      <div className="text-sm text-gray-400 mt-0.5">
-                        {part.description}
-                      </div>
-                      <div className="flex items-center gap-2 mt-2 flex-wrap">
-                        <span className="text-xs text-gray-500 bg-[#141414] px-2 py-0.5 rounded">
-                          {totalDuration} min remaining
+                        <span className="text-white font-semibold text-lg">{part.id}</span>
+                        <span className="text-base text-gray-400">
+                          {part.welds.length} {part.welds.length === 1 ? 'weld' : 'welds'}
                         </span>
-                        {hasPriority && (
-                          <Badge className="bg-red-500/10 text-red-400 border-red-500/20 text-xs">
-                            Priority
-                          </Badge>
-                        )}
-                        {partIndex === 0 && (
-                          <span className="text-xs font-medium text-yellow-500 uppercase tracking-wider">
-                            Next up
-                          </span>
-                        )}
                       </div>
                     </div>
                   </div>
