@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { ChevronDown, ChevronUp, Package, Play, BadgeCheck, Check } from 'lucide-react';
+import { ChevronDown, ChevronUp, Play, Check } from 'lucide-react';
 import { Part, Weld, CompletedWeld } from '@/types/weldcloud';
 import { Badge } from '@/components/ui/badge';
 import { initialParts } from '@/data/mockData';
@@ -17,7 +17,6 @@ export function TaskQueue({ parts, onSelectWeld, completedWelds }: TaskQueueProp
   const completedWeldIds = new Set(completedWelds.map((cw) => cw.weld.id));
 
   const totalWelds = parts.reduce((sum, part) => sum + part.welds.length, 0);
-  const nextWeld = parts[0]?.welds[0];
 
   // Parts where ALL original welds are completed
   const completedParts = initialParts.filter((part) =>
@@ -325,37 +324,6 @@ export function TaskQueue({ parts, onSelectWeld, completedWelds }: TaskQueueProp
         </div>
       )}
 
-      {/* Voice command section */}
-      {nextWeld && (
-        <div className="mt-6 p-4 bg-[#1a1a1a] border border-[#2a2a2a] rounded-xl">
-          <div className="flex items-center gap-2 text-xs text-gray-400 mb-3">
-            <span className="text-yellow-500">🎤</span>
-            <span className="font-mono">
-              "start {nextWeld.id}"
-            </span>
-          </div>
-          <div className="bg-[#141414] rounded-lg p-4">
-            <p className="text-sm text-white font-medium mb-3">
-              Start weld {nextWeld.id} — {nextWeld.partNumber} {nextWeld.jointType}?
-            </p>
-            <div className="grid grid-cols-2 gap-3">
-              <button
-                onClick={() => onSelectWeld(nextWeld)}
-                className="flex flex-col items-center justify-center gap-1 p-4 bg-green-600 hover:bg-green-500 rounded-lg transition-colors"
-              >
-                <BadgeCheck className="w-5 h-5 text-white" />
-                <span className="text-white font-medium">Yes</span>
-                <span className="text-[10px] text-green-200">Say 'yes' or tap</span>
-              </button>
-              <button className="flex flex-col items-center justify-center gap-1 p-4 bg-[#2a2a2a] hover:bg-[#333333] rounded-lg transition-colors">
-                <span className="text-white text-lg">✕</span>
-                <span className="text-white font-medium">No</span>
-                <span className="text-[10px] text-gray-400">Say 'no' or tap</span>
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 }

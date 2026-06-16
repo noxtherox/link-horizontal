@@ -95,6 +95,7 @@ export default function Index() {
           completedWelds={flow.completedWelds}
           onVerify={flow.verifyConsumable}
           onSendToInspection={flow.sendToInspection}
+          onSelectWeld={flow.selectWeld}
         />
       </div>
 

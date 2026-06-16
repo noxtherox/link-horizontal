@@ -16,6 +16,7 @@ interface VoicePanelProps {
   completedWelds?: CompletedWeld[];
   onVerify?: (id: string) => void;
   onSendToInspection?: () => void;
+  onSelectWeld?: (weld: Weld) => void;
 }
 
 const commandMap: Record<string, string[]> = {
@@ -42,7 +43,7 @@ const micLabels: Record<string, string> = {
   supervisor: 'Press to speak',
 };
 
-export function VoicePanel({ viewMode, step, weldActiveMode = 'setup', isRecording, setIsRecording, voiceCommand, selectedWeld, nextWeld, parts, consumables, completedWelds, onVerify, onSendToInspection }: VoicePanelProps) {
+export function VoicePanel({ viewMode, step, weldActiveMode = 'setup', isRecording, setIsRecording, voiceCommand, selectedWeld, nextWeld, parts, consumables, completedWelds, onVerify, onSendToInspection, onSelectWeld }: VoicePanelProps) {
   const [otherWeldsExpanded, setOtherWeldsExpanded] = useState(false);
 
   let key: string;
@@ -72,6 +73,10 @@ export function VoicePanel({ viewMode, step, weldActiveMode = 'setup', isRecordi
   const micLabel = micLabels[key] || 'Press to speak';
 
   const isPreWeldScan = key === 'weldActiveSetup' && consumables && onVerify;
+
+  // Next weld in the task queue (first weld of the first part) — used for the
+  // press-to-confirm card that appears after the mic is pressed.
+  const queueNextWeld = parts[0]?.welds[0] ?? null;
 
   // Compute other welds for arc mode
   const otherWelds: Weld[] = [];
@@ -334,6 +339,39 @@ export function VoicePanel({ viewMode, step, weldActiveMode = 'setup', isRecordi
               <p className="mt-1 text-sm text-white font-mono">{voiceCommand}</p>
             </div>
           )}
+        </>
+      ) : key === 'taskQueue' && isRecording && queueNextWeld ? (
+        <>
+          <div className="p-4 border-b border-[#2a2a2a]">
+            <div className="flex items-center gap-2 text-xs text-gray-400 mb-3">
+              <span className="text-yellow-500">🎤</span>
+              <span className="font-mono">"start {queueNextWeld.id}"</span>
+            </div>
+            <p className="text-sm text-white font-medium mb-3">
+              Start weld {queueNextWeld.id} — {queueNextWeld.partNumber} {queueNextWeld.jointType}?
+            </p>
+            <div className="space-y-2">
+              <button
+                onClick={() => {
+                  setIsRecording(false);
+                  onSelectWeld?.(queueNextWeld);
+                }}
+                className="w-full flex flex-col items-center justify-center gap-1 p-4 bg-green-600 hover:bg-green-500 rounded-lg transition-colors"
+              >
+                <Check className="w-5 h-5 text-white" />
+                <span className="text-white font-medium">Yes</span>
+                <span className="text-[10px] text-green-200">Say 'yes' or tap</span>
+              </button>
+              <button
+                onClick={() => setIsRecording(false)}
+                className="w-full flex flex-col items-center justify-center gap-1 p-4 bg-[#2a2a2a] hover:bg-[#333333] rounded-lg transition-colors"
+              >
+                <span className="text-white text-lg leading-none">✕</span>
+                <span className="text-white font-medium">No</span>
+                <span className="text-[10px] text-gray-400">Say 'no' or tap</span>
+              </button>
+            </div>
+          </div>
         </>
       ) : (
         <>
