@@ -84,6 +84,9 @@ export function TaskQueue({ parts, onSelectWeld, completedWelds }: TaskQueueProp
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2 flex-wrap">
                         <span className="text-white font-semibold text-lg">{part.id}</span>
+                        {part.name && (
+                          <span className="text-sm text-gray-400 truncate">· {part.name}</span>
+                        )}
                         <span className="text-base text-gray-400">
                           {part.welds.length} {part.welds.length === 1 ? 'weld' : 'welds'}
                         </span>
