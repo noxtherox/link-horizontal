@@ -19,10 +19,10 @@ export function FloorStatus() {
   return (
     <div className="p-4 md:p-6">
       <div className="mb-6">
-        <div className="text-[10px] uppercase tracking-wider text-gray-500 mb-1">
+        <div className="text-[10px] uppercase tracking-wider text-[var(--text-dim)] mb-1">
           Supervisor · Cell B · 06:14 PM · Voice alerts push to earpiece
         </div>
-        <h1 className="text-2xl md:text-3xl font-bold text-white">Cell B — 4 stations</h1>
+        <h1 className="text-2xl md:text-3xl font-bold text-[var(--text-hi)]">Cell B — 4 stations</h1>
       </div>
 
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
@@ -32,7 +32,7 @@ export function FloorStatus() {
             className={`p-4 rounded-lg border ${
               station.heatInput && station.heatInput > 1.0
                 ? 'bg-yellow-500/10 border-yellow-500/30'
-                : 'bg-[#1a1a1a] border-[#2a2a2a]'
+                : 'bg-[var(--c-raised)] border-[var(--c-border)]'
             }`}
           >
             <div className="flex items-center justify-center mb-2">
@@ -44,19 +44,19 @@ export function FloorStatus() {
                       : 'bg-green-500'
                     : station.status === 'pre-weld'
                     ? 'bg-yellow-500/50'
-                    : 'bg-[#2a2a2a]'
+                    : 'bg-[var(--c-border)]'
                 }`}
               />
             </div>
             <div className="text-center">
               <div
                 className={`text-sm font-bold ${
-                  station.heatInput && station.heatInput > 1.0 ? 'text-yellow-500' : 'text-white'
+                  station.heatInput && station.heatInput > 1.0 ? 'text-yellow-500' : 'text-[var(--text-hi)]'
                 }`}
               >
                 {station.heatInput?.toFixed(2) || '—'}
               </div>
-              <div className="text-[10px] text-gray-500">{station.id}</div>
+              <div className="text-[10px] text-[var(--text-dim)]">{station.id}</div>
             </div>
           </div>
         ))}
@@ -69,14 +69,14 @@ export function FloorStatus() {
             className={`p-4 rounded-lg border ${
               station.heatInput && station.heatInput > 1.0
                 ? 'bg-yellow-500/5 border-yellow-500/20'
-                : 'bg-[#1a1a1a] border-[#2a2a2a]'
+                : 'bg-[var(--c-raised)] border-[var(--c-border)]'
             }`}
           >
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
                 <div>
-                  <div className="text-sm font-bold text-white">{station.id}</div>
-                  <div className="text-xs text-gray-400">{station.welder}</div>
+                  <div className="text-sm font-bold text-[var(--text-hi)]">{station.id}</div>
+                  <div className="text-xs text-[var(--text-lo)]">{station.welder}</div>
                   <div className="flex items-center gap-1.5 mt-1">
                     <div
                       className={`w-2 h-2 rounded-full ${
@@ -87,7 +87,7 @@ export function FloorStatus() {
                           : 'bg-gray-500'
                       }`}
                     />
-                    <span className="text-[10px] text-gray-500">
+                    <span className="text-[10px] text-[var(--text-dim)]">
                       {station.status === 'arc-on'
                         ? 'Arc on'
                         : station.status === 'pre-weld'
@@ -98,12 +98,12 @@ export function FloorStatus() {
                 </div>
               </div>
               <div className="text-right">
-                <div className="text-[10px] uppercase tracking-wider text-gray-500">WPS Conform.</div>
+                <div className="text-[10px] uppercase tracking-wider text-[var(--text-dim)]">WPS Conform.</div>
                 <div
                   className={`text-lg font-bold ${
                     station.wpsConformance && station.wpsConformance < 80
                       ? 'text-yellow-500'
-                      : 'text-white'
+                      : 'text-[var(--text-hi)]'
                   }`}
                 >
                   {station.wpsConformance ? `${station.wpsConformance}%` : '—'}
@@ -124,8 +124,8 @@ export function FloorStatus() {
               <div className="flex items-start gap-3">
                 <AlertTriangle className="w-5 h-5 text-yellow-500 shrink-0 mt-0.5" />
                 <div>
-                  <p className="text-sm text-white font-medium">{alert.message}</p>
-                  <p className="text-xs text-gray-400 mt-0.5">
+                  <p className="text-sm text-[var(--text-hi)] font-medium">{alert.message}</p>
+                  <p className="text-xs text-[var(--text-lo)] mt-0.5">
                     Voice alert sent to earpiece · {alert.time} · no acknowledgement
                   </p>
                 </div>
@@ -142,7 +142,7 @@ export function FloorStatus() {
       )}
 
       {unacknowledged.length === 0 && (
-        <div className="flex items-center justify-center gap-2 p-6 text-green-400">
+        <div className="flex items-center justify-center gap-2 p-6 text-[var(--text-verified)]">
           <Check className="w-5 h-5" />
           <span className="text-sm">All alerts acknowledged</span>
         </div>
