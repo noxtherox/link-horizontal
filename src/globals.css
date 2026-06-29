@@ -3,37 +3,28 @@
 @tailwind utilities;
 
 @layer base {
+  /* Dark theme (default) */
   :root {
     --background: 0 0% 7%;
     --foreground: 0 0% 95%;
-
     --card: 0 0% 11%;
     --card-foreground: 0 0% 95%;
-
     --popover: 0 0% 11%;
     --popover-foreground: 0 0% 95%;
-
     --primary: 48 100% 50%;
     --primary-foreground: 0 0% 0%;
-
     --secondary: 0 0% 16%;
     --secondary-foreground: 0 0% 95%;
-
     --muted: 0 0% 16%;
     --muted-foreground: 0 0% 60%;
-
     --accent: 0 0% 16%;
     --accent-foreground: 0 0% 95%;
-
     --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 98%;
-
     --border: 0 0% 20%;
     --input: 0 0% 20%;
     --ring: 48 100% 50%;
-
     --radius: 0.5rem;
-
     --sidebar-background: 0 0% 8%;
     --sidebar-foreground: 0 0% 90%;
     --sidebar-primary: 48 100% 50%;
@@ -42,6 +33,67 @@
     --sidebar-accent-foreground: 0 0% 95%;
     --sidebar-border: 0 0% 20%;
     --sidebar-ring: 48 100% 50%;
+
+    /* App semantic tokens — dark */
+    --c-root:    #0f0f0f;
+    --c-surface: #141414;
+    --c-raised:  #1a1a1a;
+    --c-elevated:#1f1f1f;
+    --c-border:  #2a2a2a;
+    --c-hover:   #333333;
+    --text-hi:   #ffffff;
+    --text-md:   #d1d5db;
+    --text-lo:   #9ca3af;
+    --text-dim:  #6b7280;
+    --text-verified: #4ade80;
+    --c-weld-active:        rgba(234, 179, 8, 0.12);
+    --c-weld-active-border: rgba(234, 179, 8, 0.45);
+  }
+
+  /* Light theme */
+  .light {
+    --background: 36 20% 94%;
+    --foreground: 0 0% 7%;
+    --card: 0 0% 100%;
+    --card-foreground: 0 0% 7%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 0 0% 7%;
+    --primary: 48 100% 50%;
+    --primary-foreground: 0 0% 0%;
+    --secondary: 36 15% 92%;
+    --secondary-foreground: 0 0% 7%;
+    --muted: 36 15% 92%;
+    --muted-foreground: 0 0% 42%;
+    --accent: 36 15% 92%;
+    --accent-foreground: 0 0% 7%;
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 36 10% 83%;
+    --input: 36 10% 83%;
+    --ring: 48 100% 50%;
+    --sidebar-background: 0 0% 100%;
+    --sidebar-foreground: 0 0% 7%;
+    --sidebar-primary: 48 100% 50%;
+    --sidebar-primary-foreground: 0 0% 0%;
+    --sidebar-accent: 36 15% 92%;
+    --sidebar-accent-foreground: 0 0% 7%;
+    --sidebar-border: 36 10% 83%;
+    --sidebar-ring: 48 100% 50%;
+
+    /* App semantic tokens — light */
+    --c-root:    #f0ede8;
+    --c-surface: #ffffff;
+    --c-raised:  #f5f3ef;
+    --c-elevated:#eceae5;
+    --c-border:  #d5d2cc;
+    --c-hover:   #e5e2dd;
+    --text-hi:   #111111;
+    --text-md:   #3d3c3a;
+    --text-lo:   #6b6865;
+    --text-dim:  #948f89;
+    --text-verified: #166534;
+    --c-weld-active:        rgba(234, 179, 8, 0.28);
+    --c-weld-active-border: rgba(234, 179, 8, 0.95);
   }
 }
 

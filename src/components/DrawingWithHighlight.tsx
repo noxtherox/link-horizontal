@@ -18,16 +18,16 @@ export function DrawingWithHighlight({ selectedWeld, currentPart, compact = fals
     <div>
       <div
         onClick={() => setIsExpanded(!isExpanded)}
-        className={`relative bg-white rounded-xl border border-[#2a2a2a] overflow-hidden cursor-pointer group transition-all duration-300 ${
+        className={`relative bg-white rounded-xl border border-[var(--c-border)] overflow-hidden cursor-pointer group transition-all duration-300 ${
           isExpanded ? '' : compact ? 'max-h-48' : 'max-h-80'
         }`}
       >
         {/* Expand/collapse button */}
         <div className="absolute top-3 right-3 z-10 p-1.5 bg-black/50 hover:bg-black/70 rounded-md backdrop-blur-sm transition-colors">
           {isExpanded ? (
-            <Minimize2 className="w-4 h-4 text-white" />
+            <Minimize2 className="w-4 h-4 text-[var(--text-hi)]" />
           ) : (
-            <Maximize2 className="w-4 h-4 text-white" />
+            <Maximize2 className="w-4 h-4 text-[var(--text-hi)]" />
           )}
         </div>
 
@@ -40,9 +40,9 @@ export function DrawingWithHighlight({ selectedWeld, currentPart, compact = fals
           />
         ) : (
           <div className="w-full h-64 flex flex-col items-center justify-center gap-3 bg-[#f5f5f5]">
-            <ImageOff className="w-10 h-10 text-gray-400" />
-            <span className="text-sm text-gray-500">Part drawing for {currentPart?.id}</span>
-            <span className="text-xs text-gray-400">CAD view · Section B</span>
+            <ImageOff className="w-10 h-10 text-[var(--text-lo)]" />
+            <span className="text-sm text-[var(--text-dim)]">Part drawing for {currentPart?.id}</span>
+            <span className="text-xs text-[var(--text-lo)]">CAD view · Section B</span>
           </div>
         )}
 
@@ -60,9 +60,9 @@ export function DrawingWithHighlight({ selectedWeld, currentPart, compact = fals
       </div>
 
       <div className="mt-2 flex items-center gap-2 flex-wrap">
-        <span className="text-sm text-white font-medium">{currentPart?.id}</span>
-        <span className="text-sm text-gray-400">· {currentPart?.name}</span>
-        <span className="text-xs text-gray-500">· {currentPart?.description}</span>
+        <span className="text-sm text-[var(--text-hi)] font-medium">{currentPart?.id}</span>
+        <span className="text-sm text-[var(--text-lo)]">· {currentPart?.name}</span>
+        <span className="text-xs text-[var(--text-dim)]">· {currentPart?.description}</span>
       </div>
 
       <style>{`
