@@ -88,6 +88,8 @@ export default function Index() {
           onVerify={flow.verifyConsumable}
           onSendToInspection={flow.sendToInspection}
           onSelectWeld={flow.selectWeld}
+          availabilityStatus={flow.availabilityStatus}
+          onChangeAvailability={flow.setAvailabilityStatus}
         />
       </div>
 

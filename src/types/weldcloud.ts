@@ -70,3 +70,5 @@ export interface CompletedWeld {
 
 export type WelderStep = 'taskQueue' | 'weldActive' | 'reviewAndSign';
 export type ViewMode = 'welder' | 'supervisor';
+
+export type AvailabilityStatus = 'P' | 'F' | 'W' | 'L' | 'U' | 'N';

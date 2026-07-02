@@ -1,5 +1,6 @@
 import { Check, Scan, Zap, ArrowRight, ChevronDown, ChevronUp, ClipboardCheck } from 'lucide-react';
-import { ViewMode, WelderStep, Weld, Part, Consumable, CompletedWeld } from '@/types/weldcloud';
+import { ViewMode, WelderStep, Weld, Part, Consumable, CompletedWeld, AvailabilityStatus } from '@/types/weldcloud';
+import { MachineAvailability } from '@/components/MachineAvailability';
 import { useState } from 'react';
 
 interface VoicePanelProps {
@@ -17,9 +18,11 @@ interface VoicePanelProps {
   onVerify?: (id: string) => void;
   onSendToInspection?: () => void;
   onSelectWeld?: (weld: Weld) => void;
+  availabilityStatus: AvailabilityStatus;
+  onChangeAvailability: (status: AvailabilityStatus) => void;
 }
 
-export function VoicePanel({ viewMode, step, weldActiveMode = 'setup', isRecording, setIsRecording, voiceCommand, selectedWeld, nextWeld, parts, consumables, completedWelds, onVerify, onSendToInspection, onSelectWeld }: VoicePanelProps) {
+export function VoicePanel({ viewMode, step, weldActiveMode = 'setup', isRecording, setIsRecording, voiceCommand, selectedWeld, nextWeld, parts, consumables, completedWelds, onVerify, onSendToInspection, onSelectWeld, availabilityStatus, onChangeAvailability }: VoicePanelProps) {
   const [otherWeldsExpanded, setOtherWeldsExpanded] = useState(false);
 
   let key: string;
@@ -73,6 +76,10 @@ export function VoicePanel({ viewMode, step, weldActiveMode = 'setup', isRecordi
             </div>
           </div>
         </div>
+      )}
+
+      {viewMode === 'welder' && (
+        <MachineAvailability status={availabilityStatus} onChange={onChangeAvailability} />
       )}
 
       {isPreWeldScan ? (

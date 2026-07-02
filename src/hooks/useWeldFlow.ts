@@ -1,5 +1,5 @@
 import { useState, useCallback, useEffect, useRef, useMemo } from 'react';
-import { WelderStep, ViewMode, Weld, Consumable, Part, CompletedWeld, Arc } from '@/types/weldcloud';
+import { WelderStep, ViewMode, Weld, Consumable, Part, CompletedWeld, Arc, AvailabilityStatus } from '@/types/weldcloud';
 import { parts as initialParts, consumables as initialConsumables } from '@/data/mockData';
 import { showSuccess } from '@/utils/toast';
 
@@ -24,6 +24,7 @@ export function useWeldFlow() {
   const [isArcPaused, setIsArcPaused] = useState(false);
   const [completedWelds, setCompletedWelds] = useState<CompletedWeld[]>([]);
   const [lastCompletedPartId, setLastCompletedPartId] = useState<string | null>(null);
+  const [availabilityStatus, setAvailabilityStatus] = useState<AvailabilityStatus>('P');
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   const nextWeld = useMemo(() => {
@@ -351,6 +352,8 @@ export function useWeldFlow() {
     isArcPaused,
     completedWelds,
     lastCompletedPartId,
+    availabilityStatus,
+    setAvailabilityStatus,
     selectWeld,
     verifyConsumable,
     updateConsumable,
