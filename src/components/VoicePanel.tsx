@@ -57,7 +57,7 @@ export function VoicePanel({ viewMode, step, weldActiveMode = 'setup', isRecordi
     <aside className="w-full lg:w-72 bg-[var(--c-surface)] border-t lg:border-l lg:border-t-0 border-[var(--c-border)] flex flex-col shrink-0">
       {viewMode === 'supervisor' && (
         <div className="p-4 border-b border-[var(--c-border)]">
-          <div className="text-[10px] uppercase tracking-wider text-[var(--text-dim)] mb-2">Alert Log</div>
+          <div className="text-xs uppercase tracking-wider text-[var(--text-dim)] mb-2">Alert Log</div>
           <div className="space-y-2">
             <div className="flex justify-between text-xs">
               <span className="text-[var(--text-lo)]">B-1 heat excursion</span>
@@ -77,7 +77,7 @@ export function VoicePanel({ viewMode, step, weldActiveMode = 'setup', isRecordi
 
       {isPreWeldScan ? (
         <div className="p-4 border-b border-[var(--c-border)] flex-1 overflow-y-auto">
-          <div className="text-[10px] uppercase tracking-wider text-[var(--text-dim)] mb-3">Scan Consumables</div>
+          <div className="text-xs uppercase tracking-wider text-[var(--text-dim)] mb-3">Scan Consumables</div>
           <div className="space-y-3">
             {consumables!.map((c, i) => (
               <button
@@ -108,11 +108,11 @@ export function VoicePanel({ viewMode, step, weldActiveMode = 'setup', isRecordi
                 </div>
                 <div className="mt-2 flex items-center gap-2">
                   {c.verified ? (
-                    <span className="text-[10px] text-[var(--text-verified)] flex items-center gap-1">
+                    <span className="text-xs text-[var(--text-verified)] flex items-center gap-1">
                       <Scan className="w-3 h-3" /> Verified
                     </span>
                   ) : (
-                    <span className="text-[10px] text-yellow-500 flex items-center gap-1">
+                    <span className="text-xs text-yellow-500 flex items-center gap-1">
                       <Scan className="w-3 h-3" /> Tap to scan
                     </span>
                   )}
@@ -130,25 +130,25 @@ export function VoicePanel({ viewMode, step, weldActiveMode = 'setup', isRecordi
               <div className="absolute top-0 left-0 w-1 h-full bg-yellow-500" />
               <div className="flex items-center gap-1.5 mb-2">
                 <Zap className="w-3 h-3 text-yellow-500" />
-                <span className="text-[10px] uppercase tracking-wider text-yellow-500 font-semibold">Current Weld</span>
+                <span className="text-xs uppercase tracking-wider text-yellow-500 font-semibold">Current Weld</span>
               </div>
               {selectedWeld ? (
                 <div className="space-y-1.5">
                   <div className="flex items-center gap-2 flex-wrap">
                     <span className="text-sm font-bold text-[var(--text-hi)]">{selectedWeld.id}</span>
-                    <span className="text-[10px] text-yellow-500 bg-yellow-500/10 px-1.5 py-0.5 rounded font-mono border border-yellow-500/20">
+                    <span className="text-xs text-yellow-500 bg-yellow-500/10 px-1.5 py-0.5 rounded font-mono border border-yellow-500/20">
                       {selectedWeld.process}
                     </span>
                   </div>
                   <div className="text-xs text-[var(--text-md)]">{selectedWeld.jointType}</div>
                   <div className="flex flex-wrap gap-1">
-                    <span className="text-[10px] text-[var(--text-dim)] bg-[var(--c-surface)] px-1.5 py-0.5 rounded border border-[var(--c-border)]">
+                    <span className="text-xs text-[var(--text-dim)] bg-[var(--c-surface)] px-1.5 py-0.5 rounded border border-[var(--c-border)]">
                       {selectedWeld.wps}
                     </span>
-                    <span className="text-[10px] text-[var(--text-dim)] bg-[var(--c-surface)] px-1.5 py-0.5 rounded border border-[var(--c-border)]">
+                    <span className="text-xs text-[var(--text-dim)] bg-[var(--c-surface)] px-1.5 py-0.5 rounded border border-[var(--c-border)]">
                       {selectedWeld.duration} min
                     </span>
-                    <span className="text-[10px] text-[var(--text-dim)] bg-[var(--c-surface)] px-1.5 py-0.5 rounded border border-[var(--c-border)]">
+                    <span className="text-xs text-[var(--text-dim)] bg-[var(--c-surface)] px-1.5 py-0.5 rounded border border-[var(--c-border)]">
                       {selectedWeld.partNumber}
                     </span>
                   </div>
@@ -163,25 +163,25 @@ export function VoicePanel({ viewMode, step, weldActiveMode = 'setup', isRecordi
               <div className="absolute top-0 left-0 w-1 h-full bg-gray-600" />
               <div className="flex items-center gap-1.5 mb-2">
                 <ArrowRight className="w-3 h-3 text-[var(--text-lo)]" />
-                <span className="text-[10px] uppercase tracking-wider text-[var(--text-lo)] font-semibold">Next-up</span>
+                <span className="text-xs uppercase tracking-wider text-[var(--text-lo)] font-semibold">Next-up</span>
               </div>
               {nextWeld ? (
                 <div className="space-y-1.5">
                   <div className="flex items-center gap-2 flex-wrap">
                     <span className="text-sm font-bold text-[var(--text-md)]">{nextWeld.id}</span>
-                    <span className="text-[10px] text-[var(--text-lo)] bg-[var(--c-elevated)] px-1.5 py-0.5 rounded font-mono border border-[var(--c-border)]">
+                    <span className="text-xs text-[var(--text-lo)] bg-[var(--c-elevated)] px-1.5 py-0.5 rounded font-mono border border-[var(--c-border)]">
                       {nextWeld.process}
                     </span>
                   </div>
                   <div className="text-xs text-[var(--text-lo)]">{nextWeld.jointType}</div>
                   <div className="flex flex-wrap gap-1">
-                    <span className="text-[10px] text-[var(--text-dim)] bg-[var(--c-surface)] px-1.5 py-0.5 rounded border border-[var(--c-border)]">
+                    <span className="text-xs text-[var(--text-dim)] bg-[var(--c-surface)] px-1.5 py-0.5 rounded border border-[var(--c-border)]">
                       {nextWeld.wps}
                     </span>
-                    <span className="text-[10px] text-[var(--text-dim)] bg-[var(--c-surface)] px-1.5 py-0.5 rounded border border-[var(--c-border)]">
+                    <span className="text-xs text-[var(--text-dim)] bg-[var(--c-surface)] px-1.5 py-0.5 rounded border border-[var(--c-border)]">
                       {nextWeld.duration} min
                     </span>
-                    <span className="text-[10px] text-[var(--text-dim)] bg-[var(--c-surface)] px-1.5 py-0.5 rounded border border-[var(--c-border)]">
+                    <span className="text-xs text-[var(--text-dim)] bg-[var(--c-surface)] px-1.5 py-0.5 rounded border border-[var(--c-border)]">
                       {nextWeld.partNumber}
                     </span>
                   </div>
@@ -198,7 +198,7 @@ export function VoicePanel({ viewMode, step, weldActiveMode = 'setup', isRecordi
                   onClick={() => setOtherWeldsExpanded(!otherWeldsExpanded)}
                   className="w-full flex items-center justify-between"
                 >
-                  <span className="text-[10px] uppercase tracking-wider text-[var(--text-dim)] font-semibold">
+                  <span className="text-xs uppercase tracking-wider text-[var(--text-dim)] font-semibold">
                     Other welds on this part
                   </span>
                   {otherWeldsExpanded ? (
@@ -216,9 +216,9 @@ export function VoicePanel({ viewMode, step, weldActiveMode = 'setup', isRecordi
                       >
                         <div className="flex items-center gap-2 min-w-0">
                           <span className="text-xs font-bold text-[var(--text-lo)] shrink-0">{weld.id}</span>
-                          <span className="text-[10px] text-[var(--text-dim)] truncate">{weld.jointType}</span>
+                          <span className="text-xs text-[var(--text-dim)] truncate">{weld.jointType}</span>
                         </div>
-                        <span className="text-[10px] text-[var(--text-dim)] bg-[var(--c-elevated)] px-1.5 py-0.5 rounded font-mono border border-[var(--c-border)] shrink-0">
+                        <span className="text-xs text-[var(--text-dim)] bg-[var(--c-elevated)] px-1.5 py-0.5 rounded font-mono border border-[var(--c-border)] shrink-0">
                           {weld.process}
                         </span>
                       </div>
@@ -242,7 +242,7 @@ export function VoicePanel({ viewMode, step, weldActiveMode = 'setup', isRecordi
       ) : key === 'reviewAndSign' ? (
         <>
           <div className="p-4 border-b border-[var(--c-border)]">
-            <div className="text-[10px] uppercase tracking-wider text-[var(--text-dim)] mb-3">Inspection</div>
+            <div className="text-xs uppercase tracking-wider text-[var(--text-dim)] mb-3">Inspection</div>
             
             {allLocked ? (
               <div className="flex items-center gap-3 p-3 bg-green-500/10 border border-green-500/30 rounded-lg">
@@ -313,7 +313,7 @@ export function VoicePanel({ viewMode, step, weldActiveMode = 'setup', isRecordi
               >
                 <Check className="w-5 h-5 text-[var(--text-hi)]" />
                 <span className="text-[var(--text-hi)] font-medium">Yes</span>
-                <span className="text-[10px] text-[var(--text-verified)]">Say 'yes' or tap</span>
+                <span className="text-xs text-[var(--text-verified)]">Say 'yes' or tap</span>
               </button>
               <button
                 onClick={() => setIsRecording(false)}
@@ -321,7 +321,7 @@ export function VoicePanel({ viewMode, step, weldActiveMode = 'setup', isRecordi
               >
                 <span className="text-[var(--text-hi)] text-lg leading-none">✕</span>
                 <span className="text-[var(--text-hi)] font-medium">No</span>
-                <span className="text-[10px] text-[var(--text-lo)]">Say 'no' or tap</span>
+                <span className="text-xs text-[var(--text-lo)]">Say 'no' or tap</span>
               </button>
             </div>
           </div>

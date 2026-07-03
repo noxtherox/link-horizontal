@@ -211,18 +211,20 @@ export function useWeldFlow() {
     setDeviations([]);
     setWeldActiveMode('setup');
     
-    if (remainingParts.length === 0) {
-      // All welds done - stay in weldActive context to show completion
-      // Don't change step
-    } else {
-      setStep('taskQueue');
-      setWorkflowStep('taskQueue');
-    }
+    setStep('taskQueue');
+    setWorkflowStep('taskQueue');
   }, [selectedWeld, addCompletedWeld, buildFinalArcs, parts, consumables]);
 
   const sendToInspection = useCallback(() => {
     setCompletedWelds((prev) => prev.map((cw) => ({ ...cw, locked: true })));
     showSuccess('All welds sent to inspection and locked');
+  }, []);
+
+  const sendPartToInspection = useCallback((partId: string) => {
+    setCompletedWelds((prev) =>
+      prev.map((cw) => cw.weld.partNumber === partId ? { ...cw, locked: true } : cw)
+    );
+    showSuccess(`Part ${partId} sent for review`);
   }, []);
 
   const finishAndStartNext = useCallback(() => {
@@ -269,13 +271,14 @@ export function useWeldFlow() {
       resetWeldState();
       startArcTimer();
     } else {
-      // Part complete — stay in the weldActive context to show the completion screen,
-      // which lets the welder go back to the task queue or move on to review.
-      // (remainingParts.length === 0 means every part is done.)
+      // Part complete — go back to the task queue so the welder sees green weld pills
+      // and can click "Send for review".
       stopArcTimer();
-      setLastCompletedPartId(currentPart?.id ?? null);
       setSelectedWeld(null);
+      setLastCompletedPartId(null);
       resetWeldState();
+      setStep('taskQueue');
+      setWorkflowStep('taskQueue');
     }
   }, [selectedWeld, parts, buildFinalArcs, stopArcTimer, startArcTimer, addCompletedWeld, consumables]);
 
@@ -362,6 +365,7 @@ export function useWeldFlow() {
     completeWeld,
     signWeld,
     sendToInspection,
+    sendPartToInspection,
     finishAndStartNext,
     chooseDifferentWeld,
     backToQueue,

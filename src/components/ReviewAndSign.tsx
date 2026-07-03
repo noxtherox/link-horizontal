@@ -95,7 +95,7 @@ export function ReviewAndSign({
   return (
     <div className="p-4 md:p-6">
       <div className="mb-6">
-        <div className="text-[10px] uppercase tracking-wider text-[var(--text-dim)] mb-1">
+        <div className="text-xs uppercase tracking-wider text-[var(--text-dim)] mb-1">
           {selectedWeld?.id || 'Review'} · {hasActiveWeld ? 'Review and Sign' : 'Completed Welds'}
         </div>
         <h1 className="text-2xl md:text-3xl font-bold text-[var(--text-hi)]">
@@ -107,26 +107,26 @@ export function ReviewAndSign({
       {hasActiveWeld && (
         <div className="mb-6">
           <div className="p-4 bg-[var(--c-raised)] border border-[var(--c-border)] rounded-lg">
-            <div className="text-[10px] uppercase tracking-wider text-[var(--text-dim)] mb-3">Arc Summary</div>
+            <div className="text-xs uppercase tracking-wider text-[var(--text-dim)] mb-3">Arc Summary</div>
             <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
               <div>
-                <div className="text-[10px] uppercase tracking-wider text-[var(--text-dim)] mb-1">Arc time</div>
+                <div className="text-xs uppercase tracking-wider text-[var(--text-dim)] mb-1">Arc time</div>
                 <div className="text-xl font-bold text-[var(--text-hi)] font-mono">{formatTime(totalArcDuration)}</div>
               </div>
               <div>
-                <div className="text-[10px] uppercase tracking-wider text-[var(--text-dim)] mb-1">Arcs completed</div>
+                <div className="text-xs uppercase tracking-wider text-[var(--text-dim)] mb-1">Arcs completed</div>
                 <div className="text-xl font-bold text-[var(--text-hi)]">{arcs.length || 1}</div>
               </div>
               <div>
-                <div className="text-[10px] uppercase tracking-wider text-[var(--text-dim)] mb-1">Avg heat</div>
+                <div className="text-xs uppercase tracking-wider text-[var(--text-dim)] mb-1">Avg heat</div>
                 <div className="text-xl font-bold text-yellow-500">{avgHeat} <span className="text-sm text-[var(--text-dim)] font-normal">kJ/mm</span></div>
               </div>
               <div>
-                <div className="text-[10px] uppercase tracking-wider text-[var(--text-dim)] mb-1">WPS conformance</div>
+                <div className="text-xs uppercase tracking-wider text-[var(--text-dim)] mb-1">WPS conformance</div>
                 <div className="text-xl font-bold text-[var(--text-hi)]">{avgConformance}%</div>
               </div>
               <div>
-                <div className="text-[10px] uppercase tracking-wider text-[var(--text-dim)] mb-1">Passes</div>
+                <div className="text-xs uppercase tracking-wider text-[var(--text-dim)] mb-1">Passes</div>
                 <div className="text-xl font-bold text-[var(--text-hi)]">{allPasses}</div>
               </div>
             </div>
@@ -134,7 +134,7 @@ export function ReviewAndSign({
             {/* Current weld arcs detail */}
             {arcs.length > 0 && (
               <div className="mt-4 pt-4 border-t border-[var(--c-border)] space-y-2">
-                <div className="text-[10px] uppercase tracking-wider text-[var(--text-dim)] mb-2">Arc breakdown</div>
+                <div className="text-xs uppercase tracking-wider text-[var(--text-dim)] mb-2">Arc breakdown</div>
                 {arcs.map((arc, i) => (
                   <div key={arc.id} className="flex items-center gap-3 text-xs">
                     <span className="text-[var(--text-dim)] font-medium w-12">Arc {i + 1}</span>
@@ -142,7 +142,7 @@ export function ReviewAndSign({
                     <span className="text-[var(--text-hi)] font-mono">{formatTime(arc.duration)}</span>
                     <span className="text-yellow-500">{arc.avgHeat} kJ/mm</span>
                     <span className="text-[var(--text-lo)]">{arc.wpsConformance}%</span>
-                    <span className="text-[var(--text-dim)] text-[10px]">{arc.passes.join(' · ')}</span>
+                    <span className="text-[var(--text-dim)] text-xs">{arc.passes.join(' · ')}</span>
                   </div>
                 ))}
               </div>
@@ -155,7 +155,7 @@ export function ReviewAndSign({
       {hasActiveWeld && (
         <div className="mb-6">
           <div className="flex items-center justify-between mb-3">
-            <div className="text-[10px] uppercase tracking-wider text-[var(--text-dim)]">Consumables</div>
+            <div className="text-xs uppercase tracking-wider text-[var(--text-dim)]">Consumables</div>
             <span className="text-xs text-[var(--text-dim)]">Tap to edit</span>
           </div>
           <div className="space-y-2">
@@ -208,7 +208,7 @@ export function ReviewAndSign({
                       </div>
                     </div>
                     <div className="flex items-center gap-2">
-                      <span className={`text-[10px] px-2 py-1 rounded border ${
+                      <span className={`text-xs px-2 py-1 rounded border ${
                         c.verified 
                           ? 'text-[var(--text-verified)] bg-green-500/10 border-green-500/20' 
                           : 'text-yellow-500 bg-yellow-500/10 border-yellow-500/20'
@@ -262,7 +262,7 @@ export function ReviewAndSign({
             {/* Completed welds */}
             {completed.length > 0 && (
               <div className="mb-4">
-                <div className="text-[10px] uppercase tracking-wider text-[var(--text-dim)] mb-2">
+                <div className="text-xs uppercase tracking-wider text-[var(--text-dim)] mb-2">
                   Completed — {completed.length} weld{completed.length !== 1 ? 's' : ''}
                   {totalCompletedArcTime > 0 && ` · ${formatTime(totalCompletedArcTime)} arc time`}
                 </div>
@@ -294,11 +294,11 @@ export function ReviewAndSign({
                               <div className="flex items-center gap-2 flex-wrap">
                                 <span className="text-sm font-bold text-[var(--text-hi)]">{cw.weld.id}</span>
                                 <span className="text-xs text-[var(--text-lo)]">{cw.weld.jointType}</span>
-                                <span className="text-[10px] text-yellow-500 bg-yellow-500/10 px-2 py-0.5 rounded font-mono border border-yellow-500/20">
+                                <span className="text-xs text-yellow-500 bg-yellow-500/10 px-2 py-0.5 rounded font-mono border border-yellow-500/20">
                                   {cw.weld.process}
                                 </span>
                                 {cw.locked && (
-                                  <span className="inline-flex items-center gap-1 text-[10px] text-[var(--text-verified)] bg-green-500/10 px-2 py-0.5 rounded border border-green-500/20">
+                                  <span className="inline-flex items-center gap-1 text-xs text-[var(--text-verified)] bg-green-500/10 px-2 py-0.5 rounded border border-green-500/20">
                                     <Lock className="w-3 h-3" />
                                     Locked
                                   </span>
@@ -306,7 +306,7 @@ export function ReviewAndSign({
                               </div>
                               <div className="flex items-center gap-2 mt-1">
                                 <span className="text-xs text-[var(--text-dim)]">{cw.weld.partNumber}</span>
-                                <span className="text-[10px] text-[var(--text-dim)]">
+                                <span className="text-xs text-[var(--text-dim)]">
                                   {cw.arcs.length} arc{cw.arcs.length !== 1 ? 's' : ''}
                                 </span>
                               </div>
@@ -315,7 +315,7 @@ export function ReviewAndSign({
                           <div className="flex items-center gap-3 shrink-0">
                             <div className="text-right">
                               <div className="text-sm text-[var(--text-hi)] font-mono">{formatTime(totalDuration)}</div>
-                              <div className="text-[10px] text-[var(--text-dim)]">{cw.completedAt}</div>
+                              <div className="text-xs text-[var(--text-dim)]">{cw.completedAt}</div>
                             </div>
                             {isExpanded ? (
                               <ChevronUp className="w-4 h-4 text-[var(--text-dim)]" />
@@ -328,7 +328,7 @@ export function ReviewAndSign({
                         {isExpanded && (
                           <div className="mt-4 pt-4 border-t border-[var(--c-border)] w-full">
                             {/* Arc Sessions */}
-                            <div className="text-[10px] uppercase tracking-wider text-[var(--text-dim)] mb-3">Arc Sessions</div>
+                            <div className="text-xs uppercase tracking-wider text-[var(--text-dim)] mb-3">Arc Sessions</div>
                             <div className="space-y-2 mb-4">
                               {cw.arcs.map((arc, i) => (
                                 <div
@@ -347,7 +347,7 @@ export function ReviewAndSign({
                                     <span className="text-[var(--text-lo)]">{arc.wpsConformance}%</span>
                                   </div>
                                   <div className="flex items-center gap-1 text-xs text-[var(--text-dim)] ml-auto">
-                                    <span className="text-[10px] uppercase tracking-wider text-[var(--text-dim)]">Passes:</span>
+                                    <span className="text-xs uppercase tracking-wider text-[var(--text-dim)]">Passes:</span>
                                     <span className="text-[var(--text-lo)]">{arc.passes.join(' · ')}</span>
                                   </div>
                                 </div>
@@ -358,7 +358,7 @@ export function ReviewAndSign({
                             {(cw.consumables || []).length > 0 && (
                               <div className="mt-4 pt-4 border-t border-[var(--c-border)]">
                                 <div className="flex items-center justify-between mb-3">
-                                  <div className="text-[10px] uppercase tracking-wider text-[var(--text-dim)]">Consumables</div>
+                                  <div className="text-xs uppercase tracking-wider text-[var(--text-dim)]">Consumables</div>
                                   <span className="text-xs text-[var(--text-dim)]">Tap to edit</span>
                                 </div>
                                 <div className="space-y-2">
@@ -419,7 +419,7 @@ export function ReviewAndSign({
                                               </div>
                                             </div>
                                             <div className="flex items-center gap-2">
-                                              <span className={`text-[10px] px-2 py-0.5 rounded border ${
+                                              <span className={`text-xs px-2 py-0.5 rounded border ${
                                                 c.verified 
                                                   ? 'text-[var(--text-verified)] bg-green-500/10 border-green-500/20' 
                                                   : 'text-yellow-500 bg-yellow-500/10 border-yellow-500/20'
@@ -457,7 +457,7 @@ export function ReviewAndSign({
             {incomplete.length > 0 && (
               <div>
                 <div className="flex items-center justify-between gap-2 mb-2">
-                  <div className="text-[10px] uppercase tracking-wider text-[var(--text-dim)]">
+                  <div className="text-xs uppercase tracking-wider text-[var(--text-dim)]">
                     Incomplete — {incomplete.length} remaining · {totalIncompleteDuration} min
                   </div>
                   <button
@@ -482,21 +482,21 @@ export function ReviewAndSign({
                         <div className="flex items-center gap-2 flex-wrap">
                           <span className="text-sm font-bold text-[var(--text-hi)]">{weld.id}</span>
                           <span className="text-xs text-[var(--text-lo)]">{weld.jointType}</span>
-                          <span className="text-[10px] text-yellow-500 bg-yellow-500/10 px-2 py-0.5 rounded font-mono border border-yellow-500/20">
+                          <span className="text-xs text-yellow-500 bg-yellow-500/10 px-2 py-0.5 rounded font-mono border border-yellow-500/20">
                             {weld.process}
                           </span>
                         </div>
                         <div className="flex items-center gap-2 mt-1">
                           <span className="text-xs text-[var(--text-dim)]">{weld.partNumber}</span>
-                          <span className="text-[10px] text-[var(--text-dim)]">{weld.duration} min</span>
+                          <span className="text-xs text-[var(--text-dim)]">{weld.duration} min</span>
                           {weld.priority && (
-                            <span className="text-[10px] text-red-400 bg-red-500/10 px-2 py-0.5 rounded border border-red-500/20">
+                            <span className="text-xs text-red-400 bg-red-500/10 px-2 py-0.5 rounded border border-red-500/20">
                               Priority
                             </span>
                           )}
                         </div>
                       </div>
-                      <span className="inline-flex items-center gap-1 text-[10px] font-medium text-[var(--text-dim)] group-hover:text-yellow-500 uppercase tracking-wider shrink-0 transition-colors">
+                      <span className="inline-flex items-center gap-1 text-xs font-medium text-[var(--text-dim)] group-hover:text-yellow-500 uppercase tracking-wider shrink-0 transition-colors">
                         Open
                         <ChevronRight className="w-3.5 h-3.5" />
                       </span>
@@ -529,12 +529,12 @@ export function ReviewAndSign({
                 >
                   <span className="text-[var(--text-hi)] text-lg">✓</span>
                   <span className="text-[var(--text-hi)] font-medium">Yes</span>
-                  <span className="text-[10px] text-yellow-200">"yes sign" or re-tap badge — irreversible</span>
+                  <span className="text-xs text-yellow-200">"yes sign" or re-tap badge — irreversible</span>
                 </button>
                 <button className="flex flex-col items-center justify-center gap-1 p-4 bg-[var(--c-border)] hover:bg-[var(--c-hover)] rounded-lg transition-colors">
                   <span className="text-[var(--text-hi)] text-lg">✕</span>
                   <span className="text-[var(--text-hi)] font-medium">No</span>
-                  <span className="text-[10px] text-[var(--text-lo)]">"no" to go back</span>
+                  <span className="text-xs text-[var(--text-lo)]">"no" to go back</span>
                 </button>
               </div>
             </div>

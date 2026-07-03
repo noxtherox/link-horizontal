@@ -13,13 +13,9 @@ export default function Index() {
 
   return (
     <div className="min-h-screen bg-[var(--c-root)] flex flex-col">
-      <Header 
-        viewMode={flow.viewMode} 
-        setViewMode={flow.setViewMode} 
-        step={flow.step}
-        workflowStep={flow.workflowStep}
-        setStep={flow.setStep}
-        onResume={flow.resumeStep}
+      <Header
+        viewMode={flow.viewMode}
+        setViewMode={flow.setViewMode}
       />
 
       <div className="flex-1 flex flex-col lg:flex-row overflow-hidden pb-[88px]">
@@ -27,10 +23,11 @@ export default function Index() {
           {flow.viewMode === 'supervisor' && <FloorStatus />}
 
           {flow.viewMode === 'welder' && flow.step === 'taskQueue' && (
-            <TaskQueue 
-              parts={flow.parts} 
+            <TaskQueue
+              parts={flow.parts}
               onSelectWeld={flow.selectWeld}
               completedWelds={flow.completedWelds}
+              onSendPartForReview={flow.sendPartToInspection}
             />
           )}
 

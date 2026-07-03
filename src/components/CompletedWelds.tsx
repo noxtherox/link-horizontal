@@ -84,23 +84,23 @@ export function CompletedWelds({ completedWelds }: CompletedWeldsProps) {
                     <span className="text-xs text-[var(--text-dim)]">{cw.weld.jointType}</span>
                   </div>
                   <div className="flex items-center gap-2 mt-1 flex-wrap">
-                    <span className="text-[10px] text-[var(--text-dim)] bg-[var(--c-surface)] px-2 py-0.5 rounded border border-[var(--c-border)]">
+                    <span className="text-xs text-[var(--text-dim)] bg-[var(--c-surface)] px-2 py-0.5 rounded border border-[var(--c-border)]">
                       {cw.weld.partNumber}
                     </span>
-                    <span className="text-[10px] text-yellow-500 bg-yellow-500/10 px-2 py-0.5 rounded font-mono border border-yellow-500/20">
+                    <span className="text-xs text-yellow-500 bg-yellow-500/10 px-2 py-0.5 rounded font-mono border border-yellow-500/20">
                       {cw.weld.process}
                     </span>
-                    <span className="text-[10px] text-[var(--text-dim)]">
+                    <span className="text-xs text-[var(--text-dim)]">
                       {cw.arcs.length} arc{cw.arcs.length !== 1 ? 's' : ''}
                     </span>
                   </div>
                 </div>
                 <div className="text-right shrink-0">
-                  <div className={`inline-flex items-center gap-1 px-2 py-1 rounded text-[10px] font-medium border ${meta.color}`}>
+                  <div className={`inline-flex items-center gap-1 px-2 py-1 rounded text-xs font-medium border ${meta.color}`}>
                     {meta.icon}
                     {meta.text}
                   </div>
-                  <div className="text-[10px] text-[var(--text-dim)] mt-1">
+                  <div className="text-xs text-[var(--text-dim)] mt-1">
                     Arc {formatTime(totalDuration)} · {cw.completedAt}
                   </div>
                 </div>

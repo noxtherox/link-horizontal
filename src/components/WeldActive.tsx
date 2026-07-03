@@ -163,13 +163,13 @@ export function WeldActive({
 
           {/* WPS · process · progress */}
           <div className="shrink-0 flex items-center gap-2 ml-1 pl-2 border-l border-[var(--c-border)]">
-            <span className="text-[10px] text-[var(--text-dim)] font-mono hidden sm:inline">
+            <span className="text-xs text-[var(--text-dim)] font-mono hidden sm:inline">
               {selectedWeld.wps}
             </span>
-            <span className="text-[10px] text-yellow-500 bg-yellow-500/10 px-1.5 py-0.5 rounded font-mono border border-yellow-500/20">
+            <span className="text-xs text-yellow-500 bg-yellow-500/10 px-1.5 py-0.5 rounded font-mono border border-yellow-500/20">
               {selectedWeld.process}
             </span>
-            <span className="text-[10px] text-[var(--text-dim)] tabular-nums">
+            <span className="text-xs text-[var(--text-dim)] tabular-nums">
               {doneCount}/{allWelds.length}
             </span>
           </div>
@@ -299,7 +299,7 @@ function AllWeldsComplete({
         </div>
 
         <div className="mt-6 p-4 bg-[var(--c-raised)] border border-[var(--c-border)] rounded-xl">
-          <div className="text-[10px] uppercase tracking-wider text-[var(--text-dim)] mb-2">Completed Summary</div>
+          <div className="text-xs uppercase tracking-wider text-[var(--text-dim)] mb-2">Completed Summary</div>
           <div className="grid grid-cols-3 gap-4">
             <div>
               <div className="text-xl font-bold text-[var(--text-hi)]">{summaryWelds.length}</div>
@@ -483,25 +483,25 @@ function WeldActiveArc({
         <>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-4">
             <div className="bg-[var(--c-raised)] border border-[var(--c-border)] rounded-lg p-4">
-              <div className="text-[10px] uppercase tracking-wider text-[var(--text-dim)] mb-1">Voltage</div>
+              <div className="text-xs uppercase tracking-wider text-[var(--text-dim)] mb-1">Voltage</div>
               <div className="text-2xl font-bold text-[var(--text-hi)]">
                 {readings.voltage}<span className="text-sm text-[var(--text-dim)] font-normal"> V</span>
               </div>
             </div>
             <div className="bg-[var(--c-raised)] border border-[var(--c-border)] rounded-lg p-4">
-              <div className="text-[10px] uppercase tracking-wider text-[var(--text-dim)] mb-1">Current</div>
+              <div className="text-xs uppercase tracking-wider text-[var(--text-dim)] mb-1">Current</div>
               <div className="text-2xl font-bold text-[var(--text-hi)]">
                 {readings.current}<span className="text-sm text-[var(--text-dim)] font-normal"> A</span>
               </div>
             </div>
             <div className="bg-[var(--c-raised)] border border-[var(--c-border)] rounded-lg p-4">
-              <div className="text-[10px] uppercase tracking-wider text-[var(--text-dim)] mb-1">Travel</div>
+              <div className="text-xs uppercase tracking-wider text-[var(--text-dim)] mb-1">Travel</div>
               <div className="text-2xl font-bold text-yellow-500">
                 {readings.travel}<span className="text-sm text-[var(--text-dim)] font-normal"> cm/min</span>
               </div>
             </div>
             <div className="bg-[var(--c-raised)] border border-[var(--c-border)] rounded-lg p-4">
-              <div className="text-[10px] uppercase tracking-wider text-[var(--text-dim)] mb-1">Heat In</div>
+              <div className="text-xs uppercase tracking-wider text-[var(--text-dim)] mb-1">Heat In</div>
               <div className="text-2xl font-bold text-yellow-500">
                 {readings.heatInput}<span className="text-sm text-[var(--text-dim)] font-normal"> kJ/mm</span>
               </div>
@@ -522,7 +522,7 @@ function WeldActiveArc({
 
             <div className="space-y-4">
               <div className="p-4 bg-[var(--c-raised)] border border-[var(--c-border)] rounded-lg">
-                <div className="text-[10px] uppercase tracking-wider text-[var(--text-dim)] mb-3">Live · Fleet · 4 Hz</div>
+                <div className="text-xs uppercase tracking-wider text-[var(--text-dim)] mb-3">Live · Fleet · 4 Hz</div>
                 <div className="space-y-3">
                   <div className="flex justify-between text-sm">
                     <span className="text-[var(--text-lo)]">Machine</span>
