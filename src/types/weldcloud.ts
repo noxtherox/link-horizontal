@@ -8,6 +8,20 @@ export interface Arc {
   passes: string[];
 }
 
+export type WeldProcess = 'GTAW' | 'GMAW' | 'SMAW' | 'FCAW';
+
+// One process step of a WPS. A WPS can define up to 3 processes, each covering
+// specific passes (e.g. GTAW for the root, GMAW for fill and cap). `assigned`
+// marks whether this welder's task includes the step — a task may scope down
+// to a single process while the rest is welded by someone else.
+export interface WpsProcessStep {
+  process: WeldProcess;
+  passes: string[];
+  assigned: boolean;
+  welder?: string; // who welds this step when it is not assigned to you
+  completed?: boolean; // step already welded (e.g. root done at another station)
+}
+
 export interface Weld {
   id: string;
   partNumber: string;
@@ -15,7 +29,7 @@ export interface Weld {
   wps: string;
   duration: number;
   priority?: boolean;
-  process: 'GTAW' | 'GMAW' | 'SMAW' | 'FCAW';
+  processes: WpsProcessStep[];
   drawingPosition?: { x: number; y: number };
 }
 

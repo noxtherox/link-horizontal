@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { ChevronDown, ChevronUp, Play, Check } from 'lucide-react';
 import { Part, Weld, CompletedWeld } from '@/types/weldcloud';
 import { Badge } from '@/components/ui/badge';
+import { ProcessBadges } from './ProcessBadges';
 import { initialParts } from '@/data/mockData';
 
 interface TaskQueueProps {
@@ -206,9 +207,7 @@ export function TaskQueue({ parts, onSelectWeld, completedWelds }: TaskQueueProp
                               <span className="text-[10px] text-[var(--text-dim)] bg-[var(--c-surface)] px-2 py-0.5 rounded">
                                 {weld.duration} min
                               </span>
-                              <span className="text-[10px] text-yellow-500 bg-yellow-500/10 px-2 py-0.5 rounded font-mono">
-                                {weld.process}
-                              </span>
+                              <ProcessBadges weld={weld} />
                               {weld.priority && (
                                 <Badge className="bg-red-500/10 text-red-400 border-red-500/20 text-[10px]">
                                   Priority

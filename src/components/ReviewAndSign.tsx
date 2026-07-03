@@ -2,6 +2,8 @@ import { useState } from 'react';
 import { ChevronDown, ChevronUp, ChevronRight, Timer, BadgeCheck, CircleDashed, Package, Lock, Pencil, Check, AlertTriangle, Play } from 'lucide-react';
 import { Weld, CompletedWeld, Arc, Part, Consumable } from '@/types/weldcloud';
 import { initialParts } from '@/data/mockData';
+import { ProcessBadges } from '@/components/ProcessBadges';
+import { processLabel } from '@/utils/weldProcess';
 import { Button } from '@/components/ui/button';
 
 interface ReviewAndSignProps {
@@ -295,7 +297,7 @@ export function ReviewAndSign({
                                 <span className="text-sm font-bold text-[var(--text-hi)]">{cw.weld.id}</span>
                                 <span className="text-xs text-[var(--text-lo)]">{cw.weld.jointType}</span>
                                 <span className="text-[10px] text-yellow-500 bg-yellow-500/10 px-2 py-0.5 rounded font-mono border border-yellow-500/20">
-                                  {cw.weld.process}
+                                  {processLabel(cw.weld)}
                                 </span>
                                 {cw.locked && (
                                   <span className="inline-flex items-center gap-1 text-[10px] text-[var(--text-verified)] bg-green-500/10 px-2 py-0.5 rounded border border-green-500/20">
@@ -482,9 +484,7 @@ export function ReviewAndSign({
                         <div className="flex items-center gap-2 flex-wrap">
                           <span className="text-sm font-bold text-[var(--text-hi)]">{weld.id}</span>
                           <span className="text-xs text-[var(--text-lo)]">{weld.jointType}</span>
-                          <span className="text-[10px] text-yellow-500 bg-yellow-500/10 px-2 py-0.5 rounded font-mono border border-yellow-500/20">
-                            {weld.process}
-                          </span>
+                          <ProcessBadges weld={weld} />
                         </div>
                         <div className="flex items-center gap-2 mt-1">
                           <span className="text-xs text-[var(--text-dim)]">{weld.partNumber}</span>

@@ -1,6 +1,7 @@
 import { useState, useCallback, useEffect, useRef, useMemo } from 'react';
 import { WelderStep, ViewMode, Weld, Consumable, Part, CompletedWeld, Arc, AvailabilityStatus } from '@/types/weldcloud';
 import { parts as initialParts, consumables as initialConsumables } from '@/data/mockData';
+import { assignedPasses } from '@/utils/weldProcess';
 import { showSuccess } from '@/utils/toast';
 
 export function useWeldFlow() {
@@ -57,7 +58,9 @@ export function useWeldFlow() {
   }, []);
 
   const createArc = useCallback((duration: number, index: number): Arc => {
-    const passOptions = [['Root'], ['Root', 'Fill'], ['Root', 'Fill', 'Cap']];
+    // Arcs only ever cover the passes this welder is assigned on the weld
+    const passPool = selectedWeld ? assignedPasses(selectedWeld) : [];
+    const pool = passPool.length > 0 ? passPool : ['Root'];
     return {
       id: `arc-${Date.now()}-${index}`,
       duration,
@@ -65,9 +68,9 @@ export function useWeldFlow() {
       completedAt: new Date().toISOString(),
       avgHeat: Number((0.95 + Math.random() * 0.1).toFixed(2)),
       wpsConformance: Math.floor(82 + Math.random() * 12),
-      passes: passOptions[Math.min(index, 2)],
+      passes: pool.slice(0, index + 1),
     };
-  }, []);
+  }, [selectedWeld]);
 
   const buildFinalArcs = useCallback(() => {
     const finalArcs = [...arcs];

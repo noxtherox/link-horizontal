@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { ChevronDown, ChevronUp, Check, BadgeCheck, ArrowRight } from 'lucide-react';
 import { CompletedWeld } from '@/types/weldcloud';
+import { processLabel } from '@/utils/weldProcess';
 
 interface CompletedWeldsProps {
   completedWelds: CompletedWeld[];
@@ -88,7 +89,7 @@ export function CompletedWelds({ completedWelds }: CompletedWeldsProps) {
                       {cw.weld.partNumber}
                     </span>
                     <span className="text-[10px] text-yellow-500 bg-yellow-500/10 px-2 py-0.5 rounded font-mono border border-yellow-500/20">
-                      {cw.weld.process}
+                      {processLabel(cw.weld)}
                     </span>
                     <span className="text-[10px] text-[var(--text-dim)]">
                       {cw.arcs.length} arc{cw.arcs.length !== 1 ? 's' : ''}

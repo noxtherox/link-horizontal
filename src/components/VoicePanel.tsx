@@ -1,6 +1,8 @@
 import { Check, Scan, Zap, ArrowRight, ChevronDown, ChevronUp, ClipboardCheck } from 'lucide-react';
 import { ViewMode, WelderStep, Weld, Part, Consumable, CompletedWeld, AvailabilityStatus } from '@/types/weldcloud';
 import { MachineAvailability } from '@/components/MachineAvailability';
+import { ProcessBadges } from '@/components/ProcessBadges';
+import { processLabel } from '@/utils/weldProcess';
 import { useState } from 'react';
 
 interface VoicePanelProps {
@@ -143,9 +145,7 @@ export function VoicePanel({ viewMode, step, weldActiveMode = 'setup', isRecordi
                 <div className="space-y-1.5">
                   <div className="flex items-center gap-2 flex-wrap">
                     <span className="text-sm font-bold text-[var(--text-hi)]">{selectedWeld.id}</span>
-                    <span className="text-[10px] text-yellow-500 bg-yellow-500/10 px-1.5 py-0.5 rounded font-mono border border-yellow-500/20">
-                      {selectedWeld.process}
-                    </span>
+                    <ProcessBadges weld={selectedWeld} />
                   </div>
                   <div className="text-xs text-[var(--text-md)]">{selectedWeld.jointType}</div>
                   <div className="flex flex-wrap gap-1">
@@ -176,9 +176,7 @@ export function VoicePanel({ viewMode, step, weldActiveMode = 'setup', isRecordi
                 <div className="space-y-1.5">
                   <div className="flex items-center gap-2 flex-wrap">
                     <span className="text-sm font-bold text-[var(--text-md)]">{nextWeld.id}</span>
-                    <span className="text-[10px] text-[var(--text-lo)] bg-[var(--c-elevated)] px-1.5 py-0.5 rounded font-mono border border-[var(--c-border)]">
-                      {nextWeld.process}
-                    </span>
+                    <ProcessBadges weld={nextWeld} muted />
                   </div>
                   <div className="text-xs text-[var(--text-lo)]">{nextWeld.jointType}</div>
                   <div className="flex flex-wrap gap-1">
@@ -226,7 +224,7 @@ export function VoicePanel({ viewMode, step, weldActiveMode = 'setup', isRecordi
                           <span className="text-[10px] text-[var(--text-dim)] truncate">{weld.jointType}</span>
                         </div>
                         <span className="text-[10px] text-[var(--text-dim)] bg-[var(--c-elevated)] px-1.5 py-0.5 rounded font-mono border border-[var(--c-border)] shrink-0">
-                          {weld.process}
+                          {processLabel(weld)}
                         </span>
                       </div>
                     ))}

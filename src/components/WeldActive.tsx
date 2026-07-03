@@ -4,6 +4,10 @@ import { Weld, Part, CompletedWeld } from '@/types/weldcloud';
 import { machineSpec, parts as initialParts } from '@/data/mockData';
 import { DrawingWithHighlight } from './DrawingWithHighlight';
 import { CompletedWelds } from './CompletedWelds';
+import { ProcessBadges } from './ProcessBadges';
+import { ProcessScopeBanner } from './ProcessScopeBanner';
+import { getProcessScope, getHandoffNote, assignedPasses } from '@/utils/weldProcess';
+import { Layers } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 
 interface WeldActiveProps {
@@ -166,9 +170,7 @@ export function WeldActive({
             <span className="text-[10px] text-[var(--text-dim)] font-mono hidden sm:inline">
               {selectedWeld.wps}
             </span>
-            <span className="text-[10px] text-yellow-500 bg-yellow-500/10 px-1.5 py-0.5 rounded font-mono border border-yellow-500/20">
-              {selectedWeld.process}
-            </span>
+            <ProcessBadges weld={selectedWeld} />
             <span className="text-[10px] text-[var(--text-dim)] tabular-nums">
               {doneCount}/{allWelds.length}
             </span>
@@ -337,6 +339,9 @@ function WeldActiveSetup({
     ? parts.find(p => p.id === selectedWeld.partNumber)
     : undefined;
 
+  const scope = selectedWeld ? getProcessScope(selectedWeld) : null;
+  const canStart = allVerified && (scope?.canStart ?? true);
+
   return (
     <div className="p-4 md:p-6">
       {/* Weld title */}
@@ -351,18 +356,25 @@ function WeldActiveSetup({
         <DrawingWithHighlight selectedWeld={selectedWeld} currentPart={currentPart} />
       </div>
 
+      {/* Process scope — what part of the WPS stack this welder does */}
+      {selectedWeld && (
+        <div className="mb-4">
+          <ProcessScopeBanner weld={selectedWeld} />
+        </div>
+      )}
+
       {/* Start Arc button - full width for easy tap on tablet */}
       <div className="mb-4">
         <button
           onClick={onStartArc}
-          disabled={!allVerified}
+          disabled={!canStart}
           className={`w-full py-4 rounded-xl font-bold text-lg transition-colors ${
-            allVerified
+            canStart
               ? 'bg-yellow-500 hover:bg-yellow-400 active:bg-yellow-300 text-black shadow-lg shadow-yellow-500/20'
               : 'bg-[var(--c-border)] text-[var(--text-dim)] cursor-not-allowed'
           }`}
         >
-          Start Arc
+          {scope && !scope.canStart ? 'Waiting on previous process' : 'Start Arc'}
         </button>
       </div>
 
@@ -455,12 +467,24 @@ function WeldActiveArc({
         <div className="text-5xl md:text-6xl font-bold text-[var(--text-hi)] font-mono tracking-tight">
           {formatTime(arcTime)}
         </div>
-        <div className="text-sm text-[var(--text-lo)] mt-2">W-014 · 3G butt · fill pass</div>
+        <div className="text-sm text-[var(--text-lo)] mt-2">
+          {selectedWeld
+            ? `${selectedWeld.id} · ${selectedWeld.jointType} · ${assignedPasses(selectedWeld).join(' + ')}`
+            : ''}
+        </div>
       </div>
 
       {isPaused ? (
         /* Paused state: action buttons */
         <div className="max-w-md mx-auto space-y-4">
+          {selectedWeld && getHandoffNote(selectedWeld, !!nextWeld) && (
+            <div className="flex items-start gap-3 p-4 bg-[var(--c-raised)] border border-yellow-500/30 rounded-xl">
+              <Layers className="w-5 h-5 text-yellow-500 shrink-0 mt-0.5" />
+              <p className="text-sm text-[var(--text-hi)]">
+                {getHandoffNote(selectedWeld, !!nextWeld)}
+              </p>
+            </div>
+          )}
           <button
             onClick={onDoneNext}
             className="w-full flex flex-col items-center justify-center gap-1 p-6 bg-yellow-500 hover:bg-yellow-400 active:bg-yellow-300 rounded-xl transition-colors"
