@@ -1,5 +1,5 @@
-import { Check, Scan, Zap, ArrowRight, ChevronDown, ChevronUp, ClipboardCheck } from 'lucide-react';
-import { ViewMode, WelderStep, Weld, Part, Consumable, CompletedWeld } from '@/types/weldcloud';
+import { Check, Scan, Zap, ArrowRight, ChevronDown, ChevronUp, ClipboardCheck, Users } from 'lucide-react';
+import { ViewMode, WelderStep, Weld, Part, Consumable, CompletedWeld, PrerequisiteProcess } from '@/types/weldcloud';
 import { useState } from 'react';
 
 interface VoicePanelProps {
@@ -17,9 +17,11 @@ interface VoicePanelProps {
   onVerify?: (id: string) => void;
   onSendToInspection?: () => void;
   onSelectWeld?: (weld: Weld) => void;
+  weldPrerequisites?: PrerequisiteProcess[];
+  onTogglePrerequisite?: (id: string) => void;
 }
 
-export function VoicePanel({ viewMode, step, weldActiveMode = 'setup', isRecording, setIsRecording, voiceCommand, selectedWeld, nextWeld, parts, consumables, completedWelds, onVerify, onSendToInspection, onSelectWeld }: VoicePanelProps) {
+export function VoicePanel({ viewMode, step, weldActiveMode = 'setup', isRecording, setIsRecording, voiceCommand, selectedWeld, nextWeld, parts, consumables, completedWelds, onVerify, onSendToInspection, onSelectWeld, weldPrerequisites, onTogglePrerequisite }: VoicePanelProps) {
   const [otherWeldsExpanded, setOtherWeldsExpanded] = useState(false);
 
   let key: string;
@@ -32,6 +34,7 @@ export function VoicePanel({ viewMode, step, weldActiveMode = 'setup', isRecordi
   }
 
   const isPreWeldScan = key === 'weldActiveSetup' && consumables && onVerify;
+  const hasPrerequisites = key === 'weldActiveSetup' && weldPrerequisites && weldPrerequisites.length > 0;
 
   // Next weld in the task queue (first weld of the first part) — used for the
   // press-to-confirm card that appears after the mic is pressed.
@@ -71,6 +74,59 @@ export function VoicePanel({ viewMode, step, weldActiveMode = 'setup', isRecordi
               <span className="text-[var(--text-lo)]">B-2 wire spool</span>
               <span className="text-[var(--text-verified)]">ACK 06:31</span>
             </div>
+          </div>
+        </div>
+      )}
+
+      {hasPrerequisites && (
+        <div className="p-4 border-b border-[var(--c-border)]">
+          <div className="flex items-center gap-1.5 mb-3">
+            <Users className="w-3 h-3 text-yellow-500" />
+            <span className="text-xs uppercase tracking-wider text-yellow-500 font-semibold">Waiting on other welders</span>
+          </div>
+          <div className="space-y-3">
+            {weldPrerequisites!.map((p, i) => {
+              const isDone = p.status === 'done';
+              return (
+                <button
+                  key={p.id}
+                  onClick={() => !isDone && onTogglePrerequisite?.(p.id)}
+                  disabled={isDone}
+                  className={`w-full text-left p-3 rounded-lg border transition-colors ${
+                    isDone
+                      ? 'bg-green-500/10 border-green-500/30'
+                      : 'bg-[var(--c-raised)] border-[var(--c-border)] hover:bg-[var(--c-elevated)]'
+                  }`}
+                >
+                  <div className="flex items-center gap-3">
+                    <div
+                      className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 ${
+                        isDone ? 'bg-green-500 text-black' : 'bg-[var(--c-border)] text-[var(--text-lo)]'
+                      }`}
+                    >
+                      {isDone ? <Check className="w-4 h-4" /> : <span className="text-sm">{i + 1}</span>}
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <div className={`text-sm font-medium ${isDone ? 'text-[var(--text-verified)]' : 'text-[var(--text-hi)]'}`}>
+                        {p.label}
+                      </div>
+                      <div className="text-xs text-[var(--text-dim)]">{p.welder} · {p.process}</div>
+                    </div>
+                  </div>
+                  <div className="mt-2 flex items-center gap-2">
+                    {isDone ? (
+                      <span className="text-xs text-[var(--text-verified)] flex items-center gap-1">
+                        <Check className="w-3 h-3" /> Done
+                      </span>
+                    ) : (
+                      <span className="text-xs text-yellow-500 flex items-center gap-1">
+                        Tap to mark done
+                      </span>
+                    )}
+                  </div>
+                </button>
+              );
+            })}
           </div>
         </div>
       )}

@@ -1,6 +1,6 @@
 import { useState, useCallback, useEffect, useRef, useMemo } from 'react';
-import { WelderStep, ViewMode, Weld, Consumable, Part, CompletedWeld, Arc } from '@/types/weldcloud';
-import { parts as initialParts, consumables as initialConsumables } from '@/data/mockData';
+import { WelderStep, ViewMode, Weld, Consumable, Part, CompletedWeld, Arc, PrerequisiteProcess } from '@/types/weldcloud';
+import { parts as initialParts, consumables as initialConsumables, weldPrerequisites as initialWeldPrerequisites } from '@/data/mockData';
 import { showSuccess } from '@/utils/toast';
 
 export function useWeldFlow() {
@@ -24,6 +24,7 @@ export function useWeldFlow() {
   const [isArcPaused, setIsArcPaused] = useState(false);
   const [completedWelds, setCompletedWelds] = useState<CompletedWeld[]>([]);
   const [lastCompletedPartId, setLastCompletedPartId] = useState<string | null>(null);
+  const [weldPrerequisites, setWeldPrerequisites] = useState<Record<string, PrerequisiteProcess[]>>(initialWeldPrerequisites);
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   const nextWeld = useMemo(() => {
@@ -155,6 +156,18 @@ export function useWeldFlow() {
 
   const allConsumablesVerified = consumables.every((c) => c.verified);
 
+  const selectedWeldPrerequisites = selectedWeld ? (weldPrerequisites[selectedWeld.id] || []) : [];
+  const allPrerequisitesDone = selectedWeldPrerequisites.every((p) => p.status === 'done');
+
+  const markPrerequisiteDone = useCallback((weldId: string, prerequisiteId: string) => {
+    setWeldPrerequisites((prev) => ({
+      ...prev,
+      [weldId]: (prev[weldId] || []).map((p) =>
+        p.id === prerequisiteId ? { ...p, status: 'done' as const } : p
+      ),
+    }));
+  }, []);
+
   const startArc = useCallback(() => {
     setWeldActiveMode('arc');
     setIsArcPaused(false);
@@ -265,11 +278,19 @@ export function useWeldFlow() {
     const nextWeldStillExists = nextWeldObj && remainingParts.some(p => p.welds.some(w => w.id === nextWeldObj?.id));
 
     if (nextWeldObj && nextWeldStillExists) {
-      // More welds remain on this part — keep welding
+      // Multi-process welds must drop into setup (not straight into arc) so the
+      // welder sees the blocked-on-other-welders banner instead of skipping the gate.
+      const nextWeldBlocked = (weldPrerequisites[nextWeldObj.id] || []).some((p) => p.status !== 'done');
+
       setSelectedWeld(nextWeldObj);
-      setWeldActiveMode('arc');
       resetWeldState();
-      startArcTimer();
+      if (nextWeldBlocked) {
+        setWeldActiveMode('setup');
+      } else {
+        // More welds remain on this part — keep welding
+        setWeldActiveMode('arc');
+        startArcTimer();
+      }
     } else {
       // Part complete — go back to the task queue so the welder sees green weld pills
       // and can click "Send for review".
@@ -280,22 +301,7 @@ export function useWeldFlow() {
       setStep('taskQueue');
       setWorkflowStep('taskQueue');
     }
-  }, [selectedWeld, parts, buildFinalArcs, stopArcTimer, startArcTimer, addCompletedWeld, consumables]);
-
-  const chooseDifferentWeld = useCallback(() => {
-    if (selectedWeld) {
-      const finalArcs = buildFinalArcs();
-      addCompletedWeld(selectedWeld, 'done', finalArcs, consumables);
-    }
-    stopArcTimer();
-    setIsArcPaused(false);
-    setArcTime(0);
-    setArcs([]);
-    setArcStartOffset(0);
-    setWeldActiveMode('setup');
-    setDeviationText('');
-    setDeviations([]);
-  }, [selectedWeld, buildFinalArcs, stopArcTimer, addCompletedWeld, consumables]);
+  }, [selectedWeld, parts, buildFinalArcs, stopArcTimer, startArcTimer, addCompletedWeld, consumables, weldPrerequisites]);
 
   const backToQueue = useCallback(() => {
     stopArcTimer();
@@ -351,6 +357,8 @@ export function useWeldFlow() {
     confirmAction,
     confirmMessage,
     allConsumablesVerified,
+    selectedWeldPrerequisites,
+    allPrerequisitesDone,
     isArcPaused,
     completedWelds,
     lastCompletedPartId,
@@ -358,6 +366,7 @@ export function useWeldFlow() {
     verifyConsumable,
     updateConsumable,
     updateCompletedWeldConsumable,
+    markPrerequisiteDone,
     startArc,
     pauseArc,
     toggleArcPause,
@@ -367,7 +376,6 @@ export function useWeldFlow() {
     sendToInspection,
     sendPartToInspection,
     finishAndStartNext,
-    chooseDifferentWeld,
     backToQueue,
     goToReview,
     resumeStep,

@@ -4,6 +4,7 @@ import { VoicePanel } from '@/components/VoicePanel';
 import { InputBar } from '@/components/InputBar';
 import { TaskQueue } from '@/components/TaskQueue';
 import { WeldActive } from '@/components/WeldActive';
+import { WeldNavigator } from '@/components/WeldNavigator';
 import { ReviewAndSign } from '@/components/ReviewAndSign';
 import { FloorStatus } from '@/components/FloorStatus';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
@@ -17,6 +18,15 @@ export default function Index() {
         viewMode={flow.viewMode}
         setViewMode={flow.setViewMode}
       />
+
+      {flow.viewMode === 'welder' && flow.step === 'weldActive' && (
+        <WeldNavigator
+          selectedWeld={flow.selectedWeld}
+          completedWelds={flow.completedWelds}
+          onSelectWeld={flow.selectWeld}
+          onBackToQueue={flow.backToQueue}
+        />
+      )}
 
       <div className="flex-1 flex flex-col lg:flex-row overflow-hidden pb-[88px]">
         <main className="flex-1 overflow-y-auto min-h-0">
@@ -38,14 +48,15 @@ export default function Index() {
               onTogglePause={flow.toggleArcPause}
               onComplete={flow.completeWeld}
               onDoneNext={flow.finishAndStartNext}
-              onChooseDifferent={flow.chooseDifferentWeld}
               onBackToQueue={flow.backToQueue}
               onVerify={flow.verifyConsumable}
               allVerified={flow.allConsumablesVerified}
+              prerequisites={flow.selectedWeldPrerequisites}
               selectedWeld={flow.selectedWeld}
               parts={flow.parts}
-              onSelectWeld={flow.selectWeld}
               arcTime={flow.arcTime}
+              arcs={flow.arcs}
+              consumables={flow.consumables}
               isPaused={flow.isArcPaused}
               nextWeld={flow.nextWeld}
               completedWelds={flow.completedWelds}
@@ -85,6 +96,8 @@ export default function Index() {
           onVerify={flow.verifyConsumable}
           onSendToInspection={flow.sendToInspection}
           onSelectWeld={flow.selectWeld}
+          weldPrerequisites={flow.selectedWeldPrerequisites}
+          onTogglePrerequisite={(id) => flow.selectedWeld && flow.markPrerequisiteDone(flow.selectedWeld.id, id)}
         />
       </div>
 

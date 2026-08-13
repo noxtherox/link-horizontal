@@ -1,7 +1,7 @@
-import { useState, useEffect } from 'react';
-import { AlertTriangle, Check, Play, ChevronDown, ChevronUp, ChevronLeft, ChevronRight, Package, ArrowRight, Zap, ArrowLeft, CheckCircle2, ClipboardCheck } from 'lucide-react';
-import { Weld, Part, CompletedWeld } from '@/types/weldcloud';
-import { machineSpec, parts as initialParts } from '@/data/mockData';
+import { useState, useEffect, useRef } from 'react';
+import { AlertTriangle, Play, ChevronDown, ChevronUp, Package, ArrowRight, Zap, ArrowLeft, CheckCircle2, ClipboardCheck, Users } from 'lucide-react';
+import { Weld, Part, CompletedWeld, PrerequisiteProcess, Arc, Consumable } from '@/types/weldcloud';
+import { machineSpec } from '@/data/mockData';
 import { DrawingWithHighlight } from './DrawingWithHighlight';
 import { CompletedWelds } from './CompletedWelds';
 import { Badge } from '@/components/ui/badge';
@@ -12,19 +12,31 @@ interface WeldActiveProps {
   onTogglePause: () => void;
   onComplete: () => void;
   onDoneNext: () => void;
-  onChooseDifferent: () => void;
   onBackToQueue: () => void;
   onVerify: (id: string) => void;
   allVerified: boolean;
+  prerequisites?: PrerequisiteProcess[];
   selectedWeld: Weld | null;
   parts: Part[];
-  onSelectWeld: (weld: Weld) => void;
   arcTime: number;
+  arcs: Arc[];
+  consumables: Consumable[];
   isPaused: boolean;
   nextWeld: Weld | null;
   completedWelds?: CompletedWeld[];
   onGoToReview: () => void;
   lastCompletedPartId?: string | null;
+}
+
+const PASS_NAMES = ['Root', 'Fill', 'Cap'];
+
+function currentPassLabel(arcs: Arc[]) {
+  return PASS_NAMES[Math.min(arcs.length, PASS_NAMES.length - 1)];
+}
+
+function fillerLabel(consumables: Consumable[]) {
+  const wire = consumables.find(c => c.name.toLowerCase().includes('wire'));
+  return wire ? wire.name.replace(/^Wire\s+/i, '') : '—';
 }
 
 export function WeldActive({
@@ -33,43 +45,21 @@ export function WeldActive({
   onTogglePause,
   onComplete,
   onDoneNext,
-  onChooseDifferent,
   onBackToQueue,
   onVerify,
   allVerified,
+  prerequisites,
   selectedWeld,
   parts,
-  onSelectWeld,
   arcTime,
+  arcs,
+  consumables,
   isPaused,
   nextWeld,
   completedWelds,
   onGoToReview,
   lastCompletedPartId,
 }: WeldActiveProps) {
-  // Use the immutable initial part list so the strip always shows every weld,
-  // even after completed ones are removed from the live `parts` state.
-  const allWelds = selectedWeld
-    ? (initialParts.find(p => p.id === selectedWeld.partNumber)?.welds ?? [])
-    : [];
-  const completedWeldIds = new Set((completedWelds || []).map(cw => cw.weld.id));
-  const doneCount = allWelds.filter(w => completedWeldIds.has(w.id)).length;
-
-  const VISIBLE = 4;
-  const [weldOffset, setWeldOffset] = useState(0);
-
-  // Auto-snap the window so the active weld is always on its "page" (groups of 4).
-  // When the user moves to weld index 4, the strip jumps to show 4–7, etc.
-  useEffect(() => {
-    const idx = allWelds.findIndex(w => w.id === selectedWeld?.id);
-    if (idx >= 0) setWeldOffset(Math.floor(idx / VISIBLE) * VISIBLE);
-  }, [selectedWeld?.id]); // eslint-disable-line react-hooks/exhaustive-deps
-
-  const visibleWelds = allWelds.slice(weldOffset, weldOffset + VISIBLE);
-  const canPrev = weldOffset > 0;
-  const canNext = weldOffset + VISIBLE < allWelds.length;
-  const needsPager = allWelds.length > VISIBLE;
-
   if (!selectedWeld) {
     return (
       <AllWeldsComplete
@@ -82,111 +72,21 @@ export function WeldActive({
     );
   }
 
+  const currentPass = currentPassLabel(arcs);
+  const filler = fillerLabel(consumables);
+
   return (
     <div className="flex flex-col">
-      {/* ── Sticky weld progress / navigation strip ── */}
-      <div className="sticky top-0 z-20 bg-[var(--c-surface)] border-b border-[var(--c-border)] px-4 py-2.5">
-        <div className="flex items-center gap-2">
-
-          {/* Back to queue */}
-          <button
-            onClick={onBackToQueue}
-            className="shrink-0 w-8 h-8 flex items-center justify-center rounded-lg bg-[var(--c-raised)] hover:bg-[var(--c-border)] border border-[var(--c-border)] transition-colors"
-          >
-            <ArrowLeft className="w-4 h-4 text-[var(--text-lo)]" />
-          </button>
-
-          {/* Prev page */}
-          {needsPager && (
-            <button
-              onClick={() => setWeldOffset(o => Math.max(0, o - 1))}
-              disabled={!canPrev}
-              className={`shrink-0 w-7 h-7 flex items-center justify-center rounded border transition-colors ${
-                canPrev
-                  ? 'bg-[var(--c-raised)] border-[var(--c-border)] hover:bg-[var(--c-elevated)] text-[var(--text-lo)]'
-                  : 'border-[var(--c-border)] text-[var(--text-dim)] opacity-30 cursor-not-allowed'
-              }`}
-            >
-              <ChevronLeft className="w-3.5 h-3.5" />
-            </button>
-          )}
-
-          {/* Weld pills */}
-          <div className="flex-1 grid grid-cols-4 gap-1.5">
-            {visibleWelds.map(weld => {
-              const isCompleted = completedWeldIds.has(weld.id);
-              const isCurrent = weld.id === selectedWeld.id;
-              return (
-                <button
-                  key={weld.id}
-                  onClick={() => !isCurrent && onSelectWeld(weld)}
-                  disabled={isCurrent}
-                  className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg border transition-colors text-left ${
-                    isCurrent
-                      ? 'bg-[var(--c-weld-active)] border-[var(--c-weld-active-border)] cursor-default'
-                      : isCompleted
-                      ? 'bg-[var(--c-raised)] border-[var(--c-border)] opacity-70 hover:opacity-100'
-                      : 'bg-[var(--c-raised)] border-[var(--c-border)] opacity-55 hover:opacity-100 hover:border-yellow-500/30'
-                  }`}
-                >
-                  {isCompleted && !isCurrent ? (
-                    <Check className="w-3 h-3 shrink-0 text-[var(--text-verified)]" />
-                  ) : (
-                    <span className={`w-2.5 h-2.5 shrink-0 rounded-full border ${
-                      isCurrent ? 'bg-yellow-500 border-yellow-500' : 'border-[var(--c-border)]'
-                    }`} />
-                  )}
-                  <span className={`text-xs font-bold truncate ${
-                    isCurrent ? 'text-[var(--text-hi)]' : isCompleted ? 'text-[var(--text-dim)]' : 'text-[var(--text-lo)]'
-                  }`}>
-                    {weld.id}
-                  </span>
-                </button>
-              );
-            })}
-          </div>
-
-          {/* Next page */}
-          {needsPager && (
-            <button
-              onClick={() => setWeldOffset(o => Math.min(allWelds.length - VISIBLE, o + 1))}
-              disabled={!canNext}
-              className={`shrink-0 w-7 h-7 flex items-center justify-center rounded border transition-colors ${
-                canNext
-                  ? 'bg-[var(--c-raised)] border-[var(--c-border)] hover:bg-[var(--c-elevated)] text-[var(--text-lo)]'
-                  : 'border-[var(--c-border)] text-[var(--text-dim)] opacity-30 cursor-not-allowed'
-              }`}
-            >
-              <ChevronRight className="w-3.5 h-3.5" />
-            </button>
-          )}
-
-          {/* WPS · process · progress */}
-          <div className="shrink-0 flex items-center gap-2 ml-1 pl-2 border-l border-[var(--c-border)]">
-            <span className="text-xs text-[var(--text-dim)] font-mono hidden sm:inline">
-              {selectedWeld.wps}
-            </span>
-            <span className="text-xs text-yellow-500 bg-yellow-500/10 px-1.5 py-0.5 rounded font-mono border border-yellow-500/20">
-              {selectedWeld.process}
-            </span>
-            <span className="text-xs text-[var(--text-dim)] tabular-nums">
-              {doneCount}/{allWelds.length}
-            </span>
-          </div>
-
-        </div>
-      </div>
-
-      {/* Mode content */}
       {mode === 'setup' ? (
         <WeldActiveSetup
           onStartArc={onStartArc}
           onVerify={onVerify}
           allVerified={allVerified}
+          prerequisites={prerequisites}
           selectedWeld={selectedWeld}
           parts={parts}
-          onSelectWeld={onSelectWeld}
-          onBackToQueue={onBackToQueue}
+          currentPass={currentPass}
+          filler={filler}
           completedWelds={completedWelds}
         />
       ) : (
@@ -194,10 +94,11 @@ export function WeldActive({
           onTogglePause={onTogglePause}
           onComplete={onComplete}
           onDoneNext={onDoneNext}
-          onChooseDifferent={onChooseDifferent}
           selectedWeld={selectedWeld}
           parts={parts}
           arcTime={arcTime}
+          currentPass={currentPass}
+          filler={filler}
           isPaused={isPaused}
           nextWeld={nextWeld}
         />
@@ -322,42 +223,76 @@ function AllWeldsComplete({
   );
 }
 
+/* ───────── WELD INFO HEADER ───────── */
+/* Persistent across setup and arc — same slot, same fields, so the layout doesn't jump as the welder moves through the flow */
+
+function WeldInfoHeader({ weld, currentPass, filler }: { weld: Weld | null; currentPass: string; filler: string }) {
+  return (
+    <div className="mb-4">
+      <h1 className="text-xl md:text-2xl">
+        <span className="font-bold text-[var(--text-hi)]">{weld?.id || '—'}</span>
+        <span className="font-normal text-[var(--text-lo)]"> · {weld?.jointType || '—'}</span>
+      </h1>
+      <div className="mt-1.5 flex items-center gap-1.5 flex-wrap text-sm font-normal text-[var(--text-lo)]">
+        <span>{currentPass} pass</span>
+        <span className="text-[var(--text-dim)]">·</span>
+        <span>Filler {filler}</span>
+        <span className="text-[var(--text-dim)]">·</span>
+        <span>{weld?.process || '—'}</span>
+        <span className="text-[var(--text-dim)]">·</span>
+        <span>{weld?.wps || '—'}</span>
+        <span className="text-[var(--text-dim)]">·</span>
+        <span>{weld?.duration ?? '—'} min</span>
+      </div>
+    </div>
+  );
+}
+
 /* ───────── SETUP VIEW ───────── */
 
 function WeldActiveSetup({
   onStartArc,
   allVerified,
+  prerequisites,
   selectedWeld,
   parts,
-  onSelectWeld,
-  onBackToQueue,
+  currentPass,
+  filler,
   completedWelds,
-}: Omit<WeldActiveProps, 'mode' | 'onTogglePause' | 'onComplete' | 'onDoneNext' | 'onChooseDifferent' | 'arcTime' | 'isPaused' | 'nextWeld' | 'onGoToReview'>) {
+}: Omit<WeldActiveProps, 'mode' | 'onTogglePause' | 'onComplete' | 'onDoneNext' | 'arcTime' | 'arcs' | 'consumables' | 'isPaused' | 'nextWeld' | 'onGoToReview' | 'onBackToQueue'> & { currentPass: string; filler: string }) {
   const currentPart = selectedWeld
     ? parts.find(p => p.id === selectedWeld.partNumber)
     : undefined;
 
+  const pendingPrerequisites = (prerequisites || []).filter(p => p.status !== 'done');
+  const canStart = allVerified && pendingPrerequisites.length === 0;
+
   return (
     <div className="p-4 md:p-6">
-      {/* Weld title */}
-      <div className="mb-4">
-        <h1 className="text-xl md:text-2xl font-bold text-[var(--text-hi)]">
-          {selectedWeld?.id || '—'} · {selectedWeld?.jointType || '—'}
-        </h1>
-      </div>
+      <WeldInfoHeader weld={selectedWeld} currentPass={currentPass} filler={filler} />
 
       {/* Part Drawing */}
       <div className="mb-4">
         <DrawingWithHighlight selectedWeld={selectedWeld} currentPart={currentPart} />
       </div>
 
+      {/* Blocked-on-other-welders notice */}
+      {pendingPrerequisites.length > 0 && (
+        <div className="mb-4 flex items-start gap-3 p-4 bg-yellow-500/10 border border-yellow-500/30 rounded-lg">
+          <Users className="w-5 h-5 text-yellow-500 shrink-0 mt-0.5" />
+          <p className="text-sm text-yellow-500">
+            Waiting on {pendingPrerequisites.map(p => `${p.label} (${p.welder})`).join(' & ')} — mark complete in the sidebar to unlock Start Arc
+          </p>
+        </div>
+      )}
+
       {/* Start Arc button - full width for easy tap on tablet */}
       <div className="mb-4">
         <button
           onClick={onStartArc}
-          disabled={!allVerified}
+          disabled={!canStart}
           className={`w-full py-4 rounded-xl font-bold text-lg transition-colors ${
-            allVerified
+            canStart
               ? 'bg-yellow-500 hover:bg-yellow-400 active:bg-yellow-300 text-black shadow-lg shadow-yellow-500/20'
               : 'bg-[var(--c-border)] text-[var(--text-dim)] cursor-not-allowed'
           }`}
@@ -382,13 +317,14 @@ function WeldActiveArc({
   onTogglePause,
   onComplete,
   onDoneNext,
-  onChooseDifferent,
   selectedWeld,
   parts,
   arcTime,
+  currentPass,
+  filler,
   isPaused,
   nextWeld,
-}: Omit<WeldActiveProps, 'mode' | 'onStartArc' | 'onVerify' | 'allVerified' | 'onSelectWeld' | 'onBackToQueue' | 'completedWelds' | 'onGoToReview'>) {
+}: Omit<WeldActiveProps, 'mode' | 'onStartArc' | 'onVerify' | 'allVerified' | 'arcs' | 'consumables' | 'onBackToQueue' | 'completedWelds' | 'onGoToReview'> & { currentPass: string; filler: string }) {
   const currentPart = selectedWeld
     ? parts.find(p => p.id === selectedWeld.partNumber)
     : undefined;
@@ -400,8 +336,14 @@ function WeldActiveArc({
     heatInput: 1.04,
   });
 
+  const isPausedRef = useRef(isPaused);
+  useEffect(() => {
+    isPausedRef.current = isPaused;
+  }, [isPaused]);
+
   useEffect(() => {
     const interval = setInterval(() => {
+      if (isPausedRef.current) return;
       setReadings(() => ({
         voltage: Number((23.5 + Math.random() * 0.8).toFixed(1)),
         current: Math.floor(208 + Math.random() * 10),
@@ -420,132 +362,110 @@ function WeldActiveArc({
 
   return (
     <div className="p-4 md:p-6">
+      <WeldInfoHeader weld={selectedWeld} currentPass={currentPass} filler={filler} />
+
       {/* Compact Drawing */}
-      <div className="mb-6">
+      <div className="mb-4">
         <DrawingWithHighlight selectedWeld={selectedWeld} currentPart={currentPart} compact />
       </div>
 
-      {/* Arc Indicator + Timer */}
-      <div className="mb-6 text-center">
+      {/* Primary controls — split as soon as welding starts; "Done" only becomes usable once paused */}
+      <div className="mb-6 grid grid-cols-2 gap-3">
         <button
           onClick={onTogglePause}
-          className="inline-flex flex-col items-center justify-center group cursor-pointer"
+          className="flex items-center justify-center gap-3 py-4 rounded-xl font-bold text-lg transition-colors bg-yellow-500 hover:bg-yellow-400 active:bg-yellow-300 text-black shadow-lg shadow-yellow-500/20"
         >
-          <div
-            className={`w-16 h-16 rounded-full border-2 mb-3 flex items-center justify-center transition-all duration-300 ${
-              isPaused
-                ? 'bg-yellow-500/10 border-yellow-500'
-                : 'bg-green-500/10 border-green-500'
-            }`}
-          >
-            {isPaused ? (
-              <div className="w-4 h-4 rounded-full bg-yellow-500" />
-            ) : (
-              <div className="w-6 h-6 rounded-full bg-green-500 animate-pulse" />
-            )}
-          </div>
-          <div
-            className={`text-xs font-bold uppercase tracking-[0.2em] mb-2 transition-colors ${
-              isPaused ? 'text-yellow-500' : 'text-[var(--text-verified)]'
-            }`}
-          >
-            {isPaused ? 'Arc Paused' : 'Arc On'}
-          </div>
+          <span className="w-6 h-6 rounded-full border-2 border-black/50 flex items-center justify-center shrink-0">
+            <span className={`rounded-full bg-black/70 ${isPaused ? 'w-2.5 h-2.5' : 'w-3 h-3 animate-pulse'}`} />
+          </span>
+          {isPaused ? 'Resume Arc' : 'Pause Arc'}
+          <span className="text-black/40">·</span>
+          <span className="font-mono">{formatTime(arcTime)}</span>
         </button>
-        <div className="text-5xl md:text-6xl font-bold text-[var(--text-hi)] font-mono tracking-tight">
-          {formatTime(arcTime)}
-        </div>
-        <div className="text-sm text-[var(--text-lo)] mt-2">W-014 · 3G butt · fill pass</div>
+        <button
+          onClick={onDoneNext}
+          disabled={!isPaused}
+          className={`flex flex-col items-center justify-center gap-1 py-4 rounded-xl border transition-colors ${
+            isPaused
+              ? 'bg-[var(--c-raised)] hover:bg-[var(--c-elevated)] border-[var(--c-border)] cursor-pointer'
+              : 'bg-[var(--c-raised)]/40 border-[var(--c-border)]/50 cursor-not-allowed'
+          }`}
+        >
+          <span className={`font-bold text-lg ${isPaused ? 'text-[var(--text-hi)]' : 'text-[var(--text-dim)]'}`}>Done</span>
+          <span className={`text-xs font-medium text-center ${isPaused ? 'text-[var(--text-dim)]' : 'text-[var(--text-dim)]/60'}`}>
+            {nextWeld ? `Start ${nextWeld.id}` : 'Mark part complete'}
+          </span>
+        </button>
       </div>
 
-      {isPaused ? (
-        /* Paused state: action buttons */
-        <div className="max-w-md mx-auto space-y-4">
-          <button
-            onClick={onDoneNext}
-            className="w-full flex flex-col items-center justify-center gap-1 p-6 bg-yellow-500 hover:bg-yellow-400 active:bg-yellow-300 rounded-xl transition-colors"
-          >
-            <span className="text-black font-bold text-2xl">Done</span>
-            <span className="text-black/70 text-sm font-medium">
-              {nextWeld ? `Start ${nextWeld.id} · ${nextWeld.jointType}` : 'Mark part complete · choose next task'}
-            </span>
-          </button>
-          
-          <button
-            onClick={onChooseDifferent}
-            className="w-full flex items-center justify-center p-4 bg-[var(--c-border)] hover:bg-[var(--c-hover)] border border-[var(--c-border)] rounded-xl transition-colors text-[var(--text-hi)] font-medium"
-          >
-            Choose different weld
-          </button>
-        </div>
-      ) : (
-        /* Running state: live readings + commands */
-        <>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-4">
-            <div className="bg-[var(--c-raised)] border border-[var(--c-border)] rounded-lg p-4">
-              <div className="text-xs uppercase tracking-wider text-[var(--text-dim)] mb-1">Voltage</div>
-              <div className="text-2xl font-bold text-[var(--text-hi)]">
-                {readings.voltage}<span className="text-sm text-[var(--text-dim)] font-normal"> V</span>
-              </div>
-            </div>
-            <div className="bg-[var(--c-raised)] border border-[var(--c-border)] rounded-lg p-4">
-              <div className="text-xs uppercase tracking-wider text-[var(--text-dim)] mb-1">Current</div>
-              <div className="text-2xl font-bold text-[var(--text-hi)]">
-                {readings.current}<span className="text-sm text-[var(--text-dim)] font-normal"> A</span>
-              </div>
-            </div>
-            <div className="bg-[var(--c-raised)] border border-[var(--c-border)] rounded-lg p-4">
-              <div className="text-xs uppercase tracking-wider text-[var(--text-dim)] mb-1">Travel</div>
-              <div className="text-2xl font-bold text-yellow-500">
-                {readings.travel}<span className="text-sm text-[var(--text-dim)] font-normal"> cm/min</span>
-              </div>
-            </div>
-            <div className="bg-[var(--c-raised)] border border-[var(--c-border)] rounded-lg p-4">
-              <div className="text-xs uppercase tracking-wider text-[var(--text-dim)] mb-1">Heat In</div>
-              <div className="text-2xl font-bold text-yellow-500">
-                {readings.heatInput}<span className="text-sm text-[var(--text-dim)] font-normal"> kJ/mm</span>
-              </div>
+      {/* Live readings — stay mounted and frozen when paused so the layout never jumps */}
+      <div className={isPaused ? 'grayscale opacity-40 pointer-events-none transition-all' : 'transition-all'}>
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-4">
+          <div className="bg-[var(--c-raised)] border border-[var(--c-border)] rounded-lg p-4">
+            <div className="text-xs uppercase tracking-wider text-[var(--text-dim)] mb-1">Voltage</div>
+            <div className="text-2xl font-bold text-[var(--text-hi)]">
+              {readings.voltage}<span className="text-sm text-[var(--text-dim)] font-normal"> V</span>
             </div>
           </div>
-
-          {readings.heatInput > 1.0 && (
-            <div className="flex items-center gap-3 p-4 bg-yellow-500/10 border border-yellow-500/30 rounded-lg mb-6">
-              <AlertTriangle className="w-5 h-5 text-yellow-500 shrink-0" />
-              <p className="text-sm text-yellow-500">
-                Heat input over WPS limit — increase travel to 34 cm/min
-              </p>
+          <div className="bg-[var(--c-raised)] border border-[var(--c-border)] rounded-lg p-4">
+            <div className="text-xs uppercase tracking-wider text-[var(--text-dim)] mb-1">Current</div>
+            <div className="text-2xl font-bold text-[var(--text-hi)]">
+              {readings.current}<span className="text-sm text-[var(--text-dim)] font-normal"> A</span>
             </div>
-          )}
+          </div>
+          <div className="bg-[var(--c-raised)] border border-[var(--c-border)] rounded-lg p-4">
+            <div className="text-xs uppercase tracking-wider text-[var(--text-dim)] mb-1">Travel</div>
+            <div className="text-2xl font-bold text-yellow-500">
+              {readings.travel}<span className="text-sm text-[var(--text-dim)] font-normal"> cm/min</span>
+            </div>
+          </div>
+          <div className="bg-[var(--c-raised)] border border-[var(--c-border)] rounded-lg p-4">
+            <div className="text-xs uppercase tracking-wider text-[var(--text-dim)] mb-1">Heat In</div>
+            <div className="text-2xl font-bold text-yellow-500">
+              {readings.heatInput}<span className="text-sm text-[var(--text-dim)] font-normal"> kJ/mm</span>
+            </div>
+          </div>
+        </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            <div className="lg:col-span-2" />
+        {readings.heatInput > 1.0 && (
+          <div className="flex items-center gap-3 p-4 bg-yellow-500/10 border border-yellow-500/30 rounded-lg mb-6">
+            <AlertTriangle className="w-5 h-5 text-yellow-500 shrink-0" />
+            <p className="text-sm text-yellow-500">
+              Heat input over WPS limit — increase travel to 34 cm/min
+            </p>
+          </div>
+        )}
 
-            <div className="space-y-4">
-              <div className="p-4 bg-[var(--c-raised)] border border-[var(--c-border)] rounded-lg">
-                <div className="text-xs uppercase tracking-wider text-[var(--text-dim)] mb-3">Live · Fleet · 4 Hz</div>
-                <div className="space-y-3">
-                  <div className="flex justify-between text-sm">
-                    <span className="text-[var(--text-lo)]">Machine</span>
-                    <span className="text-[var(--text-hi)] font-medium">{machineSpec.name}</span>
-                  </div>
-                  <div className="flex justify-between text-sm">
-                    <span className="text-[var(--text-lo)]">Layer</span>
-                    <span className="text-[var(--text-hi)] font-medium">{machineSpec.layer}</span>
-                  </div>
-                  <div className="flex justify-between text-sm">
-                    <span className="text-[var(--text-lo)]">Deposition</span>
-                    <span className="text-[var(--text-hi)] font-medium">{machineSpec.deposition}</span>
-                  </div>
-                  <div className="flex justify-between text-sm">
-                    <span className="text-[var(--text-lo)]">WPS heat max</span>
-                    <span className="text-yellow-500 font-medium">{machineSpec.wpsHeatMax}</span>
-                  </div>
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <div className="lg:col-span-2" />
+
+          <div className="space-y-4">
+            <div className="p-4 bg-[var(--c-raised)] border border-[var(--c-border)] rounded-lg">
+              <div className="text-xs uppercase tracking-wider text-[var(--text-dim)] mb-3">
+                {isPaused ? 'Paused · Fleet · 4 Hz' : 'Live · Fleet · 4 Hz'}
+              </div>
+              <div className="space-y-3">
+                <div className="flex justify-between text-sm">
+                  <span className="text-[var(--text-lo)]">Machine</span>
+                  <span className="text-[var(--text-hi)] font-medium">{machineSpec.name}</span>
+                </div>
+                <div className="flex justify-between text-sm">
+                  <span className="text-[var(--text-lo)]">Layer</span>
+                  <span className="text-[var(--text-hi)] font-medium">{machineSpec.layer}</span>
+                </div>
+                <div className="flex justify-between text-sm">
+                  <span className="text-[var(--text-lo)]">Deposition</span>
+                  <span className="text-[var(--text-hi)] font-medium">{machineSpec.deposition}</span>
+                </div>
+                <div className="flex justify-between text-sm">
+                  <span className="text-[var(--text-lo)]">WPS heat max</span>
+                  <span className="text-yellow-500 font-medium">{machineSpec.wpsHeatMax}</span>
                 </div>
               </div>
             </div>
           </div>
-        </>
-      )}
+        </div>
+      </div>
     </div>
   );
 }

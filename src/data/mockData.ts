@@ -1,4 +1,4 @@
-import { Weld, Part, Consumable, Station, Alert } from '@/types/weldcloud';
+import { Weld, Part, Consumable, Station, Alert, PrerequisiteProcess } from '@/types/weldcloud';
 
 export const welds: Weld[] = [
   { id: 'W-014', partNumber: 'P-4471-B', jointType: 'Butt joint 3G', wps: 'WPS-A36-3G', duration: 8, priority: true, process: 'GMAW', drawingPosition: { x: 25, y: 38 } },
@@ -15,7 +15,7 @@ export const parts: Part[] = [
     welds: [
       { id: 'W-014', partNumber: 'P-4471-B', jointType: 'Butt joint 3G', wps: 'WPS-A36-3G', duration: 8, priority: true, process: 'GMAW', drawingPosition: { x: 25, y: 38 } },
       { id: 'W-015', partNumber: 'P-4471-B', jointType: 'Fillet 2F', wps: 'WPS-A36-2F', duration: 5, process: 'FCAW', drawingPosition: { x: 73, y: 38 } },
-      { id: 'W-018', partNumber: 'P-4471-B', jointType: 'Butt joint 1G', wps: 'WPS-A36-1G', duration: 6, process: 'GTAW', drawingPosition: { x: 54, y: 24 } },
+      { id: 'W-018', partNumber: 'P-4471-B', jointType: 'Butt joint 1G · Cap pass', wps: 'WPS-A36-1G', duration: 6, process: 'GTAW', drawingPosition: { x: 54, y: 24 } },
       { id: 'W-019', partNumber: 'P-4471-B', jointType: 'Fillet 3F', wps: 'WPS-A36-3F', duration: 4, process: 'SMAW', drawingPosition: { x: 48, y: 62 } },
       { id: 'W-020', partNumber: 'P-4471-B', jointType: 'Fillet 2F', wps: 'WPS-A36-2F', duration: 7, priority: true, process: 'GMAW', drawingPosition: { x: 63, y: 38 } },
     ],
@@ -33,6 +33,15 @@ export const parts: Part[] = [
 
 // Deep clone of parts for tracking completion against original data
 export const initialParts: Part[] = JSON.parse(JSON.stringify(parts));
+
+// Passes other welders must finish on a multi-process joint before this weld's
+// own process can start. Keyed by weld id.
+export const weldPrerequisites: Record<string, PrerequisiteProcess[]> = {
+  'W-018': [
+    { id: 'w018-root', label: 'Root pass', process: 'SMAW', welder: 'T. Bauer', status: 'pending' },
+    { id: 'w018-fill', label: 'Fill pass', process: 'FCAW', welder: 'R. Silva', status: 'pending' },
+  ],
+};
 
 export const consumables: Consumable[] = [
   { id: 'c1', name: 'Wire ER70S-6', lot: 'L24-08812', verified: true, method: 'scan' },

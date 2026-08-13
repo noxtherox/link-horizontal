@@ -200,7 +200,7 @@ export function TaskQueue({ parts, onSelectWeld, completedWelds, onSendPartForRe
 
               {/* Expanded weld list */}
               {isExpanded && (
-                <div className="border-t border-[var(--c-border)] px-4 pb-4 pt-3 bg-[#141414]/50">
+                <div className="border-t border-[var(--c-border)] px-4 pb-4 pt-3 bg-[var(--c-surface)]">
                   <div className="text-xs uppercase tracking-wider text-[var(--text-dim)] mb-3">
                     {isFullyCompleted ? 'All welds completed' : 'Welds assigned — tap one to start'}
                   </div>

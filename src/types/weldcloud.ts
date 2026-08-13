@@ -26,6 +26,17 @@ export interface Part {
   welds: Weld[];
 }
 
+// A pass that another welder must finish before this weld's own process can start
+// (e.g. root/fill passes on a multi-process joint). Tracked outside the Weld itself
+// since it belongs to a different welder's station.
+export interface PrerequisiteProcess {
+  id: string;
+  label: string;
+  process: string;
+  welder: string;
+  status: 'pending' | 'done';
+}
+
 export interface Consumable {
   id: string;
   name: string;
