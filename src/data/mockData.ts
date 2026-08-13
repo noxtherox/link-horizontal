@@ -75,3 +75,14 @@ export const alerts: Alert[] = [
   { id: 'a2', station: 'B-3', message: 'B-3 gas check', time: '06:45', acknowledged: true },
   { id: 'a3', station: 'B-2', message: 'B-2 wire spool', time: '06:31', acknowledged: true },
 ];
+
+export const AVAILABILITY_CODES = [
+  { code: 'P', label: 'Production time', color: '#22c55e' },
+  { code: 'F', label: 'Failure',         color: '#ef4444' },
+  { code: 'W', label: 'Waiting',         color: '#f59e0b' },
+  { code: 'L', label: 'Line restraint',  color: '#6366f1' },
+  { code: 'U', label: 'Unscheduled',     color: '#eab308' },
+  { code: 'N', label: 'Not Defined',     color: '#9ca3af' },
+] as const;
+
+export type AvailabilityCode = typeof AVAILABILITY_CODES[number]['code'];

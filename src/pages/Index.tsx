@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { useWeldFlow } from '@/hooks/useWeldFlow';
 import { Header } from '@/components/Header';
 import { VoicePanel } from '@/components/VoicePanel';
@@ -8,15 +9,19 @@ import { WeldNavigator } from '@/components/WeldNavigator';
 import { ReviewAndSign } from '@/components/ReviewAndSign';
 import { FloorStatus } from '@/components/FloorStatus';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { AvailabilityCode } from '@/data/mockData';
 
 export default function Index() {
   const flow = useWeldFlow();
+  const [availability, setAvailability] = useState<AvailabilityCode>('P');
 
   return (
     <div className="min-h-screen bg-[var(--c-root)] flex flex-col">
       <Header
         viewMode={flow.viewMode}
         setViewMode={flow.setViewMode}
+        availability={availability}
+        onSetAvailability={setAvailability}
       />
 
       {flow.viewMode === 'welder' && flow.step === 'weldActive' && (
@@ -98,6 +103,8 @@ export default function Index() {
           onSelectWeld={flow.selectWeld}
           weldPrerequisites={flow.selectedWeldPrerequisites}
           onTogglePrerequisite={(id) => flow.selectedWeld && flow.markPrerequisiteDone(flow.selectedWeld.id, id)}
+          availability={availability}
+          onSetAvailability={setAvailability}
         />
       </div>
 

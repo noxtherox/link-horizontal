@@ -1,34 +1,25 @@
 import { useState } from 'react';
 import { ViewMode } from '@/types/weldcloud';
+import { AVAILABILITY_CODES, AvailabilityCode } from '@/data/mockData';
 import { Zap, ChevronDown, Wifi, Sun, Moon, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useTheme } from '@/contexts/ThemeContext';
 
-const AVAILABILITY_CODES = [
-  { code: 'P', label: 'Production time', color: '#22c55e' },
-  { code: 'F', label: 'Failure',         color: '#ef4444' },
-  { code: 'W', label: 'Waiting',         color: '#f59e0b' },
-  { code: 'L', label: 'Line restraint',  color: '#6366f1' },
-  { code: 'U', label: 'Unscheduled',     color: '#eab308' },
-  { code: 'N', label: 'Not Defined',     color: '#9ca3af' },
-] as const;
-
-type AvailabilityCode = typeof AVAILABILITY_CODES[number]['code'];
-
 interface HeaderProps {
   viewMode: ViewMode;
   setViewMode: (m: ViewMode) => void;
+  availability: AvailabilityCode;
+  onSetAvailability: (code: AvailabilityCode) => void;
 }
 
-export function Header({ viewMode, setViewMode }: HeaderProps) {
+export function Header({ viewMode, setViewMode, availability, onSetAvailability }: HeaderProps) {
   const { theme, toggleTheme } = useTheme();
-  const [availability, setAvailability] = useState<AvailabilityCode>('P');
   const [showAvailability, setShowAvailability] = useState(false);
 
   const current = AVAILABILITY_CODES.find(c => c.code === availability)!;
 
   const selectCode = (code: AvailabilityCode) => {
-    setAvailability(code);
+    onSetAvailability(code);
     setShowAvailability(false);
   };
 

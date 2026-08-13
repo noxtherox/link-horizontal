@@ -1,5 +1,6 @@
-import { Check, Scan, Zap, ArrowRight, ChevronDown, ChevronUp, ClipboardCheck, Users } from 'lucide-react';
+import { Check, Scan, ChevronDown, ChevronUp, ClipboardCheck, Users } from 'lucide-react';
 import { ViewMode, WelderStep, Weld, Part, Consumable, CompletedWeld, PrerequisiteProcess } from '@/types/weldcloud';
+import { AVAILABILITY_CODES, AvailabilityCode } from '@/data/mockData';
 import { useState } from 'react';
 
 interface VoicePanelProps {
@@ -19,9 +20,11 @@ interface VoicePanelProps {
   onSelectWeld?: (weld: Weld) => void;
   weldPrerequisites?: PrerequisiteProcess[];
   onTogglePrerequisite?: (id: string) => void;
+  availability?: AvailabilityCode;
+  onSetAvailability?: (code: AvailabilityCode) => void;
 }
 
-export function VoicePanel({ viewMode, step, weldActiveMode = 'setup', isRecording, setIsRecording, voiceCommand, selectedWeld, nextWeld, parts, consumables, completedWelds, onVerify, onSendToInspection, onSelectWeld, weldPrerequisites, onTogglePrerequisite }: VoicePanelProps) {
+export function VoicePanel({ viewMode, step, weldActiveMode = 'setup', isRecording, setIsRecording, voiceCommand, selectedWeld, nextWeld, parts, consumables, completedWelds, onVerify, onSendToInspection, onSelectWeld, weldPrerequisites, onTogglePrerequisite, availability, onSetAvailability }: VoicePanelProps) {
   const [otherWeldsExpanded, setOtherWeldsExpanded] = useState(false);
 
   let key: string;
@@ -33,8 +36,9 @@ export function VoicePanel({ viewMode, step, weldActiveMode = 'setup', isRecordi
     key = step;
   }
 
-  const isPreWeldScan = key === 'weldActiveSetup' && consumables && onVerify;
-  const hasPrerequisites = key === 'weldActiveSetup' && weldPrerequisites && weldPrerequisites.length > 0;
+  const isWeldActiveStep = key === 'weldActiveSetup' || key === 'weldActiveArc';
+  const isPreWeldScan = isWeldActiveStep && consumables && onVerify;
+  const hasPrerequisites = isWeldActiveStep && weldPrerequisites && weldPrerequisites.length > 0;
 
   // Next weld in the task queue (first weld of the first part) — used for the
   // press-to-confirm card that appears after the mic is pressed.
@@ -131,124 +135,58 @@ export function VoicePanel({ viewMode, step, weldActiveMode = 'setup', isRecordi
         </div>
       )}
 
-      {isPreWeldScan ? (
-        <div className="p-4 border-b border-[var(--c-border)] flex-1 overflow-y-auto">
-          <div className="text-xs uppercase tracking-wider text-[var(--text-dim)] mb-3">Scan Consumables</div>
-          <div className="space-y-3">
-            {consumables!.map((c, i) => (
-              <button
-                key={c.id}
-                onClick={() => onVerify!(c.id)}
-                className={`w-full text-left p-3 rounded-lg border transition-colors ${
-                  c.verified
-                    ? 'bg-green-500/10 border-green-500/30'
-                    : i === 3
-                    ? 'bg-yellow-500/5 border-yellow-500/30'
-                    : 'bg-[var(--c-raised)] border-[var(--c-border)] hover:bg-[var(--c-elevated)]'
-                }`}
-              >
-                <div className="flex items-center gap-3">
-                  <div
-                    className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 ${
-                      c.verified ? 'bg-green-500 text-black' : 'bg-[var(--c-border)] text-[var(--text-lo)]'
+      {isWeldActiveStep ? (
+        <div className="flex-1 overflow-y-auto">
+          {isPreWeldScan && (
+            <div className="p-4 border-b border-[var(--c-border)]">
+              <div className="text-xs uppercase tracking-wider text-[var(--text-dim)] mb-3">Scan Consumables</div>
+              <div className="space-y-3">
+                {consumables!.map((c, i) => (
+                  <button
+                    key={c.id}
+                    onClick={() => onVerify!(c.id)}
+                    className={`w-full text-left p-3 rounded-lg border transition-colors ${
+                      c.verified
+                        ? 'bg-green-500/10 border-green-500/30'
+                        : i === 3
+                        ? 'bg-yellow-500/5 border-yellow-500/30'
+                        : 'bg-[var(--c-raised)] border-[var(--c-border)] hover:bg-[var(--c-elevated)]'
                     }`}
                   >
-                    {c.verified ? <Check className="w-4 h-4" /> : <span className="text-sm">{i + 1}</span>}
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <div className={`text-sm font-medium ${c.verified ? 'text-[var(--text-verified)]' : 'text-[var(--text-hi)]'}`}>
-                      {c.name}
+                    <div className="flex items-center gap-3">
+                      <div
+                        className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 ${
+                          c.verified ? 'bg-green-500 text-black' : 'bg-[var(--c-border)] text-[var(--text-lo)]'
+                        }`}
+                      >
+                        {c.verified ? <Check className="w-4 h-4" /> : <span className="text-sm">{i + 1}</span>}
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <div className={`text-sm font-medium ${c.verified ? 'text-[var(--text-verified)]' : 'text-[var(--text-hi)]'}`}>
+                          {c.name}
+                        </div>
+                        <div className="text-xs text-[var(--text-dim)]">{c.lot}</div>
+                      </div>
                     </div>
-                    <div className="text-xs text-[var(--text-dim)]">{c.lot}</div>
-                  </div>
-                </div>
-                <div className="mt-2 flex items-center gap-2">
-                  {c.verified ? (
-                    <span className="text-xs text-[var(--text-verified)] flex items-center gap-1">
-                      <Scan className="w-3 h-3" /> Verified
-                    </span>
-                  ) : (
-                    <span className="text-xs text-yellow-500 flex items-center gap-1">
-                      <Scan className="w-3 h-3" /> Tap to scan
-                    </span>
-                  )}
-                </div>
-              </button>
-            ))}
-          </div>
-
-        </div>
-      ) : key === 'weldActiveArc' ? (
-        <>
-          <div className="p-4 border-b border-[var(--c-border)] space-y-3">
-            {/* Current Weld */}
-            <div className="bg-[var(--c-raised)] border border-yellow-500/30 rounded-lg p-3 relative overflow-hidden">
-              <div className="absolute top-0 left-0 w-1 h-full bg-yellow-500" />
-              <div className="flex items-center gap-1.5 mb-2">
-                <Zap className="w-3 h-3 text-yellow-500" />
-                <span className="text-xs uppercase tracking-wider text-yellow-500 font-semibold">Current Weld</span>
+                    <div className="mt-2 flex items-center gap-2">
+                      {c.verified ? (
+                        <span className="text-xs text-[var(--text-verified)] flex items-center gap-1">
+                          <Scan className="w-3 h-3" /> Verified
+                        </span>
+                      ) : (
+                        <span className="text-xs text-yellow-500 flex items-center gap-1">
+                          <Scan className="w-3 h-3" /> Tap to scan
+                        </span>
+                      )}
+                    </div>
+                  </button>
+                ))}
               </div>
-              {selectedWeld ? (
-                <div className="space-y-1.5">
-                  <div className="flex items-center gap-2 flex-wrap">
-                    <span className="text-sm font-bold text-[var(--text-hi)]">{selectedWeld.id}</span>
-                    <span className="text-xs text-yellow-500 bg-yellow-500/10 px-1.5 py-0.5 rounded font-mono border border-yellow-500/20">
-                      {selectedWeld.process}
-                    </span>
-                  </div>
-                  <div className="text-xs text-[var(--text-md)]">{selectedWeld.jointType}</div>
-                  <div className="flex flex-wrap gap-1">
-                    <span className="text-xs text-[var(--text-dim)] bg-[var(--c-surface)] px-1.5 py-0.5 rounded border border-[var(--c-border)]">
-                      {selectedWeld.wps}
-                    </span>
-                    <span className="text-xs text-[var(--text-dim)] bg-[var(--c-surface)] px-1.5 py-0.5 rounded border border-[var(--c-border)]">
-                      {selectedWeld.duration} min
-                    </span>
-                    <span className="text-xs text-[var(--text-dim)] bg-[var(--c-surface)] px-1.5 py-0.5 rounded border border-[var(--c-border)]">
-                      {selectedWeld.partNumber}
-                    </span>
-                  </div>
-                </div>
-              ) : (
-                <p className="text-xs text-[var(--text-dim)]">No weld selected</p>
-              )}
             </div>
+          )}
 
-            {/* Next-up */}
-            <div className="bg-[var(--c-raised)] border border-[var(--c-border)] rounded-lg p-3 relative overflow-hidden">
-              <div className="absolute top-0 left-0 w-1 h-full bg-gray-600" />
-              <div className="flex items-center gap-1.5 mb-2">
-                <ArrowRight className="w-3 h-3 text-[var(--text-lo)]" />
-                <span className="text-xs uppercase tracking-wider text-[var(--text-lo)] font-semibold">Next-up</span>
-              </div>
-              {nextWeld ? (
-                <div className="space-y-1.5">
-                  <div className="flex items-center gap-2 flex-wrap">
-                    <span className="text-sm font-bold text-[var(--text-md)]">{nextWeld.id}</span>
-                    <span className="text-xs text-[var(--text-lo)] bg-[var(--c-elevated)] px-1.5 py-0.5 rounded font-mono border border-[var(--c-border)]">
-                      {nextWeld.process}
-                    </span>
-                  </div>
-                  <div className="text-xs text-[var(--text-lo)]">{nextWeld.jointType}</div>
-                  <div className="flex flex-wrap gap-1">
-                    <span className="text-xs text-[var(--text-dim)] bg-[var(--c-surface)] px-1.5 py-0.5 rounded border border-[var(--c-border)]">
-                      {nextWeld.wps}
-                    </span>
-                    <span className="text-xs text-[var(--text-dim)] bg-[var(--c-surface)] px-1.5 py-0.5 rounded border border-[var(--c-border)]">
-                      {nextWeld.duration} min
-                    </span>
-                    <span className="text-xs text-[var(--text-dim)] bg-[var(--c-surface)] px-1.5 py-0.5 rounded border border-[var(--c-border)]">
-                      {nextWeld.partNumber}
-                    </span>
-                  </div>
-                </div>
-              ) : (
-                <p className="text-xs text-[var(--text-dim)]">Queue complete</p>
-              )}
-            </div>
-
-            {/* Other welds */}
-            {otherWelds.length > 0 && (
+          {key === 'weldActiveArc' && otherWelds.length > 0 && (
+            <div className="p-4 border-b border-[var(--c-border)]">
               <div className="bg-[var(--c-raised)] border border-[var(--c-border)] rounded-lg p-3">
                 <button
                   onClick={() => setOtherWeldsExpanded(!otherWeldsExpanded)}
@@ -282,10 +220,10 @@ export function VoicePanel({ viewMode, step, weldActiveMode = 'setup', isRecordi
                   </div>
                 )}
               </div>
-            )}
-          </div>
+            </div>
+          )}
 
-          {voiceCommand && (
+          {key === 'weldActiveArc' && voiceCommand && (
             <div className="p-4 border-b border-[var(--c-border)] bg-[var(--c-raised)]">
               <div className="flex items-center gap-2 text-xs text-[var(--text-verified)]">
                 <Check className="w-3 h-3" />
@@ -294,7 +232,7 @@ export function VoicePanel({ viewMode, step, weldActiveMode = 'setup', isRecordi
               <p className="mt-1 text-sm text-[var(--text-hi)] font-mono">{voiceCommand}</p>
             </div>
           )}
-        </>
+        </div>
       ) : key === 'reviewAndSign' ? (
         <>
           <div className="p-4 border-b border-[var(--c-border)]">
@@ -349,38 +287,78 @@ export function VoicePanel({ viewMode, step, weldActiveMode = 'setup', isRecordi
             </div>
           )}
         </>
-      ) : key === 'taskQueue' && isRecording && queueNextWeld ? (
+      ) : key === 'taskQueue' ? (
         <>
-          <div className="p-4 border-b border-[var(--c-border)]">
-            <div className="flex items-center gap-2 text-xs text-[var(--text-lo)] mb-3">
-              <span className="text-yellow-500">🎤</span>
-              <span className="font-mono">"start {queueNextWeld.id}"</span>
+          {availability && onSetAvailability && (
+            <div className="p-4 border-b border-[var(--c-border)]">
+              <div className="text-xs uppercase tracking-wider text-[var(--text-dim)] mb-3">Station Availability</div>
+              <div className="space-y-2">
+                {AVAILABILITY_CODES.map(({ code, label, color }) => {
+                  const isSelected = availability === code;
+                  return (
+                    <button
+                      key={code}
+                      onClick={() => onSetAvailability(code)}
+                      style={isSelected ? { borderColor: color, backgroundColor: `${color}18` } : {}}
+                      className={`w-full flex items-center gap-3 p-2.5 rounded-lg border transition-colors ${
+                        isSelected
+                          ? 'border-current'
+                          : 'bg-[var(--c-raised)] border-[var(--c-border)] hover:bg-[var(--c-elevated)]'
+                      }`}
+                    >
+                      <span className="w-3 h-3 rounded-full shrink-0" style={{ backgroundColor: color }} />
+                      <span className="text-sm font-bold text-[var(--text-hi)] w-4 shrink-0">{code}</span>
+                      <span className="text-sm text-[var(--text-lo)] flex-1 text-left truncate">{label}</span>
+                      {isSelected && <Check className="w-4 h-4 shrink-0" style={{ color }} />}
+                    </button>
+                  );
+                })}
+              </div>
             </div>
-            <p className="text-sm text-[var(--text-hi)] font-medium mb-3">
-              Start weld {queueNextWeld.id} — {queueNextWeld.partNumber} {queueNextWeld.jointType}?
-            </p>
-            <div className="space-y-2">
-              <button
-                onClick={() => {
-                  setIsRecording(false);
-                  onSelectWeld?.(queueNextWeld);
-                }}
-                className="w-full flex flex-col items-center justify-center gap-1 p-4 bg-green-600 hover:bg-green-500 rounded-lg transition-colors"
-              >
-                <Check className="w-5 h-5 text-[var(--text-hi)]" />
-                <span className="text-[var(--text-hi)] font-medium">Yes</span>
-                <span className="text-xs text-[var(--text-verified)]">Say 'yes' or tap</span>
-              </button>
-              <button
-                onClick={() => setIsRecording(false)}
-                className="w-full flex flex-col items-center justify-center gap-1 p-4 bg-[var(--c-border)] hover:bg-[var(--c-hover)] rounded-lg transition-colors"
-              >
-                <span className="text-[var(--text-hi)] text-lg leading-none">✕</span>
-                <span className="text-[var(--text-hi)] font-medium">No</span>
-                <span className="text-xs text-[var(--text-lo)]">Say 'no' or tap</span>
-              </button>
+          )}
+
+          {isRecording && queueNextWeld && (
+            <div className="p-4 border-b border-[var(--c-border)]">
+              <div className="flex items-center gap-2 text-xs text-[var(--text-lo)] mb-3">
+                <span className="text-yellow-500">🎤</span>
+                <span className="font-mono">"start {queueNextWeld.id}"</span>
+              </div>
+              <p className="text-sm text-[var(--text-hi)] font-medium mb-3">
+                Start weld {queueNextWeld.id} — {queueNextWeld.partNumber} {queueNextWeld.jointType}?
+              </p>
+              <div className="space-y-2">
+                <button
+                  onClick={() => {
+                    setIsRecording(false);
+                    onSelectWeld?.(queueNextWeld);
+                  }}
+                  className="w-full flex flex-col items-center justify-center gap-1 p-4 bg-green-600 hover:bg-green-500 rounded-lg transition-colors"
+                >
+                  <Check className="w-5 h-5 text-[var(--text-hi)]" />
+                  <span className="text-[var(--text-hi)] font-medium">Yes</span>
+                  <span className="text-xs text-[var(--text-verified)]">Say 'yes' or tap</span>
+                </button>
+                <button
+                  onClick={() => setIsRecording(false)}
+                  className="w-full flex flex-col items-center justify-center gap-1 p-4 bg-[var(--c-border)] hover:bg-[var(--c-hover)] rounded-lg transition-colors"
+                >
+                  <span className="text-[var(--text-hi)] text-lg leading-none">✕</span>
+                  <span className="text-[var(--text-hi)] font-medium">No</span>
+                  <span className="text-xs text-[var(--text-lo)]">Say 'no' or tap</span>
+                </button>
+              </div>
             </div>
-          </div>
+          )}
+
+          {!isRecording && voiceCommand && (
+            <div className="p-4 border-b border-[var(--c-border)] bg-[var(--c-raised)]">
+              <div className="flex items-center gap-2 text-xs text-[var(--text-verified)]">
+                <Check className="w-3 h-3" />
+                <span>Understood</span>
+              </div>
+              <p className="mt-1 text-sm text-[var(--text-hi)] font-mono">{voiceCommand}</p>
+            </div>
+          )}
         </>
       ) : voiceCommand ? (
         <div className="p-4 border-b border-[var(--c-border)] bg-[var(--c-raised)]">
@@ -392,7 +370,7 @@ export function VoicePanel({ viewMode, step, weldActiveMode = 'setup', isRecordi
         </div>
       ) : null}
 
-      {!isPreWeldScan && <div className="flex-1" />}
+      {!isWeldActiveStep && <div className="flex-1" />}
     </aside>
   );
 }
