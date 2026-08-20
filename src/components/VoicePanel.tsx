@@ -25,7 +25,7 @@ interface VoicePanelProps {
 }
 
 export function VoicePanel({ viewMode, step, weldActiveMode = 'setup', isRecording, setIsRecording, voiceCommand, selectedWeld, nextWeld, parts, consumables, completedWelds, onVerify, onSendToInspection, onSelectWeld, weldPrerequisites, onTogglePrerequisite, availability, onSetAvailability }: VoicePanelProps) {
-  const [otherWeldsExpanded, setOtherWeldsExpanded] = useState(false);
+  const [consumablesExpanded, setConsumablesExpanded] = useState(false);
 
   let key: string;
   if (viewMode === 'supervisor') {
@@ -37,23 +37,13 @@ export function VoicePanel({ viewMode, step, weldActiveMode = 'setup', isRecordi
   }
 
   const isWeldActiveStep = key === 'weldActiveSetup' || key === 'weldActiveArc';
-  const isPreWeldScan = isWeldActiveStep && consumables && onVerify;
+  const isPreWeldScan = key === 'weldActiveSetup' && consumables && onVerify;
+  const isArcConsumablesSummary = key === 'weldActiveArc' && consumables && consumables.length > 0;
   const hasPrerequisites = isWeldActiveStep && weldPrerequisites && weldPrerequisites.length > 0;
 
   // Next weld in the task queue (first weld of the first part) — used for the
   // press-to-confirm card that appears after the mic is pressed.
   const queueNextWeld = parts[0]?.welds[0] ?? null;
-
-  // Compute other welds for arc mode
-  const otherWelds: Weld[] = [];
-  if (key === 'weldActiveArc' && selectedWeld) {
-    const currentPart = parts.find(p => p.id === selectedWeld.partNumber);
-    if (currentPart) {
-      otherWelds.push(...currentPart.welds.filter(
-        w => w.id !== selectedWeld.id && w.id !== nextWeld?.id
-      ));
-    }
-  }
 
   const pendingInspectionCount = completedWelds?.filter(c => !c.locked).length || 0;
   const lockedCount = completedWelds?.filter(c => c.locked).length || 0;
@@ -185,40 +175,69 @@ export function VoicePanel({ viewMode, step, weldActiveMode = 'setup', isRecordi
             </div>
           )}
 
-          {key === 'weldActiveArc' && otherWelds.length > 0 && (
+          {isArcConsumablesSummary && (
             <div className="p-4 border-b border-[var(--c-border)]">
               <div className="bg-[var(--c-raised)] border border-[var(--c-border)] rounded-lg p-3">
                 <button
-                  onClick={() => setOtherWeldsExpanded(!otherWeldsExpanded)}
+                  onClick={() => setConsumablesExpanded(!consumablesExpanded)}
                   className="w-full flex items-center justify-between"
                 >
                   <span className="text-xs uppercase tracking-wider text-[var(--text-dim)] font-semibold">
-                    Other welds on this part
+                    Consumables
                   </span>
-                  {otherWeldsExpanded ? (
-                    <ChevronUp className="w-3 h-3 text-[var(--text-dim)]" />
-                  ) : (
-                    <ChevronDown className="w-3 h-3 text-[var(--text-dim)]" />
-                  )}
+                  <div className="flex items-center gap-2">
+                    <span className="text-xs text-[var(--text-verified)] flex items-center gap-1">
+                      <Check className="w-3 h-3" /> {consumables!.length} verified
+                    </span>
+                    {consumablesExpanded ? (
+                      <ChevronUp className="w-3 h-3 text-[var(--text-dim)]" />
+                    ) : (
+                      <ChevronDown className="w-3 h-3 text-[var(--text-dim)]" />
+                    )}
+                  </div>
                 </button>
-                {otherWeldsExpanded && (
+                {consumablesExpanded && (
                   <div className="mt-3 space-y-2">
-                    {otherWelds.map((weld) => (
+                    {consumables!.map((c) => (
                       <div
-                        key={weld.id}
+                        key={c.id}
                         className="flex items-center justify-between p-2 bg-[var(--c-surface)] rounded border border-[var(--c-border)]"
                       >
-                        <div className="flex items-center gap-2 min-w-0">
-                          <span className="text-xs font-bold text-[var(--text-lo)] shrink-0">{weld.id}</span>
-                          <span className="text-xs text-[var(--text-dim)] truncate">{weld.jointType}</span>
-                        </div>
-                        <span className="text-xs text-[var(--text-dim)] bg-[var(--c-elevated)] px-1.5 py-0.5 rounded font-mono border border-[var(--c-border)] shrink-0">
-                          {weld.process}
-                        </span>
+                        <span className="text-xs font-medium text-[var(--text-hi)] truncate">{c.name}</span>
+                        <span className="text-xs text-[var(--text-dim)] font-mono shrink-0">{c.lot}</span>
                       </div>
                     ))}
                   </div>
                 )}
+              </div>
+            </div>
+          )}
+
+          {key === 'weldActiveArc' && availability && onSetAvailability && (
+            <div className="p-4 border-b border-[var(--c-border)]">
+              <div className="text-xs uppercase tracking-wider text-[var(--text-dim)] font-semibold mb-3">
+                Machine Status
+              </div>
+              <div className="grid grid-cols-1 gap-2">
+                {AVAILABILITY_CODES.map(({ code, label, color }) => {
+                  const isSelected = availability === code;
+                  return (
+                    <button
+                      key={code}
+                      onClick={() => onSetAvailability(code)}
+                      style={isSelected ? { borderColor: color, backgroundColor: `${color}18` } : {}}
+                      className={`w-full flex items-center gap-3 p-3.5 rounded-lg border transition-colors ${
+                        isSelected
+                          ? 'border-current'
+                          : 'bg-[var(--c-raised)] border-[var(--c-border)] hover:bg-[var(--c-elevated)]'
+                      }`}
+                    >
+                      <span className="w-3.5 h-3.5 rounded-full shrink-0" style={{ backgroundColor: color }} />
+                      <span className="text-sm font-bold text-[var(--text-hi)] flex-1 text-left">{label}</span>
+                      {isSelected && <Check className="w-4 h-4 shrink-0" style={{ color }} />}
+                    </button>
+                  );
+                })}
               </div>
             </div>
           )}

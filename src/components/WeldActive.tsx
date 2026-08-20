@@ -385,14 +385,14 @@ function WeldActiveArc({
         <button
           onClick={onDoneNext}
           disabled={!isPaused}
-          className={`flex flex-col items-center justify-center gap-1 py-4 rounded-xl border transition-colors ${
+          className={`flex flex-col items-center justify-center gap-1 py-4 rounded-xl font-bold transition-colors ${
             isPaused
-              ? 'bg-[var(--c-raised)] hover:bg-[var(--c-elevated)] border-[var(--c-border)] cursor-pointer'
-              : 'bg-[var(--c-raised)]/40 border-[var(--c-border)]/50 cursor-not-allowed'
+              ? 'bg-yellow-500 hover:bg-yellow-400 active:bg-yellow-300 text-black shadow-lg shadow-yellow-500/20 cursor-pointer'
+              : 'border border-[var(--c-border)]/50 bg-[var(--c-raised)]/40 cursor-not-allowed'
           }`}
         >
-          <span className={`font-bold text-lg ${isPaused ? 'text-[var(--text-hi)]' : 'text-[var(--text-dim)]'}`}>Done</span>
-          <span className={`text-xs font-medium text-center ${isPaused ? 'text-[var(--text-dim)]' : 'text-[var(--text-dim)]/60'}`}>
+          <span className={`font-bold text-lg ${isPaused ? 'text-black' : 'text-[var(--text-dim)]'}`}>Done</span>
+          <span className={`text-xs font-medium text-center ${isPaused ? 'text-black/60' : 'text-[var(--text-dim)]/60'}`}>
             {nextWeld ? `Start ${nextWeld.id}` : 'Mark part complete'}
           </span>
         </button>
