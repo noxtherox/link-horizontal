@@ -1,0 +1,1934 @@
+<title>WeldCloud Inspect</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg-page:#EAE6E1;
+  --frame-bezel:#232323;
+  --surface-app:#EBE6E2;
+  --surface-card:#FFFFFF;
+  --surface-raised:#FFFFFF;
+  --surface-sunken:#F4F1EE;
+  --border:#CECFD0;
+  --border-strong:#B7B3AE;
+  --text:#1A171B;
+  --text-secondary:#445771;
+  --text-muted:#6C7075;
+  --text-on-accent:#FFFFFF;
+  --assembly-1:#731642;
+  --assembly-2:#B62850;
+  --assembly-solid:#A52850;
+  --fleet-1:#7A2B1C;
+  --fleet-2:#C0210E;
+  --success:#4CAF50;
+  --error:#E23900;
+  --warning:#F1A30A;
+  --info:#0B7DA8;
+  --mandatory:#F44336;
+  --stage-waiting:#9AA0A6;
+  --stage-fitted:#2E5B78;
+  --stage-welded:#F2AA3C;
+  --stage-pwht:#C98CAE;
+  --stage-tested:#B35591;
+  --stage-finished:#3B6F3E;
+  --stage-shipped:#5245A1;
+  --shadow-1:0 1px 2px rgba(26,23,27,.08);
+  --shadow-2:0 4px 14px rgba(26,23,27,.14);
+  --shadow-modal:0 20px 60px rgba(0,0,0,.35);
+}
+:root[data-theme="dark"], :root:not([data-theme="light"]) {
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg-page:#101010;
+    --surface-app:#1E1E1E;
+    --surface-card:#262626;
+    --surface-raised:#2C2C2C;
+    --surface-sunken:#181818;
+    --border:#3A3A3C;
+    --border-strong:#4A4A4C;
+    --text:#F1EFED;
+    --text-secondary:#9DB4CC;
+    --text-muted:#A6A9AC;
+    --shadow-1:0 1px 2px rgba(0,0,0,.4);
+    --shadow-2:0 4px 18px rgba(0,0,0,.5);
+    --shadow-modal:0 20px 60px rgba(0,0,0,.6);
+  }
+}
+:root[data-theme="dark"]{
+  --bg-page:#101010;
+  --surface-app:#1E1E1E;
+  --surface-card:#262626;
+  --surface-raised:#2C2C2C;
+  --surface-sunken:#181818;
+  --border:#3A3A3C;
+  --border-strong:#4A4A4C;
+  --text:#F1EFED;
+  --text-secondary:#9DB4CC;
+  --text-muted:#A6A9AC;
+  --shadow-1:0 1px 2px rgba(0,0,0,.4);
+  --shadow-2:0 4px 18px rgba(0,0,0,.5);
+  --shadow-modal:0 20px 60px rgba(0,0,0,.6);
+}
+*{box-sizing:border-box;}
+html,body{margin:0;padding:0;}
+body{
+  background:var(--bg-page);
+  color:var(--text);
+  font-family:'Roboto',sans-serif;
+  min-height:100vh;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:flex-start;
+  gap:16px;
+  padding:28px 16px 40px;
+}
+h1,h2,h3,h4{
+  font-family:'Museo Sans','Roboto',sans-serif;
+  font-weight:700;
+  margin:0;
+  text-wrap:balance;
+}
+button{font-family:inherit;}
+::selection{background:var(--assembly-2);color:#fff;}
+:focus-visible{outline:3px solid var(--info);outline-offset:2px;}
+
+/* ---- facilitator bar ---- */
+.facilitator{
+  display:flex;align-items:center;gap:10px;flex-wrap:wrap;justify-content:center;
+  background:transparent;color:var(--text-muted);font-size:13px;
+  max-width:1280px;width:100%;
+}
+.facilitator .label{font-weight:500;letter-spacing:.04em;text-transform:uppercase;font-size:11px;color:var(--text-muted);margin-right:4px;}
+.fac-btn{
+  border:1px solid var(--border-strong);background:var(--surface-card);color:var(--text);
+  border-radius:8px;padding:8px 14px;font-size:13px;font-weight:500;cursor:pointer;
+  transition:transform .08s ease, background .15s ease;
+}
+.fac-btn:active{transform:scale(.96);background:var(--surface-sunken);}
+.fac-btn.on{background:var(--warning);color:#221a02;border-color:var(--warning);}
+
+/* ---- device frame ---- */
+.device-wrap{
+  width:1280px;max-width:100%;
+}
+.device-frame{
+  width:1280px;height:800px;max-width:100%;
+  background:linear-gradient(180deg,#2b2b2b,#161616);
+  border-radius:34px;
+  padding:16px;
+  box-shadow:var(--shadow-modal), 0 0 0 1px rgba(0,0,0,.4);
+  margin:0 auto;
+}
+.screen{
+  width:100%;height:100%;
+  background:var(--surface-app);
+  border-radius:20px;
+  overflow:hidden;
+  display:flex;
+  position:relative;
+  box-shadow:inset 0 0 0 1px rgba(0,0,0,.25);
+}
+
+/* ---- rail ---- */
+.rail{
+  width:76px;flex:0 0 76px;
+  background:var(--surface-card);
+  border-right:1px solid var(--border);
+  display:flex;flex-direction:column;align-items:center;
+  padding:16px 0;gap:6px;
+}
+.rail-btn{
+  width:56px;height:56px;border-radius:14px;border:none;background:transparent;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;
+  color:var(--text-muted);cursor:pointer;transition:background .12s ease, transform .08s ease;
+}
+.rail-btn svg{width:22px;height:22px;}
+.rail-btn span{font-size:10px;font-weight:500;}
+.rail-btn:active{transform:scale(.94);}
+.rail-btn.active{background:var(--surface-sunken);color:var(--assembly-solid);}
+.rail-btn:not(.active):active{background:var(--surface-sunken);}
+
+/* ---- main column ---- */
+.col{flex:1;display:flex;flex-direction:column;min-width:0;}
+.topbar{
+  min-height:72px;flex:0 0 auto;
+  display:flex;align-items:center;gap:14px;
+  padding:0 22px;
+  color:#fff;
+  background:linear-gradient(90deg,var(--assembly-1),var(--assembly-2));
+}
+.topbar.neutral{background:var(--surface-card);color:var(--text);border-bottom:1px solid var(--border);}
+.topbar.fleet{background:linear-gradient(90deg,var(--fleet-1),var(--fleet-2));}
+.back-btn{
+  width:44px;height:44px;min-width:44px;border-radius:12px;border:none;
+  background:rgba(255,255,255,.16);color:inherit;display:flex;align-items:center;justify-content:center;cursor:pointer;
+}
+.topbar.neutral .back-btn{background:var(--surface-sunken);}
+.back-btn:active{transform:scale(.93);}
+.topbar h1{font-size:19px;letter-spacing:.01em;}
+.topbar .sub{font-size:12px;opacity:.85;font-weight:400;margin-top:1px;}
+.topbar .grow{flex:1;min-width:0;}
+.topbar-right{display:flex;align-items:center;gap:10px;flex:0 0 auto;}
+.pill{
+  display:flex;align-items:center;gap:6px;padding:7px 12px;border-radius:20px;font-size:12px;font-weight:500;
+  background:rgba(255,255,255,.16);color:inherit;white-space:nowrap;
+}
+.topbar.neutral .pill{background:var(--surface-sunken);border:1px solid var(--border);}
+.pill .dot{width:8px;height:8px;border-radius:50%;flex:0 0 auto;}
+.icon-toggle{
+  width:44px;height:44px;border-radius:12px;border:none;background:rgba(255,255,255,.16);
+  color:inherit;display:flex;align-items:center;justify-content:center;cursor:pointer;
+}
+.topbar.neutral .icon-toggle{background:var(--surface-sunken);}
+.icon-toggle:active{transform:scale(.93);}
+.avatar{
+  width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,.22);
+  display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px;color:#fff;flex:0 0 auto;
+}
+.topbar.neutral .avatar{background:var(--assembly-solid);}
+
+.content{flex:1;overflow-y:auto;padding:22px 26px 100px;position:relative;}
+.content.no-pad-b{padding-bottom:26px;}
+
+/* ---- generic bits ---- */
+.section-title{
+  font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--text-secondary);
+  margin:0 0 12px;
+}
+.stack{display:flex;flex-direction:column;gap:14px;}
+.hstack{display:flex;align-items:center;gap:10px;}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+.card{
+  background:var(--surface-card);border:1px solid var(--border);border-radius:16px;
+  box-shadow:var(--shadow-1);padding:18px;
+}
+.card.tap{cursor:pointer;transition:transform .08s ease, box-shadow .15s ease;}
+.card.tap:active{transform:scale(.985);box-shadow:var(--shadow-1);}
+.card.disabled{opacity:.62;cursor:not-allowed;}
+.muted{color:var(--text-muted);}
+.label-sm{font-size:12px;font-weight:500;color:var(--text-secondary);text-transform:uppercase;letter-spacing:.04em;}
+.val-lg{font-size:18px;font-weight:500;color:var(--text);}
+.divider{height:1px;background:var(--border);margin:14px 0;}
+
+.badge{
+  display:inline-flex;align-items:center;gap:6px;padding:5px 11px;border-radius:20px;font-size:13px;font-weight:500;
+  white-space:nowrap;
+}
+.badge-success{background:rgba(76,175,80,.14);color:#2f7a33;}
+.badge-error{background:rgba(226,57,0,.12);color:var(--error);}
+.badge-warning{background:rgba(241,163,10,.16);color:#8a5c04;}
+.badge-info{background:rgba(11,125,168,.12);color:var(--info);}
+.badge-muted{background:var(--surface-sunken);color:var(--text-muted);border:1px solid var(--border);}
+:root[data-theme="dark"] .badge-success, :root:not([data-theme="light"]) .badge-success{color:#7bd47f;}
+:root[data-theme="dark"] .badge-warning, :root:not([data-theme="light"]) .badge-warning{color:#f4c15e;}
+
+.chip{
+  display:inline-flex;align-items:center;padding:4px 10px;border-radius:8px;font-size:12px;font-weight:500;
+  background:var(--surface-sunken);border:1px solid var(--border);color:var(--text-secondary);
+}
+
+.btn{
+  border:none;border-radius:12px;font-weight:500;font-size:15px;cursor:pointer;
+  min-height:48px;padding:0 18px;display:inline-flex;align-items:center;justify-content:center;gap:8px;
+  transition:transform .08s ease, filter .12s ease, background .12s ease;
+}
+.btn:active{transform:scale(.96);}
+.btn[disabled]{opacity:.45;cursor:not-allowed;transform:none;}
+.btn-primary{background:var(--assembly-solid);color:#fff;}
+.btn-fleet{background:var(--fleet-2);color:#fff;}
+.btn-success{background:var(--success);color:#fff;}
+.btn-danger{background:var(--error);color:#fff;}
+.btn-outline{background:transparent;border:1.5px solid var(--border-strong);color:var(--text);}
+.btn-ghost{background:var(--surface-sunken);color:var(--text);}
+.btn-lg{min-height:56px;font-size:16px;padding:0 26px;font-weight:700;}
+.btn-block{width:100%;}
+
+.footer-bar{
+  flex:0 0 auto;padding:14px 26px;display:flex;align-items:center;justify-content:flex-end;gap:12px;
+  background:var(--surface-card);border-top:1px solid var(--border);box-shadow:0 -2px 10px rgba(0,0,0,.05);
+}
+.footer-bar .hint{margin-right:auto;font-size:13px;color:var(--text-muted);}
+
+.field{display:flex;flex-direction:column;gap:6px;}
+.field label{font-size:12px;font-weight:500;color:var(--text-secondary);text-transform:uppercase;letter-spacing:.03em;}
+.field .req::after{content:' *';color:var(--mandatory);}
+.input, .select, textarea.input{
+  border:1.5px solid var(--border-strong);border-radius:10px;padding:12px 14px;font-size:16px;
+  background:var(--surface-card);color:var(--text);min-height:48px;font-family:inherit;width:100%;
+}
+textarea.input{min-height:90px;resize:vertical;}
+.keypad-display{
+  border:1.5px solid var(--border-strong);border-radius:10px;padding:12px 14px;font-size:20px;
+  background:var(--surface-card);color:var(--text);min-height:52px;width:100%;cursor:pointer;
+  display:flex;align-items:center;justify-content:space-between;font-variant-numeric:tabular-nums;
+}
+.keypad-display .unit{color:var(--text-muted);font-size:14px;}
+.keypad-display.empty{color:var(--text-muted);}
+
+.list-row{
+  display:flex;align-items:center;gap:14px;padding:16px;border-radius:14px;background:var(--surface-card);
+  border:1px solid var(--border);cursor:pointer;transition:transform .08s ease,background .12s ease;
+}
+.list-row:active{transform:scale(.985);background:var(--surface-sunken);}
+.list-row.locked{cursor:default;opacity:.65;}
+.list-row.locked:active{transform:none;}
+.weld-id{font-size:18px;font-weight:700;min-width:74px;}
+.row-meta{display:flex;flex-direction:column;gap:2px;flex:1;min-width:0;}
+.row-meta .top{font-size:14px;color:var(--text-muted);}
+.chevron{color:var(--text-muted);flex:0 0 auto;}
+
+.dot-ind{width:10px;height:10px;border-radius:50%;display:inline-block;flex:0 0 auto;}
+.param-row{display:flex;align-items:center;justify-content:space-between;padding:11px 0;border-bottom:1px solid var(--border);}
+.param-row:last-child{border-bottom:none;}
+.param-name{font-size:14px;color:var(--text-secondary);font-weight:500;}
+.param-vals{display:flex;align-items:center;gap:10px;font-variant-numeric:tabular-nums;}
+.param-recorded{font-size:18px;font-weight:500;}
+.param-range{font-size:12px;color:var(--text-muted);}
+
+.stage-track{display:flex;gap:3px;border-radius:8px;overflow:hidden;height:8px;}
+.stage-seg{flex:1;background:var(--border);}
+.stage-legend{display:flex;flex-wrap:wrap;gap:10px;margin-top:10px;}
+.stage-legend .item{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--text-muted);}
+.stage-legend .sw{width:10px;height:10px;border-radius:3px;}
+
+/* modal / overlay */
+.overlay{
+  position:absolute;inset:0;background:rgba(10,10,10,.5);display:flex;align-items:center;justify-content:center;
+  z-index:40;padding:24px;
+}
+.modal{
+  background:var(--surface-raised);border-radius:18px;box-shadow:var(--shadow-modal);
+  max-width:560px;width:100%;max-height:90%;overflow-y:auto;padding:24px;
+}
+.modal h2{font-size:20px;margin-bottom:6px;}
+.modal .modal-actions{display:flex;justify-content:flex-end;gap:10px;margin-top:20px;}
+
+.keypad-overlay{align-items:flex-end;}
+.keypad-sheet{
+  background:var(--surface-raised);border-radius:20px 20px 0 0;box-shadow:var(--shadow-modal);
+  width:420px;max-width:100%;padding:20px;
+}
+.keys{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:14px;}
+.key{
+  min-height:56px;border-radius:12px;background:var(--surface-sunken);border:1px solid var(--border);
+  font-size:20px;font-weight:500;color:var(--text);cursor:pointer;
+}
+.key:active{transform:scale(.94);background:var(--border);}
+.key.wide{grid-column:span 1;}
+.key.done{background:var(--assembly-solid);color:#fff;grid-row:span 2;}
+
+/* reason picker */
+.search-input{
+  width:100%;border:1.5px solid var(--border-strong);border-radius:12px;padding:14px 16px;font-size:16px;
+  background:var(--surface-card);color:var(--text);margin-bottom:14px;
+}
+.reason-row{
+  display:flex;align-items:center;gap:14px;padding:16px;border-radius:14px;border:1.5px solid var(--border);
+  background:var(--surface-card);cursor:pointer;margin-bottom:10px;
+}
+.reason-row:active{transform:scale(.985);}
+.reason-row.selected{border-color:var(--assembly-solid);background:rgba(165,40,80,.06);}
+.reason-code{font-size:18px;font-weight:700;min-width:56px;color:var(--assembly-solid);}
+
+/* photo annotate */
+.photo-wrap{position:relative;border-radius:14px;overflow:hidden;border:1px solid var(--border);cursor:crosshair;user-select:none;}
+.marker{
+  position:absolute;width:30px;height:30px;border-radius:50%;background:var(--error);color:#fff;
+  display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px;
+  transform:translate(-50%,-50%);box-shadow:0 0 0 3px rgba(255,255,255,.85), 0 2px 6px rgba(0,0,0,.4);
+}
+
+/* toast */
+.toast-wrap{position:absolute;top:16px;right:16px;display:flex;flex-direction:column;gap:8px;z-index:60;align-items:flex-end;}
+.toast{
+  background:var(--text);color:var(--surface-card);padding:12px 16px;border-radius:10px;font-size:14px;font-weight:500;
+  box-shadow:var(--shadow-2);max-width:320px;animation:toastin .18s ease-out;
+}
+:root[data-theme="dark"] .toast, :root:not([data-theme="light"]) .toast{background:#3a3a3c;color:#f1efed;}
+@keyframes toastin{from{opacity:0;transform:translateY(-6px);}to{opacity:1;transform:none;}}
+
+.banner{
+  display:flex;align-items:center;gap:10px;padding:12px 16px;border-radius:12px;font-size:14px;font-weight:500;
+  margin-bottom:16px;
+}
+.banner-warning{background:rgba(241,163,10,.14);color:#8a5c04;border:1px solid rgba(241,163,10,.35);}
+.banner-info{background:rgba(11,125,168,.1);color:var(--info);border:1px solid rgba(11,125,168,.3);}
+:root[data-theme="dark"] .banner-warning, :root:not([data-theme="light"]) .banner-warning{color:#f4c15e;}
+
+.history-block{background:var(--surface-sunken);border:1px dashed var(--border-strong);border-radius:14px;padding:16px;}
+.history-block .tag{font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--text-muted);}
+
+.scan-frame{
+  width:280px;height:280px;margin:0 auto;position:relative;border-radius:20px;background:var(--surface-sunken);
+}
+.scan-frame .corner{position:absolute;width:36px;height:36px;border:4px solid var(--assembly-solid);}
+.scan-frame .c1{top:14px;left:14px;border-right:none;border-bottom:none;border-radius:8px 0 0 0;}
+.scan-frame .c2{top:14px;right:14px;border-left:none;border-bottom:none;border-radius:0 8px 0 0;}
+.scan-frame .c3{bottom:14px;left:14px;border-right:none;border-top:none;border-radius:0 0 0 8px;}
+.scan-frame .c4{bottom:14px;right:14px;border-left:none;border-top:none;border-radius:0 0 8px 0;}
+.scan-line{position:absolute;left:14px;right:14px;height:3px;background:var(--assembly-solid);border-radius:2px;box-shadow:0 0 10px var(--assembly-solid);animation:scan 1.4s ease-in-out infinite;}
+@keyframes scan{0%{top:20px;}50%{top:250px;}100%{top:20px;}}
+@media (prefers-reduced-motion: reduce){.scan-line{animation:none;top:120px;}}
+
+.check-item{display:flex;flex-direction:column;gap:10px;padding:16px;border:1px solid var(--border);border-radius:14px;background:var(--surface-card);}
+.check-toggle{display:flex;gap:10px;}
+.check-btn{flex:1;min-height:48px;border-radius:10px;border:1.5px solid var(--border-strong);background:var(--surface-sunken);font-weight:500;color:var(--text);cursor:pointer;}
+.check-btn.pass.on{background:rgba(76,175,80,.16);border-color:var(--success);color:#2f7a33;}
+.check-btn.fail.on{background:rgba(226,57,0,.12);border-color:var(--error);color:var(--error);}
+
+.wrap-table{overflow-x:auto;border-radius:14px;border:1px solid var(--border);}
+table.ind{width:100%;border-collapse:collapse;min-width:640px;background:var(--surface-card);}
+table.ind th{background:var(--surface-sunken);text-align:left;font-size:12px;color:var(--text-secondary);text-transform:uppercase;letter-spacing:.03em;padding:10px 12px;}
+table.ind td{padding:12px;font-size:15px;border-top:1px solid var(--border);}
+
+.result-toggle{display:flex;gap:12px;}
+.result-btn{flex:1;min-height:64px;border-radius:14px;border:2px solid var(--border-strong);background:var(--surface-card);font-size:17px;font-weight:700;cursor:pointer;color:var(--text);}
+.result-btn.acceptable.on{border-color:var(--success);background:rgba(76,175,80,.12);color:#2f7a33;}
+.result-btn.failed.on{border-color:var(--error);background:rgba(226,57,0,.1);color:var(--error);}
+
+.thumb-strip{display:flex;gap:10px;flex-wrap:wrap;}
+.thumb{width:84px;height:64px;border-radius:8px;border:1px solid var(--border);position:relative;overflow:hidden;}
+.thumb .rm{position:absolute;top:2px;right:2px;width:20px;height:20px;border-radius:50%;background:rgba(0,0,0,.6);color:#fff;display:flex;align-items:center;justify-content:center;border:none;cursor:pointer;padding:0;}
+.thumb .rm svg{width:11px;height:11px;}
+.thumb-add{width:84px;height:64px;border-radius:8px;border:1.5px dashed var(--border-strong);background:var(--surface-sunken);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;color:var(--text-muted);cursor:pointer;font-size:10px;font-weight:500;}
+.thumb-add svg{width:18px;height:18px;}
+.thumb-add:active{transform:scale(.94);}
+
+.select-display{
+  border:1.5px solid var(--border-strong);border-radius:10px;padding:12px 14px;font-size:16px;
+  background:var(--surface-sunken);color:var(--text);min-height:48px;width:100%;
+  display:flex;align-items:center;justify-content:space-between;gap:8px;
+}
+.select-display svg{width:16px;height:16px;color:var(--text-muted);flex:0 0 auto;}
+.date-display{display:flex;align-items:center;gap:0;border:1.5px solid var(--border-strong);border-radius:10px;overflow:hidden;background:var(--surface-sunken);min-height:48px;}
+.date-display .txt{flex:1;padding:12px 14px;font-size:16px;font-weight:500;font-variant-numeric:tabular-nums;}
+.date-display .cal{width:44px;height:48px;background:var(--mandatory);color:#fff;display:flex;align-items:center;justify-content:center;flex:0 0 auto;}
+.date-display .cal svg{width:18px;height:18px;}
+
+.collapsible .head{
+  display:flex;align-items:center;justify-content:space-between;cursor:pointer;padding:16px 18px;
+  background:var(--surface-sunken);margin:-18px -18px 0;border-radius:16px 16px 0 0;
+}
+.collapsible .head h3{font-size:16px;font-weight:500;font-family:'Roboto',sans-serif;}
+.collapsible .head svg{width:18px;height:18px;color:var(--text-muted);transition:transform .15s ease;}
+.collapsible .head.closed svg{transform:rotate(180deg);}
+.collapsible .body{padding-top:18px;}
+.link-btn{display:inline-flex;align-items:center;gap:6px;color:var(--info);font-size:14px;font-weight:500;background:none;border:none;cursor:pointer;padding:0;}
+.link-btn svg{width:14px;height:14px;}
+
+::-webkit-scrollbar{width:10px;height:10px;}
+::-webkit-scrollbar-thumb{background:var(--border-strong);border-radius:6px;}
+</style>
+<div class="facilitator">
+  <span class="label">Facilitator</span>
+  <button class="fac-btn" onclick="window.location.href='/'">&larr; Home apps</button>
+  <button class="fac-btn" onclick="App.reset()">Reset demo</button>
+  <button class="fac-btn" id="facOffline" onclick="App.toggleOffline()">Go offline</button>
+  <button class="fac-btn" onclick="App.jumpToStep7()">Jump to step 7 (W-004 ready for re-test)</button>
+</div>
+<div class="device-wrap">
+  <div class="device-frame">
+    <div class="screen" id="screen"></div>
+  </div>
+</div>
+<script>
+/* ============================= ICONS ============================= */
+const ICON = {
+  home:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-7 9 7"/><path d="M5 10v10h14V10"/></svg>',
+  assembly:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l8 4-8 4-8-4 8-4z"/><path d="M4 11l8 4 8-4"/><path d="M4 15l8 4 8-4"/></svg>',
+  fleet:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="7" width="13" height="9" rx="1"/><path d="M16 10h3l2 3v3h-5z"/><circle cx="7.5" cy="18" r="1.6"/><circle cx="17.5" cy="18" r="1.6"/></svg>',
+  wps:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 3h7l3 3v15H7z"/><path d="M14 3v3h3"/><path d="M9.5 12h5M9.5 15h5M9.5 18h3"/></svg>',
+  back:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 6l-6 6 6 6"/></svg>',
+  sun:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v3M12 19v3M4.2 4.2l2.1 2.1M17.7 17.7l2.1 2.1M2 12h3M19 12h3M4.2 19.8l2.1-2.1M17.7 6.3l2.1-2.1"/></svg>',
+  moon:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 14.5A8.5 8.5 0 1 1 9.5 4a7 7 0 0 0 10.5 10.5z"/></svg>',
+  wifi:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 8.5a15 15 0 0 1 20 0"/><path d="M5.5 12.5a10 10 0 0 1 13 0"/><path d="M9 16.3a5 5 0 0 1 6 0"/><circle cx="12" cy="20" r="1"/></svg>',
+  wifiOff:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 8.5a15 15 0 0 1 15.6-3.4"/><path d="M22 8.5a15 15 0 0 0-3-2.2"/><path d="M5.5 12.5a10 10 0 0 1 6-2.4"/><path d="M12 16.3a5 5 0 0 1 3 1"/><circle cx="12" cy="20" r="1"/><path d="M2 2l20 20"/></svg>',
+  qr:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><path d="M14 14h3v3h-3zM20 14v3M17 20h3"/></svg>',
+  chevron:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg>',
+  chevronDown:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>',
+  linkExternal:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 4h6v6"/><path d="M20 4L10 14"/><path d="M18 13v6a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h6"/></svg>',
+  calendar:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></svg>',
+  check:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12l5 5L20 6"/></svg>',
+  x:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M6 6l12 12M18 6L6 18"/></svg>',
+  camera:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13.5" r="3.5"/></svg>',
+  alert:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l10 18H2z"/><path d="M12 9.5v4M12 16.5v.1"/></svg>',
+  lock:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="10" width="14" height="10" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg>',
+  doc:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 3h7l3 3v15H7z"/><path d="M14 3v3h3"/></svg>',
+  share:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="2.4"/><circle cx="6" cy="12" r="2.4"/><circle cx="18" cy="19" r="2.4"/><path d="M8.1 10.8l7.8-4.4M8.1 13.2l7.8 4.4"/></svg>',
+  wrench:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a4 4 0 1 0-5.4 5.4L4 17l3 3 5.3-5.3a4 4 0 0 0 5.4-5.4l-2.7 2.7-2-2z"/></svg>',
+  plus:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>',
+  trash:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13"/></svg>',
+};
+
+/* ============================= DATA ============================= */
+const STAGES = ['Waiting','Fitting','Welding','PWHT Completing','Testing','Finishing','Shipping'];
+const STAGE_COLOR = {Waiting:'var(--stage-waiting)',Fitting:'var(--stage-fitted)',Welding:'var(--stage-welded)','PWHT Completing':'var(--stage-pwht)',Testing:'var(--stage-tested)',Finishing:'var(--stage-finished)',Shipping:'var(--stage-shipped)'};
+
+const IMPERFECTIONS = [
+  {code:'100',label:'Crack'},
+  {code:'104',label:'Crater crack'},
+  {code:'2011',label:'Gas pore'},
+  {code:'2012',label:'Uniformly distributed porosity'},
+  {code:'2013',label:'Clustered porosity'},
+  {code:'2017',label:'Surface pore'},
+  {code:'301',label:'Slag inclusion'},
+  {code:'401',label:'Lack of fusion'},
+  {code:'4021',label:'Incomplete root penetration'},
+  {code:'5011',label:'Continuous undercut'},
+  {code:'5012',label:'Intermittent undercut'},
+  {code:'502',label:'Excess weld metal'},
+  {code:'504',label:'Excessive penetration'},
+  {code:'506',label:'Overlap'},
+  {code:'511',label:'Incompletely filled groove'},
+  {code:'515',label:'Root concavity'},
+  {code:'602',label:'Spatter'},
+];
+
+const WPS = {
+  id:'WPS-135-BW-S355-01',
+  process:'135 (MAG, solid wire)',
+  material:'S355J2+N, group 1.2',
+  thickness:'12 mm butt / 8 mm fillet',
+  filler:'OK Aristrod 12.50 Ø1.2 mm',
+  gas:'ISO 14175-M21-ArC-18',
+  positions:['PA','PB','PC','PF'],
+  preheat:'20 °C min',
+  interpass:'250 °C max',
+  current:[220,260],
+  voltage:[24,28],
+  speed:[25,35],
+  heat:[0.8,1.6],
+  acceptance:'EN ISO 5817-C',
+};
+
+const ASSEMBLY = {
+  id:'ASM-2026-0412', name:'Skid Frame S4', client:'Nordic Energy AB', site:'Aalborg Plant',
+  inspector:{name:'A. Lindqvist', method:'VT', level:2, cert:'SE-VT2-11487', expires:'2028-04-30',
+             ptCert:'SE-PT2-11487'},
+  welder:{name:'Sven Wik', stamp:'SW4', qualification:'ISO 9606-1 135 P BW FM1 S t12 PF ss nb', validTo:'2027-03-31'},
+  machine:{name:'ESAB Warrior EDGE 500 CX', station:'EDGE Carbon Solid', site:'Aalborg Plant'},
+};
+
+function inRange(v,r){return v>=r[0]&&v<=r[1];}
+
+function session(current,voltage,speed,heat,interpass){
+  return {current,voltage,speed,heat,interpass};
+}
+
+function makeWeld(o){
+  return Object.assign({
+    status:'Pending', stage:'Testing', ncr:null, records:[], photo:null,
+  }, o);
+}
+
+function seedData(){
+  return {
+    parts:[
+      {
+        id:'P-01', name:'Base Frame', blocked:false,
+        welds:[
+          makeWeld({id:'W-001',type:'BW',process:'135',position:'PB',tests:['VT 100%'],session:session(240,26.0,30,1.2,180)}),
+          makeWeld({id:'W-002',type:'BW',process:'135',position:'PF',tests:['VT 100%','PT 100%'],session:session(235,25.5,28,1.1,200),ndtRequired:true,status:'Pending'}),
+          makeWeld({id:'W-003',type:'FW',process:'136',position:'PB',tests:['VT 100%'],session:session(245,26.5,32,1.0,150)}),
+          makeWeld({id:'W-004',type:'BW',process:'135',position:'PF',tests:['VT 100%'],session:session(250,29.2,27,1.5,220)}),
+          makeWeld({id:'W-005',type:'FW',process:'136',position:'PA',tests:['VT 100%'],session:session(230,25.0,29,0.9,160)}),
+          makeWeld({id:'W-006',type:'BW',process:'135',position:'PC',tests:['VT 100%'],session:session(242,26.8,31,1.3,190)}),
+        ],
+      },
+      {
+        id:'P-02', name:'Manifold Bracket', blocked:true,
+        welds:[
+          makeWeld({id:'W-007',type:'BW',process:'135',position:'PF',weldStatus:'Welded'}),
+          makeWeld({id:'W-008',type:'BW',process:'135',position:'PF',weldStatus:'Welded'}),
+          makeWeld({id:'W-009',type:'FW',process:'136',position:'PB',weldStatus:'Welding'}),
+          makeWeld({id:'W-010',type:'FW',process:'136',position:'PA',weldStatus:'Waiting'}),
+        ],
+      },
+    ],
+    ncrCounter:88,
+    ndtCounter:417,
+    ndtReports:{},
+  };
+}
+
+const MACHINES = [
+  {id:'m1', name:'EDGE Carbon Solid', site:'Aalborg Plant', online:true, activity:'Arc on', activityAt:'11:42',
+   events:[{t:'Today 09:10',msg:'Session started — W-006 / Sven Wik'}], service:{due:null,log:[{t:'2026-08-02',summary:'Routine service — 8/8 items passed'}]}},
+  {id:'m2', name:'EDGE Stainless Solid', site:'Aalborg Plant', online:true, activity:'Idle', activityAt:'10:55',
+   events:[], service:{due:null,log:[{t:'2026-07-18',summary:'Routine service — 7/8 items passed, 1 fail: gas hose'}]}},
+  {id:'m3', name:'4004 testing room', site:'Aalborg Plant', online:false, activity:'Offline since yesterday', activityAt:'Yesterday 17:20',
+   events:[{t:'Yesterday 17:20',msg:'Machine stop'}], service:{due:null,log:[]}},
+  {id:'m4', name:'UC1', site:'Aalborg Plant', online:true, activity:'Fault', activityAt:'12:03',
+   events:[{t:'Today 12:03',msg:'Gas pressure fault'}], service:{due:null,log:[]}},
+  {id:'m5', name:'SAW System', site:'Aalborg Plant', online:true, activity:'Idle', activityAt:'08:30',
+   events:[], service:{due:'in 3 days',log:[{t:'2026-05-10',summary:'Routine service — 8/8 items passed'}]}},
+];
+
+const CHECKLIST_ITEMS = [
+  'Gas hose & fittings inspected',
+  'Wire feed rollers cleaned / inspected',
+  'Torch liner condition',
+  'Ground / earth clamp connection',
+  'Cooling system coolant level',
+  'Safety guards & E-stop function',
+];
+</script>
+<script>
+/* ============================= STATE ============================= */
+let DATA = seedData();
+let state = {
+  theme:'system', // 'dark' | 'light' | 'system'
+  offline:false,
+  queued:0,
+  stack:[{screen:'home', params:{}}],
+  modal:null,        // {type, ...}
+  keypad:null,       // {title, unit, value, onCommit}
+  toasts:[],
+  draft:null,        // reject wizard draft
+  ndtDraft:null,     // ndt form draft
+  checklistDraft:null,
+};
+
+function findPart(id){ return DATA.parts.find(p=>p.id===id); }
+function findWeld(weldId){
+  for(const p of DATA.parts){ const w=p.welds.find(w=>w.id===weldId); if(w) return {part:p, weld:w}; }
+  return null;
+}
+function findMachine(id){ return MACHINES.find(m=>m.id===id); }
+
+function cur(){ return state.stack[state.stack.length-1]; }
+
+/* ============================= NAV ============================= */
+const App = {
+  nav(screen, params={}){
+    state.stack.push({screen, params});
+    render();
+  },
+  back(){
+    if(state.stack.length>1) state.stack.pop();
+    render();
+  },
+  home(){
+    state.stack = [{screen:'home', params:{}}];
+    render();
+  },
+  reset(){
+    DATA = seedData();
+    state.offline = false;
+    state.queued = 0;
+    state.stack = [{screen:'home', params:{}}];
+    state.modal = null; state.keypad = null; state.draft = null; state.ndtDraft = null; state.checklistDraft = null;
+    state.toasts = [];
+    document.getElementById('facOffline').classList.remove('on');
+    document.getElementById('facOffline').textContent = 'Go offline';
+    render();
+    toast('Demo reset');
+  },
+  toggleTheme(){
+    const root = document.documentElement;
+    const isDark = root.getAttribute('data-theme')==='dark' || (!root.hasAttribute('data-theme') && window.matchMedia('(prefers-color-scheme: dark)').matches);
+    root.setAttribute('data-theme', isDark ? 'light' : 'dark');
+    render();
+  },
+  toggleOffline(){
+    state.offline = !state.offline;
+    const btn = document.getElementById('facOffline');
+    if(state.offline){
+      btn.classList.add('on'); btn.textContent='Go online';
+      toast('Facilitator: app is now offline');
+    } else {
+      btn.classList.remove('on'); btn.textContent='Go offline';
+      if(state.queued>0){
+        const n = state.queued;
+        toast('Syncing '+n+' queued item'+(n===1?'':'s')+'…');
+        setTimeout(()=>{ state.queued=0; toast('All caught up — synced with WeldCloud Assembly'); render(); }, 900);
+      } else {
+        toast('Facilitator: app is back online');
+      }
+    }
+    render();
+  },
+  jumpToStep7(){
+    const rec = findWeld('W-004');
+    if(!rec) return;
+    const w = rec.weld;
+    if(w.records.length===0){
+      w.records.push({
+        type:'inspection', verdict:'Not acceptable', timestamp:demoTimestamp(),
+        inspector:{...ASSEMBLY.inspector},
+        reasonCode:'2013', reasonLabel:'Clustered porosity',
+        sizing:{qty:6, width:2.4, length:14, height:0, depth:1.1, angle:0},
+        markers:[{n:1,x:38,y:46,code:'2013'},{n:2,x:52,y:58,code:'2013'}],
+        remarks:'Clustered porosity across root pass, mid-length. See markers.',
+        ncr:'NCR-2026-'+DATA.ncrCounter,
+      });
+      w.ncr = 'NCR-2026-'+DATA.ncrCounter;
+      w.status = 'Not acceptable';
+      w.disposition = 'awaiting QA';
+      w.stage = 'Welding';
+    }
+    w.status = 'Repair — re-test';
+    w.stage = 'Testing';
+    w.readyForRetest = true;
+    w.session = session(250, 26.4, 28, 1.3, 200); // repaired session, voltage back in range
+    App.home();
+    toast('Facilitator: W-004 repaired by Sven Wik and returned for re-test');
+  },
+};
+
+function demoTimestamp(){
+  const d = new Date();
+  const pad = n=>String(n).padStart(2,'0');
+  return 'Today '+pad(d.getHours())+':'+pad(d.getMinutes());
+}
+
+function toast(msg){
+  const id = Math.random().toString(36).slice(2);
+  state.toasts.push({id,msg});
+  renderToasts();
+  setTimeout(()=>{ state.toasts = state.toasts.filter(t=>t.id!==id); renderToasts(); }, 3200);
+}
+function renderToasts(){
+  const host = document.getElementById('toastHost');
+  if(!host) return;
+  host.innerHTML = state.toasts.map(t=>'<div class="toast">'+esc(t.msg)+'</div>').join('');
+}
+
+function esc(s){ return String(s==null?'':s).replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+
+/* ============================= RENDER SHELL ============================= */
+const RAIL_ITEMS = [
+  {screen:'home', icon:'home', label:'Home'},
+  {screen:'assembly', icon:'assembly', label:'Assembly'},
+  {screen:'fleet', icon:'fleet', label:'Fleet'},
+  {screen:'wps', icon:'wps', label:'WPS'},
+];
+
+function render(){
+  const {screen, params} = cur();
+  const root = document.getElementById('screen');
+  const railHtml = RAIL_ITEMS.map(r=>{
+    const active = screen===r.screen;
+    return '<button class="rail-btn'+(active?' active':'')+'" onclick="App.'+(r.screen==='home'?'home':'nav')+(r.screen==='home'?'()':"('"+r.screen+"')")+'">'+ICON[r.icon]+'<span>'+r.label+'</span></button>';
+  }).join('');
+
+  const sc = SCREENS[screen] || SCREENS.home;
+  const topbar = sc.topbar(params);
+  const body = sc.render(params);
+  const footer = sc.footer ? sc.footer(params) : '';
+
+  root.innerHTML =
+    '<div class="rail">'+railHtml+'</div>'+
+    '<div class="col">'+
+      topbar+
+      '<div class="content'+(sc.noPadBottom?' no-pad-b':'')+'" id="content">'+
+        (state.offline && state.queued>0 ? '<div class="banner banner-warning">'+ICON.wifiOff.replace('<svg','<svg style="width:18px;height:18px;flex:0 0 auto;"')+'<span>'+state.queued+' inspection'+(state.queued===1?'':'s')+' queued — will sync when connected</span></div>' : '')+
+        body+
+      '</div>'+
+      (footer ? '<div class="footer-bar">'+footer+'</div>' : '')+
+      '<div class="toast-wrap" id="toastHost"></div>'+
+    '</div>'+
+    (state.modal ? renderModal() : '')+
+    (state.keypad ? renderKeypad() : '');
+
+  renderToasts();
+  if(sc.after) sc.after(params);
+}
+
+function topbarBase(opts){
+  const cls = 'topbar'+(opts.variant?(' '+opts.variant):'');
+  const backBtn = opts.showBack===false ? '' :
+    '<button class="back-btn" onclick="App.back()" aria-label="Back">'+ICON.back+'</button>';
+  const right = opts.right || '';
+  return '<div class="'+cls+'">'+
+    backBtn+
+    '<div class="grow"><h1>'+esc(opts.title)+'</h1>'+(opts.sub?'<div class="sub">'+esc(opts.sub)+'</div>':'')+'</div>'+
+    '<div class="topbar-right">'+syncPill(opts.variant)+themeToggle(opts.variant)+avatarChip(opts.variant)+right+'</div>'+
+  '</div>';
+}
+
+function syncPill(variant){
+  const online = !state.offline;
+  return '<div class="pill" title="'+(online?'Online':'Offline')+'">'+
+    '<span class="dot" style="background:'+(online?'var(--success)':'var(--text-muted)')+'"></span>'+
+    (online?ICON.wifi:ICON.wifiOff).replace('<svg','<svg style="width:14px;height:14px;"')+
+    '<span>'+(online?'Online':'Offline')+'</span>'+
+  '</div>';
+}
+function themeToggle(){
+  const root = document.documentElement;
+  const isDark = root.getAttribute('data-theme')==='dark' || (!root.hasAttribute('data-theme') && window.matchMedia('(prefers-color-scheme: dark)').matches);
+  return '<button class="icon-toggle" onclick="App.toggleTheme()" aria-label="Toggle dark mode">'+(isDark?ICON.sun:ICON.moon)+'</button>';
+}
+function avatarChip(){
+  return '<div class="avatar" title="A. Lindqvist">AL</div>';
+}
+
+/* generic modal renderer: state.modal = {title, body(html), actions(html)} built by callers via html strings */
+function renderModal(){
+  const m = state.modal;
+  return '<div class="overlay" onclick="if(event.target===this) Modal.close()">'+
+    '<div class="modal">'+m.html+'</div>'+
+  '</div>';
+}
+const Modal = {
+  open(html){ state.modal = {html}; render(); },
+  close(){ state.modal = null; render(); },
+};
+
+function renderKeypad(){
+  const k = state.keypad;
+  const disp = k.value===''? '<span class="empty-txt" style="color:var(--text-muted)">Enter value</span>' : esc(k.value);
+  return '<div class="overlay keypad-overlay" onclick="if(event.target===this) Keypad.cancel()">'+
+    '<div class="keypad-sheet">'+
+      '<div class="label-sm">'+esc(k.title)+'</div>'+
+      '<div class="keypad-display" style="margin-top:8px;">'+disp+'<span class="unit">'+esc(k.unit||'')+'</span></div>'+
+      '<div class="keys">'+
+        [1,2,3,4,5,6,7,8,9].map(n=>'<button class="key" onclick="Keypad.press(\''+n+'\')">'+n+'</button>').join('')+
+        '<button class="key" onclick="Keypad.press(\'.\')">.</button>'+
+        '<button class="key" onclick="Keypad.press(\'0\')">0</button>'+
+        '<button class="key" onclick="Keypad.press(\'back\')">⌫</button>'+
+      '</div>'+
+      '<div style="margin-top:10px;display:flex;gap:10px;">'+
+        '<button class="btn btn-outline btn-block" onclick="Keypad.cancel()">Cancel</button>'+
+        '<button class="btn btn-primary btn-block" onclick="Keypad.commit()">Done</button>'+
+      '</div>'+
+    '</div>'+
+  '</div>';
+}
+const Keypad = {
+  open(title, value, unit, onCommit){
+    state.keypad = {title, value: value==null?'':String(value), unit, onCommit};
+    render();
+  },
+  press(k){
+    const kp = state.keypad; if(!kp) return;
+    if(k==='back') kp.value = kp.value.slice(0,-1);
+    else if(k==='.'){ if(!kp.value.includes('.')) kp.value += '.'; }
+    else kp.value += k;
+    render();
+  },
+  commit(){
+    const kp = state.keypad; if(!kp) return;
+    const v = kp.value==='' ? null : parseFloat(kp.value);
+    kp.onCommit(v);
+    state.keypad = null;
+    render();
+  },
+  cancel(){ state.keypad = null; render(); },
+};
+
+/* ============================= SHARED HELPERS ============================= */
+function weldStatusBadge(w){
+  const map = {
+    'Pending': ['badge-muted','Ready for inspection'],
+    'Pending NDT': ['badge-info','NDT pending'],
+    'Acceptable': ['badge-success','Acceptable'],
+    'Not acceptable': ['badge-error','Not acceptable'],
+    'Repair — re-test': ['badge-warning','Repair — re-test'],
+  };
+  const [cls,label] = map[w.status] || ['badge-muted', w.status];
+  return '<span class="badge '+cls+'">'+label+'</span>';
+}
+function weldProgressBadge(w){
+  const map = {'Welded':['badge-muted','Welded'],'Welding':['badge-warning','Welding'],'Waiting':['badge-muted','Waiting']};
+  const [cls,label] = map[w.weldStatus] || ['badge-muted', w.weldStatus];
+  return '<span class="badge '+cls+'">'+label+'</span>';
+}
+function partSummary(part){
+  if(part.blocked){
+    const done = part.welds.filter(w=>w.weldStatus==='Welded').length;
+    return {blocked:true, text: done+' of '+part.welds.length+' welds complete — waiting on '+ASSEMBLY.welder.name+' ('+ASSEMBLY.welder.stamp+')'};
+  }
+  const total = part.welds.length;
+  const acceptable = part.welds.filter(w=>w.status==='Acceptable').length;
+  const repair = part.welds.filter(w=>w.status==='Not acceptable').length;
+  const retest = part.welds.filter(w=>w.status==='Repair — re-test').length;
+  const ndtPend = part.welds.filter(w=>w.status==='Pending NDT').length;
+  const pending = part.welds.filter(w=>w.status==='Pending').length;
+  const complete = acceptable===total;
+  const parts_ = [];
+  if(complete) parts_.push('All '+total+' welds acceptable');
+  else {
+    if(acceptable) parts_.push(acceptable+' acceptable');
+    if(pending) parts_.push(pending+' ready for inspection');
+    if(ndtPend) parts_.push(ndtPend+' pending NDT');
+    if(retest) parts_.push(retest+' repair — re-test');
+    if(repair) parts_.push(repair+' returned for repair');
+  }
+  return {blocked:false, complete, repair, text: parts_.join(' · ')};
+}
+function stageCounts(welds){
+  const counts = {};
+  STAGES.forEach(s=>counts[s]=0);
+  welds.forEach(w=>{ const s = w.stage || 'Waiting'; counts[s]=(counts[s]||0)+1; });
+  return counts;
+}
+function stageBar(welds){
+  const counts = stageCounts(welds);
+  const total = welds.length || 1;
+  const segs = STAGES.filter(s=>counts[s]>0).map(s=>
+    '<div class="stage-seg" style="flex:'+counts[s]+' 0 0;background:'+STAGE_COLOR[s]+'" title="'+s+': '+counts[s]+'"></div>'
+  ).join('');
+  const legend = STAGES.filter(s=>counts[s]>0).map(s=>
+    '<div class="item"><span class="sw" style="background:'+STAGE_COLOR[s]+'"></span>'+s+' · '+counts[s]+'</div>'
+  ).join('');
+  return '<div class="stage-track">'+segs+'</div><div class="stage-legend">'+legend+'</div>';
+}
+function paramRow(name, recorded, unit, range){
+  const ok = inRange(recorded, range);
+  return '<div class="param-row">'+
+    '<div class="param-name">'+name+'</div>'+
+    '<div class="param-vals">'+
+      '<span class="dot-ind" style="background:'+(ok?'var(--success)':'var(--warning)')+'"></span>'+
+      '<span class="param-recorded">'+recorded+' '+unit+'</span>'+
+      '<span class="param-range">WPS '+range[0]+'–'+range[1]+' '+unit+'</span>'+
+    '</div>'+
+  '</div>';
+}
+function sessionParamsCard(sessionObj){
+  return '<div class="card">'+
+    '<div class="section-title">Weld session vs WPS</div>'+
+    paramRow('Current', sessionObj.current, 'A', WPS.current)+
+    paramRow('Voltage', sessionObj.voltage, 'V', WPS.voltage)+
+    paramRow('Travel speed', sessionObj.speed, 'cm/min', WPS.speed)+
+    paramRow('Heat input', sessionObj.heat, 'kJ/mm', WPS.heat)+
+    paramRow('Interpass temp.', sessionObj.interpass, '°C', [0, 250])+
+  '</div>';
+}
+function wpsSummaryCard(){
+  return '<div class="card">'+
+    '<div class="hstack" style="justify-content:space-between;">'+
+      '<div class="section-title" style="margin:0;">WPS summary</div>'+
+      '<button class="btn btn-ghost" style="min-height:38px;padding:0 12px;font-size:13px;" onclick="App.nav(\'wps\')">View full WPS '+ICON.chevron.replace('<svg','<svg style="width:14px;height:14px;"')+'</button>'+
+    '</div>'+
+    '<div class="grid2" style="margin-top:8px;">'+
+      '<div><div class="label-sm">WPS</div><div class="val-lg">'+WPS.id+'</div></div>'+
+      '<div><div class="label-sm">Process</div><div class="val-lg">'+WPS.process+'</div></div>'+
+      '<div><div class="label-sm">Material</div><div class="val-lg">'+WPS.material+'</div></div>'+
+      '<div><div class="label-sm">Thickness</div><div class="val-lg">'+WPS.thickness+'</div></div>'+
+      '<div><div class="label-sm">Filler</div><div class="val-lg">'+WPS.filler+'</div></div>'+
+      '<div><div class="label-sm">Gas</div><div class="val-lg">'+WPS.gas+'</div></div>'+
+    '</div>'+
+    '<div class="divider"></div>'+
+    '<div class="hstack" style="flex-wrap:wrap;gap:8px;">'+
+      WPS.positions.map(p=>'<span class="chip">'+p+'</span>').join('')+
+      '<span class="chip">Preheat '+WPS.preheat+'</span>'+
+      '<span class="chip">Interpass '+WPS.interpass+'</span>'+
+      '<span class="chip" style="border-color:var(--info);color:var(--info);">Acceptance '+WPS.acceptance+'</span>'+
+    '</div>'+
+  '</div>';
+}
+function weldImageSVG(markers, opts){
+  opts = opts || {};
+  const interactive = !!opts.interactive;
+  const onclick = interactive ? ' onclick="RejectFlow.markPhoto(event)"' : '';
+  const svg = '<svg viewBox="0 0 400 240" width="100%" height="100%" preserveAspectRatio="none" style="display:block;">'+
+    '<rect width="400" height="240" fill="#6b6b6d"/>'+
+    '<rect width="400" height="240" fill="url(#g)"/>'+
+    '<defs><linearGradient id="g" x1="0" y1="0" x2="0" y2="1">'+
+      '<stop offset="0" stop-color="#7c7c7e"/><stop offset="1" stop-color="#54545a"/>'+
+    '</linearGradient></defs>'+
+    '<path d="M0 120 C 60 108, 100 132, 160 118 S 260 104, 320 122 S 380 130 400 118" stroke="#dcb35c" stroke-width="16" fill="none" stroke-linecap="round"/>'+
+    '<path d="M0 120 C 60 108, 100 132, 160 118 S 260 104, 320 122 S 380 130 400 118" stroke="#c99a44" stroke-width="16" fill="none" stroke-dasharray="3 7" stroke-linecap="round" opacity=".5"/>'+
+    '<ellipse cx="150" cy="120" rx="2.5" ry="2" fill="#2a2a2a" opacity=".7"/>'+
+    '<ellipse cx="205" cy="112" rx="2" ry="1.6" fill="#2a2a2a" opacity=".6"/>'+
+    '<ellipse cx="212" cy="118" rx="1.6" ry="1.4" fill="#2a2a2a" opacity=".6"/>'+
+  '</svg>';
+  const markerHtml = (markers||[]).map(m=>
+    '<div class="marker" style="left:'+m.x+'%;top:'+m.y+'%;" title="'+m.code+'">'+m.n+'</div>'
+  ).join('');
+  return '<div class="photo-wrap" style="'+(opts.style||'')+'"'+onclick+'>'+svg+markerHtml+'</div>';
+}
+</script>
+<script>
+/* ============================= SCREENS: home / assembly / part ============================= */
+const SCREENS = {};
+
+SCREENS.home = {
+  topbar(){
+    return topbarBase({title:'WeldCloud Inspect', sub:ASSEMBLY.site, showBack:false, variant:'neutral'});
+  },
+  render(){
+    const p1 = findPart('P-01'), p2 = findPart('P-02');
+    const s1 = partSummary(p1), s2 = partSummary(p2);
+    return '<div class="stack">'+
+      '<div class="card tap" style="display:flex;align-items:center;gap:16px;background:var(--surface-card);" onclick="App.nav(\'qrScan\')">'+
+        '<div style="width:52px;height:52px;border-radius:14px;background:var(--surface-sunken);display:flex;align-items:center;justify-content:center;color:var(--assembly-solid);flex:0 0 auto;">'+ICON.qr.replace('<svg','<svg style="width:26px;height:26px;"')+'</div>'+
+        '<div style="flex:1;"><div style="font-weight:700;font-size:16px;">Scan part QR</div><div class="muted" style="font-size:13px;">Jump straight to a part by scanning its printed code</div></div>'+
+        '<span class="chevron">'+ICON.chevron+'</span>'+
+      '</div>'+
+      '<div class="section-title" style="margin-top:6px;">Today\'s assigned work</div>'+
+      '<div class="grid2">'+
+        partCardHtml(p1, s1)+
+        partCardHtml(p2, s2)+
+      '</div>'+
+    '</div>';
+  },
+};
+function partCardHtml(part, sum){
+  const disabledNote = part.blocked ? '<div class="muted" style="font-size:13px;margin-top:8px;">Open to view — inspection unavailable until welding is complete.</div>' : '';
+  return '<div class="card tap" onclick="App.nav(\'part\',{partId:\''+part.id+'\'})">'+
+    '<div class="hstack" style="justify-content:space-between;">'+
+      '<div style="font-weight:700;font-size:17px;">'+part.id+' · '+part.name+'</div>'+
+      (part.blocked ? '<span class="badge badge-muted">Blocked</span>' : (sum.complete ? '<span class="badge badge-success">Complete</span>' : '<span class="badge badge-info">In progress</span>'))+
+    '</div>'+
+    '<div class="muted" style="font-size:14px;margin-top:6px;">'+part.welds.length+' welds</div>'+
+    '<div style="margin-top:10px;font-size:14px;color:var(--text);">'+esc(sum.text)+'</div>'+
+    (sum.repair ? '<div class="badge badge-warning" style="margin-top:10px;">'+sum.repair+' returned for repair — part cannot complete</div>' : '')+
+    disabledNote+
+  '</div>';
+}
+
+SCREENS.assembly = {
+  topbar(){
+    return topbarBase({title:'Assembly overview', sub:ASSEMBLY.id, variant:'assembly'});
+  },
+  render(){
+    return '<div class="stack">'+
+      '<div class="card">'+
+        '<div class="hstack" style="justify-content:space-between;flex-wrap:wrap;">'+
+          '<div><div style="font-weight:700;font-size:18px;">'+ASSEMBLY.name+'</div><div class="muted">'+ASSEMBLY.id+'</div></div>'+
+          '<div class="chip">'+ASSEMBLY.site+'</div>'+
+        '</div>'+
+        '<div class="divider"></div>'+
+        '<div class="grid2">'+
+          '<div><div class="label-sm">Client</div><div class="val-lg">'+ASSEMBLY.client+'</div></div>'+
+          '<div><div class="label-sm">WPS</div><div class="val-lg">'+WPS.id+'</div></div>'+
+          '<div><div class="label-sm">Inspector</div><div class="val-lg">'+ASSEMBLY.inspector.name+'</div><div class="muted" style="font-size:13px;">VT Level '+ASSEMBLY.inspector.level+' · '+ASSEMBLY.inspector.cert+'</div></div>'+
+          '<div><div class="label-sm">Welder</div><div class="val-lg">'+ASSEMBLY.welder.name+' · '+ASSEMBLY.welder.stamp+'</div><div class="muted" style="font-size:13px;">Qualified to '+ASSEMBLY.welder.validTo+'</div></div>'+
+        '</div>'+
+      '</div>'+
+      '<div class="section-title">Parts</div>'+
+      DATA.parts.map(part=>{
+        const sum = partSummary(part);
+        return '<div class="card tap" onclick="App.nav(\'part\',{partId:\''+part.id+'\'})">'+
+          '<div class="hstack" style="justify-content:space-between;">'+
+            '<div style="font-weight:700;font-size:16px;">'+part.id+' · '+part.name+'</div>'+
+            '<div class="muted">'+part.welds.length+' welds</div>'+
+          '</div>'+
+          '<div style="margin-top:12px;">'+stageBar(part.welds)+'</div>'+
+        '</div>';
+      }).join('')+
+    '</div>';
+  },
+};
+
+SCREENS.part = {
+  topbar(params){
+    const part = findPart(params.partId);
+    return topbarBase({title:part.id+' · '+part.name, sub:ASSEMBLY.client+' — '+ASSEMBLY.site, variant:'assembly'});
+  },
+  render(params){
+    const part = findPart(params.partId);
+    const sum = partSummary(part);
+    let banner = '';
+    if(part.blocked) banner = '<div class="banner banner-info">'+ICON.alert.replace('<svg','<svg style="width:18px;height:18px;flex:0 0 auto;"')+'<span>'+esc(sum.text)+'. You can open a weld to look, but inspection is unavailable until welding is complete.</span></div>';
+    else if(sum.repair) banner = '<div class="banner banner-warning">'+ICON.alert.replace('<svg','<svg style="width:18px;height:18px;flex:0 0 auto;"')+'<span>'+sum.repair+' weld returned for repair — this part cannot complete until it is re-tested and accepted.</span></div>';
+    const rows = part.welds.map(w=>{
+      const meta = w.type+' · '+w.process+' · '+w.position;
+      const testsLine = w.tests ? w.tests.join(' + ') : '';
+      const badge = part.blocked ? weldProgressBadge(w) : weldStatusBadge(w);
+      return '<div class="list-row" onclick="App.nav(\'weld\',{weldId:\''+w.id+'\'})">'+
+        '<div class="weld-id">'+w.id+'</div>'+
+        '<div class="row-meta"><div>'+meta+'</div><div class="top">'+testsLine+'</div></div>'+
+        badge+
+        '<span class="chevron">'+ICON.chevron+'</span>'+
+      '</div>';
+    }).join('');
+    return banner + '<div class="stack" style="gap:10px;">'+rows+'</div>';
+  },
+};
+</script>
+<script>
+/* ============================= WELD DETAIL ============================= */
+function queueOrToast(msg){
+  if(state.offline){ state.queued++; toast(msg+' — queued, will sync when connected'); }
+  else toast(msg);
+}
+
+const WeldActions = {
+  openAccept(weldId){
+    const {weld:w} = findWeld(weldId);
+    const ts = demoTimestamp();
+    const vtOnly = w.ndtRequired && w.status==='Pending';
+    Modal.open(
+      '<h2>Confirm acceptance</h2>'+
+      '<p class="muted" style="margin:0 0 14px;">'+weldId+(vtOnly?' — visual inspection (VT)':'')+'</p>'+
+      '<div class="card" style="background:var(--surface-sunken);">'+
+        '<div class="grid2">'+
+          '<div><div class="label-sm">Inspector</div><div class="val-lg">'+ASSEMBLY.inspector.name+'</div></div>'+
+          '<div><div class="label-sm">Qualification</div><div class="val-lg">VT Level '+ASSEMBLY.inspector.level+'</div></div>'+
+          '<div><div class="label-sm">Certificate</div><div class="val-lg">'+ASSEMBLY.inspector.cert+'</div></div>'+
+          '<div><div class="label-sm">Timestamp</div><div class="val-lg">'+ts+'</div></div>'+
+        '</div>'+
+      '</div>'+
+      '<p style="font-size:13px;color:var(--text-muted);margin-top:12px;">Accepting stamps this record with your name, ISO 9712 level and certificate number. Verdict: <strong style="color:var(--text)">Acceptable</strong>.</p>'+
+      '<div class="modal-actions"><button class="btn btn-outline" onclick="Modal.close()">Cancel</button><button class="btn btn-success" onclick="WeldActions.confirmAccept(\''+weldId+'\')">Confirm — Acceptable</button></div>'
+    );
+  },
+  confirmAccept(weldId){
+    const {weld:w} = findWeld(weldId);
+    const ts = demoTimestamp();
+    const rec = {type: w.readyForRetest?'retest':'inspection', verdict:'Acceptable', timestamp:ts, inspector:{...ASSEMBLY.inspector}};
+    if(w.readyForRetest){
+      rec.refersTo = w.records[w.records.length-1];
+      rec.closesNcr = w.ncr;
+      w.records.push(rec);
+      w.ncrClosed = true;
+      w.status = 'Acceptable';
+      w.stage = 'Finishing';
+      w.readyForRetest = false;
+      Modal.close();
+      queueOrToast('NCR '+w.ncr+' closed — '+weldId+' accepted on re-test');
+      App.back();
+      return;
+    }
+    w.records.push(rec);
+    if(w.ndtRequired && w.status==='Pending'){
+      w.status = 'Pending NDT';
+      Modal.close();
+      queueOrToast(weldId+' VT recorded — Acceptable');
+      App.nav('ndtPrompt', {weldId});
+      return;
+    }
+    w.status = 'Acceptable';
+    w.stage = 'Finishing';
+    Modal.close();
+    queueOrToast(weldId+' accepted');
+    App.back();
+  },
+  startReject(weldId){
+    state.draft = {weldId, reasonCode:null, reasonLabel:null, qty:null,width:null,length:null,height:null,depth:null,angle:null, markers:[], remarks:'', search:''};
+    App.nav('rejectReason', {weldId});
+  },
+};
+
+function recordCardHtml(rec, isHistory){
+  const badgeCls = rec.verdict==='Acceptable' ? 'badge-success' : 'badge-error';
+  const title = isHistory ? 'Original inspection record' : (rec.type==='retest' ? 'Re-test record' : 'Inspection record');
+  let inner = '<div class="hstack" style="justify-content:space-between;">'+
+      '<div class="tag" style="'+(isHistory?'':'display:none;')+'text-transform:uppercase;font-size:11px;font-weight:700;color:var(--text-muted);letter-spacing:.05em;">'+(isHistory?'Read-only history':'')+'</div>'+
+      '<span class="badge '+badgeCls+'">'+rec.verdict+'</span>'+
+    '</div>'+
+    '<div style="font-weight:700;font-size:15px;margin-top:6px;">'+title+'</div>'+
+    '<div class="grid2" style="margin-top:10px;">'+
+      '<div><div class="label-sm">Inspector</div><div class="val-lg">'+rec.inspector.name+'</div></div>'+
+      '<div><div class="label-sm">Timestamp</div><div class="val-lg">'+rec.timestamp+'</div></div>'+
+    '</div>';
+  if(rec.verdict==='Not acceptable'){
+    const sizes = [];
+    if(rec.sizing){
+      const s = rec.sizing;
+      if(s.qty!=null) sizes.push('Qty '+s.qty);
+      if(s.width) sizes.push('W '+s.width+' mm');
+      if(s.length) sizes.push('L '+s.length+' mm');
+      if(s.height) sizes.push('H '+s.height+' mm');
+      if(s.depth) sizes.push('D '+s.depth+' mm');
+      if(s.angle) sizes.push(s.angle+'°');
+    }
+    inner += '<div class="divider"></div>'+
+      '<div class="hstack" style="align-items:flex-start;gap:16px;flex-wrap:wrap;">'+
+        weldImageSVG(rec.markers, {style:'width:160px;height:96px;flex:0 0 auto;'})+
+        '<div style="flex:1;min-width:180px;">'+
+          '<div class="label-sm">ISO 6520-1 imperfection</div>'+
+          '<div class="val-lg">'+rec.reasonCode+' '+rec.reasonLabel+'</div>'+
+          (sizes.length?'<div class="muted" style="font-size:13px;margin-top:4px;">'+sizes.join(' · ')+'</div>':'')+
+          '<div class="label-sm" style="margin-top:8px;">Remarks</div><div style="font-size:14px;">'+esc(rec.remarks||'—')+'</div>'+
+        '</div>'+
+      '</div>'+
+      '<div class="divider"></div>'+
+      '<div class="grid2">'+
+        '<div><div class="label-sm">NCR raised</div><div class="val-lg">'+rec.ncr+'</div></div>'+
+        '<div><div class="label-sm">Disposition</div><div class="val-lg">Awaiting QA</div></div>'+
+      '</div>';
+  }
+  if(rec.type==='retest'){
+    inner += '<div class="divider"></div><div class="muted" style="font-size:13px;">References the original Not acceptable record above and closes <strong>'+rec.closesNcr+'</strong>. Recorded as a new record — the original is never edited.</div>';
+  }
+  return '<div class="card'+(isHistory?'' : '')+'" style="'+(isHistory?'background:var(--surface-sunken);border-style:dashed;':'')+'">'+inner+'</div>';
+}
+
+SCREENS.weld = {
+  topbar(params){
+    const {part} = findWeld(params.weldId);
+    return topbarBase({title:params.weldId, sub:part.id+' · '+part.name, variant:'assembly'});
+  },
+  render(params){
+    const found = findWeld(params.weldId);
+    const {part, weld:w} = found;
+    const meta = w.type+' · '+w.process+' · '+w.position;
+
+    if(part.blocked){
+      return '<div class="stack">'+
+        '<div class="card">'+
+          '<div class="hstack" style="justify-content:space-between;">'+
+            '<div style="font-weight:700;font-size:18px;">'+w.id+'</div>'+
+            weldProgressBadge(w)+
+          '</div>'+
+          '<div class="muted" style="margin-top:4px;">'+meta+'</div>'+
+        '</div>'+
+        '<div class="card" style="text-align:center;padding:28px 18px;">'+
+          '<div style="color:var(--text-muted);margin-bottom:8px;">'+ICON.lock.replace('<svg','<svg style="width:28px;height:28px;"')+'</div>'+
+          '<div style="font-weight:700;">Not yet ready for inspection</div>'+
+          '<div class="muted" style="font-size:14px;margin-top:4px;">This weld is still with '+ASSEMBLY.welder.name+' ('+ASSEMBLY.welder.stamp+'). You can look, but you can\'t start an inspection yet.</div>'+
+        '</div>'+
+      '</div>';
+    }
+
+    const testsChips = (w.tests||[]).map(t=>{
+      if(t.indexOf('PT')===0) return '<span class="badge badge-info">'+t+' · NDT required <span class="muted" style="font-weight:400;">(set in Assembly)</span></span>';
+      return '<span class="chip">'+t+'</span>';
+    }).join(' ');
+
+    let historyHtml = '';
+    if(w.records.length && (w.status==='Not acceptable' || w.readyForRetest)){
+      historyHtml = recordCardHtml(w.records[0], true);
+    }
+
+    let statusHtml = '';
+    if(w.status==='Acceptable'){
+      statusHtml = recordCardHtml(w.records[w.records.length-1], false);
+      if(w.ndtRequired && DATA.ndtReports[w.id]){
+        statusHtml += '<div class="card tap" onclick="App.nav(\'ndtSummary\',{weldId:\''+w.id+'\'})">'+
+          '<div class="hstack" style="justify-content:space-between;">'+
+            '<div><div style="font-weight:700;">NDT report '+DATA.ndtReports[w.id].id+'</div><div class="muted" style="font-size:13px;">PT — Penetrant Testing · Result '+DATA.ndtReports[w.id].result+'</div></div>'+
+            '<span class="chevron">'+ICON.chevron+'</span>'+
+          '</div>'+
+        '</div>';
+      }
+    } else if(w.status==='Not acceptable'){
+      statusHtml = recordCardHtml(w.records[w.records.length-1], false)+
+        '<div class="banner banner-warning" style="margin-top:14px;">'+ICON.alert.replace('<svg','<svg style="width:18px;height:18px;flex:0 0 auto;"')+'<span>Returned to '+ASSEMBLY.welder.name+' ('+ASSEMBLY.welder.stamp+') for repair. This weld will reappear for re-test once repaired.</span></div>';
+    } else if(w.status==='Pending NDT'){
+      statusHtml = '<div class="card" style="text-align:center;padding:24px 18px;">'+
+          '<div style="color:var(--info);margin-bottom:8px;">'+ICON.doc.replace('<svg','<svg style="width:26px;height:26px;"')+'</div>'+
+          '<div style="font-weight:700;">PT required on this weld</div>'+
+          '<div class="muted" style="font-size:14px;margin:6px 0 16px;">VT passed. This weld also requires 100% penetrant testing before it can be accepted.</div>'+
+          '<button class="btn btn-primary" onclick="App.nav(\'ndtForm\',{weldId:\''+w.id+'\'})">Create NDT report</button>'+
+        '</div>';
+    }
+
+    const photoHtml = (w.records.length && w.records[w.records.length-1].markers && w.records[w.records.length-1].markers.length)
+      ? weldImageSVG(w.records[w.records.length-1].markers, {style:'width:180px;height:110px;'})
+      : '<div class="muted" style="font-size:14px;">No photos captured for this weld.</div>';
+
+    return '<div class="stack">'+
+      (w.status==='Repair — re-test' ? '<div class="badge badge-warning" style="align-self:flex-start;">Repair — re-test</div>' : '')+
+      '<div class="card">'+
+        '<div class="hstack" style="justify-content:space-between;flex-wrap:wrap;">'+
+          '<div><div style="font-weight:700;font-size:18px;">'+w.id+'</div><div class="muted">'+meta+'</div></div>'+
+          '<div class="hstack" style="flex-wrap:wrap;gap:6px;">'+testsChips+'</div>'+
+        '</div>'+
+      '</div>'+
+      historyHtml+
+      wpsSummaryCard()+
+      (w.session ? sessionParamsCard(w.session) : '')+
+      '<div class="card"><div class="section-title">Photos</div>'+photoHtml+'</div>'+
+      statusHtml+
+    '</div>';
+  },
+  footer(params){
+    const {part, weld:w} = findWeld(params.weldId);
+    if(part.blocked){
+      return '<span class="hint">Inspection unavailable — weld not yet complete.</span>'+
+        '<button class="btn btn-outline btn-lg" disabled title="Weld not yet complete">Reject</button>'+
+        '<button class="btn btn-success btn-lg" disabled title="Weld not yet complete">Accept</button>';
+    }
+    const showDecision = (w.status==='Pending') || (w.status==='Repair — re-test');
+    if(!showDecision) return '';
+    return '<button class="btn btn-outline btn-lg" onclick="WeldActions.startReject(\''+w.id+'\')">Reject</button>'+
+      '<button class="btn btn-success btn-lg" onclick="WeldActions.openAccept(\''+w.id+'\')">Accept</button>';
+  },
+};
+</script>
+<script>
+/* ============================= REJECT WIZARD ============================= */
+const SIZE_FIELDS = [
+  {key:'qty', label:'Quantity', unit:''},
+  {key:'width', label:'Width', unit:'mm'},
+  {key:'length', label:'Length', unit:'mm'},
+  {key:'height', label:'Height', unit:'mm'},
+  {key:'depth', label:'Depth', unit:'mm'},
+  {key:'angle', label:'Angle', unit:'°'},
+];
+
+const RejectFlow = {
+  setSearch(v){ state.draft.search = v; renderReasonList(); },
+  selectReason(code, label){ state.draft.reasonCode = code; state.draft.reasonLabel = label; renderReasonList(); },
+  toSize(){ App.nav('rejectSize'); },
+  openSizeKeypad(field){
+    const f = SIZE_FIELDS.find(f=>f.key===field);
+    Keypad.open(f.label, state.draft[field], f.unit, v=>{ state.draft[field]=v; });
+  },
+  toPhoto(){ App.nav('rejectPhoto'); },
+  capturePhoto(){ state.draft.photoTaken = true; render(); },
+  retakePhoto(){ state.draft.photoTaken = false; state.draft.markers = []; render(); },
+  markPhoto(ev){
+    const rect = ev.currentTarget.getBoundingClientRect();
+    const x = ((ev.clientX-rect.left)/rect.width*100).toFixed(1);
+    const y = ((ev.clientY-rect.top)/rect.height*100).toFixed(1);
+    state.draft.markers.push({n:state.draft.markers.length+1, x, y, code:state.draft.reasonCode});
+    render();
+  },
+  removeMarker(n){
+    state.draft.markers = state.draft.markers.filter(m=>m.n!==n).map((m,i)=>({...m, n:i+1}));
+    render();
+  },
+  toRemarks(){ App.nav('rejectRemarks'); },
+  setRemarks(v){ state.draft.remarks = v; },
+  submit(){
+    const d = state.draft;
+    const {weld:w} = findWeld(d.weldId);
+    const ncrId = 'NCR-2026-'+String(DATA.ncrCounter).padStart(4,'0');
+    DATA.ncrCounter++;
+    const rec = {
+      type:'inspection', verdict:'Not acceptable', timestamp:demoTimestamp(), inspector:{...ASSEMBLY.inspector},
+      reasonCode:d.reasonCode, reasonLabel:d.reasonLabel,
+      sizing:{qty:d.qty,width:d.width,length:d.length,height:d.height,depth:d.depth,angle:d.angle},
+      markers:d.markers, remarks:d.remarks, ncr:ncrId,
+    };
+    w.records.push(rec);
+    w.ncr = ncrId;
+    w.status = 'Not acceptable';
+    w.disposition = 'awaiting QA';
+    w.stage = 'Welding';
+    w.readyForRetest = false;
+    queueOrToast(d.weldId+' — Not acceptable, '+ncrId+' raised');
+    App.nav('rejectConfirm');
+  },
+  done(){ state.draft = null; App.home(); },
+};
+
+function renderReasonList(){
+  const list = document.getElementById('reasonList');
+  if(!list) return;
+  const q = (state.draft.search||'').toLowerCase().trim();
+  const items = IMPERFECTIONS.filter(i=> i.code.indexOf(q)!==-1 || i.label.toLowerCase().indexOf(q)!==-1);
+  list.innerHTML = items.map(i=>{
+    const sel = state.draft.reasonCode===i.code;
+    return '<div class="reason-row'+(sel?' selected':'')+'" onclick="RejectFlow.selectReason(\''+i.code+'\', '+JSON.stringify(i.label)+')">'+
+      '<div class="reason-code">'+i.code+'</div><div style="flex:1;font-size:16px;">'+i.label+'</div>'+
+      (sel? '<span style="color:var(--assembly-solid);">'+ICON.check+'</span>' : '')+
+    '</div>';
+  }).join('') || '<div class="muted" style="padding:24px;text-align:center;">No matches for "'+esc(q)+'"</div>';
+  const nextBtn = document.getElementById('reasonNextBtn');
+  if(nextBtn) nextBtn.disabled = !state.draft.reasonCode;
+}
+
+SCREENS.rejectReason = {
+  topbar(){ return topbarBase({title:'Select imperfection', sub:'ISO 6520-1 · '+state.draft.weldId, variant:'assembly'}); },
+  render(){
+    return '<div class="stack">'+
+      '<input class="search-input" placeholder="Search by code or name…" value="'+esc(state.draft.search||'')+'" oninput="RejectFlow.setSearch(this.value)"/>'+
+      '<div id="reasonList"></div>'+
+    '</div>';
+  },
+  footer(){
+    return '<button class="btn btn-primary btn-lg" id="reasonNextBtn" '+(state.draft.reasonCode?'':'disabled')+' onclick="RejectFlow.toSize()">Next — size imperfection</button>';
+  },
+  after(){ renderReasonList(); },
+};
+
+SCREENS.rejectSize = {
+  topbar(){ return topbarBase({title:'Size the imperfection', sub:state.draft.reasonCode+' '+state.draft.reasonLabel, variant:'assembly'}); },
+  render(){
+    const d = state.draft;
+    const fields = SIZE_FIELDS.map(f=>{
+      const v = d[f.key];
+      return '<div class="field"><label>'+f.label+'</label>'+
+        '<div class="keypad-display'+(v==null?' empty':'')+'" onclick="RejectFlow.openSizeKeypad(\''+f.key+'\')">'+
+          (v==null?'Tap to enter':v+' '+f.unit)+
+          '<span class="unit">'+(v==null?'':'')+'</span>'+
+        '</div>'+
+      '</div>';
+    }).join('');
+    return '<div class="stack">'+
+      '<div class="card"><div class="grid2" style="gap:16px;">'+fields+'</div></div>'+
+    '</div>';
+  },
+  footer(){
+    return '<button class="btn btn-primary btn-lg" '+(state.draft.qty==null?'disabled':'')+' onclick="RejectFlow.toPhoto()">Next — capture photo</button>';
+  },
+};
+
+SCREENS.rejectPhoto = {
+  topbar(){ return topbarBase({title:'Photo & annotation', sub:state.draft.weldId, variant:'assembly'}); },
+  render(){
+    const d = state.draft;
+    if(!d.photoTaken){
+      return '<div class="stack">'+
+        '<div class="card" style="text-align:center;padding:48px 18px;">'+
+          '<div style="color:var(--text-muted);margin-bottom:12px;">'+ICON.camera.replace('<svg','<svg style="width:40px;height:40px;"')+'</div>'+
+          '<div style="font-weight:700;font-size:16px;">Capture a photo of the imperfection</div>'+
+          '<div class="muted" style="margin-top:6px;">Tablet camera capture is simulated for this prototype.</div>'+
+          '<button class="btn btn-primary" style="margin-top:18px;" onclick="RejectFlow.capturePhoto()">Simulate camera capture</button>'+
+        '</div>'+
+      '</div>';
+    }
+    const markerRows = d.markers.map(m=>
+      '<div class="hstack" style="justify-content:space-between;padding:10px 12px;border:1px solid var(--border);border-radius:10px;background:var(--surface-card);">'+
+        '<div class="hstack"><span class="badge badge-error" style="min-width:26px;justify-content:center;">'+m.n+'</span><span style="font-size:15px;">'+m.code+' '+esc(d.reasonLabel)+'</span></div>'+
+        '<button class="btn btn-outline" style="min-height:40px;padding:0 10px;" onclick="RejectFlow.removeMarker('+m.n+')">'+ICON.trash.replace('<svg','<svg style="width:16px;height:16px;"')+'</button>'+
+      '</div>'
+    ).join('');
+    return '<div class="stack">'+
+      '<div class="card">'+
+        weldImageSVG(d.markers, {interactive:true, style:'width:100%;aspect-ratio:400/240;'})+
+        '<div class="muted" style="font-size:13px;margin-top:10px;">Tap anywhere on the photo to drop a numbered marker at the defect location. You can add more than one.</div>'+
+        '<button class="btn btn-outline" style="margin-top:10px;" onclick="RejectFlow.retakePhoto()">Retake photo</button>'+
+      '</div>'+
+      '<div class="section-title">Markers ('+d.markers.length+')</div>'+
+      '<div class="stack" style="gap:8px;">'+(markerRows||'<div class="muted">No markers yet — tap the photo above.</div>')+'</div>'+
+    '</div>';
+  },
+  footer(){
+    const d = state.draft;
+    if(!d.photoTaken) return '';
+    return '<button class="btn btn-primary btn-lg" '+(d.markers.length===0?'disabled':'')+' onclick="RejectFlow.toRemarks()">Next — add remarks</button>';
+  },
+};
+
+SCREENS.rejectRemarks = {
+  topbar(){ return topbarBase({title:'Remarks & submit', sub:state.draft.weldId, variant:'assembly'}); },
+  render(){
+    const d = state.draft;
+    return '<div class="stack">'+
+      '<div class="card">'+
+        '<div class="section-title">Summary</div>'+
+        '<div class="grid2">'+
+          '<div><div class="label-sm">Imperfection</div><div class="val-lg">'+d.reasonCode+' '+esc(d.reasonLabel)+'</div></div>'+
+          '<div><div class="label-sm">Markers</div><div class="val-lg">'+d.markers.length+'</div></div>'+
+        '</div>'+
+      '</div>'+
+      '<div class="field"><label>Remarks</label>'+
+        '<textarea class="input" rows="5" placeholder="Describe what you observed…" oninput="RejectFlow.setRemarks(this.value)">'+esc(d.remarks||'')+'</textarea>'+
+      '</div>'+
+    '</div>';
+  },
+  footer(){
+    return '<button class="btn btn-danger btn-lg" onclick="RejectFlow.submit()">Submit — Not acceptable</button>';
+  },
+};
+
+SCREENS.rejectConfirm = {
+  topbar(){ return topbarBase({title:'Rejection recorded', showBack:false, variant:'assembly'}); },
+  noPadBottom:true,
+  render(){
+    const d = state.draft;
+    const {weld:w} = findWeld(d.weldId);
+    return '<div class="stack" style="max-width:520px;margin:20px auto;text-align:center;">'+
+      '<div style="width:72px;height:72px;border-radius:50%;background:rgba(226,57,0,.12);color:var(--error);display:flex;align-items:center;justify-content:center;margin:0 auto;">'+ICON.x.replace('<svg','<svg style="width:34px;height:34px;"')+'</div>'+
+      '<h2 style="font-size:22px;">'+d.weldId+' — Not acceptable</h2>'+
+      '<div class="card" style="text-align:left;">'+
+        '<div class="stack" style="gap:12px;">'+
+          '<div class="hstack" style="justify-content:space-between;"><span class="muted">NCR raised</span><strong>'+w.ncr+'</strong></div>'+
+          '<div class="hstack" style="justify-content:space-between;"><span class="muted">Disposition</span><strong>Awaiting QA</strong></div>'+
+          '<div class="hstack" style="justify-content:space-between;"><span class="muted">Weld stage</span><strong>Welding (returned)</strong></div>'+
+          '<div class="hstack" style="justify-content:space-between;"><span class="muted">Notified</span><strong>'+ASSEMBLY.welder.name+' ('+ASSEMBLY.welder.stamp+')</strong></div>'+
+        '</div>'+
+      '</div>'+
+      '<button class="btn btn-primary btn-lg btn-block" onclick="RejectFlow.done()">Done</button>'+
+    '</div>';
+  },
+};
+</script>
+<script>
+/* ============================= NDT (PT) FLOW ============================= */
+function demoDateStr(){ const d = new Date(); return d.toISOString().slice(0,10); }
+
+function initNdtDraft(weldId){
+  if(!state.ndtDraft || state.ndtDraft.weldId!==weldId){
+    state.ndtDraft = {
+      weldId, id:'NDT-2026-'+String(DATA.ndtCounter).padStart(4,'0'), date:demoDateStr(), site:ASSEMBLY.site,
+      surfaceCondition:null, surfaceTemp:null, penetrantBatch:'', developerBatch:'', dwellTime:null,
+      indications:[], result:null,
+      notes:'', pdfAttached:false, photos:[],
+      sectionsOpen:{proc:true, notes:false},
+    };
+  }
+}
+function formatDateDMY(iso){
+  const [y,m,d] = iso.split('-');
+  return d+'/'+m+'/'+y;
+}
+function formField(label, value, opts){
+  opts = opts || {};
+  return '<div class="field"><label'+(opts.required?' class="req"':'')+'>'+label+'</label>'+
+    '<div class="select-display">'+esc(value)+ICON.chevronDown+'</div></div>';
+}
+
+SCREENS.ndtPrompt = {
+  topbar(){ return topbarBase({title:'NDT required', sub:'PT — Penetrant Testing', variant:'assembly'}); },
+  render(params){
+    return '<div class="stack" style="max-width:520px;margin:30px auto;text-align:center;">'+
+      '<div style="width:64px;height:64px;border-radius:50%;background:rgba(11,125,168,.12);color:var(--info);display:flex;align-items:center;justify-content:center;margin:0 auto;">'+ICON.doc.replace('<svg','<svg style="width:30px;height:30px;"')+'</div>'+
+      '<h2 style="font-size:20px;">PT required on this weld</h2>'+
+      '<p class="muted">'+params.weldId+' passed VT. The engineer set 100% penetrant testing (PT) as a requirement upstream in Assembly — you perform this test and record the result here.</p>'+
+      '<div class="hstack" style="justify-content:center;gap:12px;margin-top:8px;">'+
+        '<button class="btn btn-outline btn-lg" onclick="App.back()">Do it later</button>'+
+        '<button class="btn btn-primary btn-lg" onclick="initNdtDraft(\''+params.weldId+'\');App.nav(\'ndtForm\',{weldId:\''+params.weldId+'\'})">Create NDT report</button>'+
+      '</div>'+
+    '</div>';
+  },
+};
+
+const NdtFlow = {
+  setCondition(v){ state.ndtDraft.surfaceCondition = v; render(); },
+  openTemp(){ Keypad.open('Surface temperature', state.ndtDraft.surfaceTemp, '°C', v=>{ state.ndtDraft.surfaceTemp=v; }); },
+  openDwell(){ Keypad.open('Dwell time', state.ndtDraft.dwellTime, 'min', v=>{ state.ndtDraft.dwellTime=v; }); },
+  setPenetrant(v){ state.ndtDraft.penetrantBatch = v; },
+  setDeveloper(v){ state.ndtDraft.developerBatch = v; },
+  setResult(v){ state.ndtDraft.result = v; render(); },
+  toggleSection(key){ state.ndtDraft.sectionsOpen[key] = !state.ndtDraft.sectionsOpen[key]; render(); },
+  newProcedureInfo(){ toast('Creating and editing procedures is managed in WeldCloud Assembly'); },
+  setNotes(v){ state.ndtDraft.notes = v; },
+  attachPdf(){ state.ndtDraft.pdfAttached = true; toast('PDF attached (simulated)'); render(); },
+  removePdf(){ state.ndtDraft.pdfAttached = false; render(); },
+  takePhoto(){
+    state.ndtDraft.photos.push({n: state.ndtDraft.photos.length+1});
+    toast('Photo captured and saved to report');
+    render();
+  },
+  removePhoto(n){
+    state.ndtDraft.photos = state.ndtDraft.photos.filter(p=>p.n!==n).map((p,idx)=>({...p,n:idx+1}));
+    render();
+  },
+  cancel(){ state.ndtDraft = null; App.back(); },
+  openAddIndication(){
+    state.indicationDraft = {code:null,label:null,location:'',linear:'linear',length:null,hasPhoto:false};
+    Modal.open(indicationModalHtml());
+  },
+  togglePhoto(){ state.indicationDraft.hasPhoto = !state.indicationDraft.hasPhoto; Modal.open(indicationModalHtml()); },
+  setLinear(v){ state.indicationDraft.linear = v; Modal.open(indicationModalHtml()); },
+  openLength(){ Keypad.open('Length', state.indicationDraft.length, 'mm', v=>{ state.indicationDraft.length=v; Modal.open(indicationModalHtml()); }); },
+  setLocation(v){ state.indicationDraft.location = v; },
+  saveIndication(){
+    const d = state.indicationDraft;
+    if(!d.code){ toast('Select an ISO 6520-1 code first'); return; }
+    state.ndtDraft.indications.push({...d, n:state.ndtDraft.indications.length+1});
+    Modal.close();
+  },
+  removeIndication(n){
+    state.ndtDraft.indications = state.ndtDraft.indications.filter(i=>i.n!==n).map((i,idx)=>({...i,n:idx+1}));
+    render();
+  },
+  save(){
+    const d = state.ndtDraft;
+    if(!d.surfaceCondition || d.surfaceTemp==null || !d.penetrantBatch || !d.developerBatch || d.dwellTime==null || !d.result){
+      toast('Complete all test conditions and a result before signing');
+      return;
+    }
+    const report = {
+      ...d, signedBy:{...ASSEMBLY.inspector}, signedAt:demoTimestampFull(),
+      procedure:'NDT-PT-01 rev 2 per ISO 3452-1', acceptance:'ISO 23277 — 2X', coverage:'100%',
+    };
+    DATA.ndtReports[d.weldId] = report;
+    DATA.ndtCounter++;
+    const {weld:w} = findWeld(d.weldId);
+    if(d.result==='Acceptable'){ w.status='Acceptable'; w.stage='Finishing'; }
+    else { w.status='Not acceptable'; w.disposition='awaiting QA'; }
+    queueOrToast(d.weldId+' — NDT report '+d.id+' saved ('+d.result+')');
+    App.nav('ndtSummary', {weldId:d.weldId});
+  },
+};
+
+function demoTimestampFull(){
+  const d = new Date();
+  const pad = n=>String(n).padStart(2,'0');
+  return demoDateStr()+' '+pad(d.getHours())+':'+pad(d.getMinutes());
+}
+
+function indicationModalHtml(){
+  const d = state.indicationDraft;
+  const codeList = IMPERFECTIONS.map(i=>{
+    const sel = d.code===i.code;
+    return '<div class="reason-row" style="padding:12px 14px;margin-bottom:6px;'+(sel?'border-color:var(--assembly-solid);background:rgba(165,40,80,.06);':'')+'" onclick="NdtFlow.pickCode(\''+i.code+'\','+JSON.stringify(i.label)+')">'+
+      '<div class="reason-code" style="font-size:15px;min-width:48px;">'+i.code+'</div><div style="flex:1;font-size:14px;">'+i.label+'</div>'+
+      (sel?'<span style="color:var(--assembly-solid);">'+ICON.check.replace('<svg','<svg style="width:16px;height:16px;"')+'</span>':'')+
+    '</div>';
+  }).join('');
+  return '<h2>Add indication</h2>'+
+    '<div class="label-sm" style="margin-bottom:6px;">ISO 6520-1 code</div>'+
+    '<div style="max-height:180px;overflow-y:auto;border:1px solid var(--border);border-radius:10px;padding:8px;margin-bottom:14px;">'+codeList+'</div>'+
+    '<div class="grid2" style="gap:14px;">'+
+      '<div class="field" style="grid-column:span 2;"><label>Location from datum</label><input class="input" placeholder="e.g. 120 mm from datum A" value="'+esc(d.location)+'" oninput="NdtFlow.setLocation(this.value)"/></div>'+
+      '<div class="field"><label>Indication type</label>'+
+        '<div class="hstack" style="gap:8px;">'+
+          '<button class="check-btn'+(d.linear==='linear'?' pass on':'')+'" onclick="NdtFlow.setLinear(\'linear\')">Linear</button>'+
+          '<button class="check-btn'+(d.linear==='non-linear'?' pass on':'')+'" onclick="NdtFlow.setLinear(\'non-linear\')">Non-linear</button>'+
+        '</div>'+
+      '</div>'+
+      '<div class="field"><label>Length</label><div class="keypad-display" onclick="NdtFlow.openLength()">'+(d.length==null?'Tap to enter':d.length+' mm')+'</div></div>'+
+    '</div>'+
+    '<button class="btn btn-outline" style="margin-top:14px;" onclick="NdtFlow.togglePhoto()">'+(d.hasPhoto?'✓ Photo attached — tap to remove':'Attach annotated photo')+'</button>'+
+    '<div class="modal-actions"><button class="btn btn-outline" onclick="Modal.close()">Cancel</button><button class="btn btn-primary" onclick="NdtFlow.saveIndication()">Add indication</button></div>';
+}
+NdtFlow.pickCode = function(code,label){ state.indicationDraft.code=code; state.indicationDraft.label=label; Modal.open(indicationModalHtml()); };
+
+SCREENS.ndtForm = {
+  topbar(params){ initNdtDraft(params.weldId); return topbarBase({title:'NDT report', sub:state.ndtDraft.id, variant:'assembly'}); },
+  render(params){
+    initNdtDraft(params.weldId);
+    const d = state.ndtDraft;
+    const indRows = d.indications.map(i=>
+      '<tr><td>'+i.n+'</td><td>'+i.code+' '+i.label+'</td><td>'+esc(i.location||'—')+'</td><td>'+(i.linear==='linear'?'Linear':'Non-linear')+'</td><td>'+(i.length!=null?i.length+' mm':'—')+'</td><td>'+(i.hasPhoto?'📎':'—')+'</td>'+
+      '<td><button class="btn btn-outline" style="min-height:36px;padding:0 10px;" onclick="NdtFlow.removeIndication('+i.n+')">'+ICON.trash.replace('<svg','<svg style="width:14px;height:14px;"')+'</button></td></tr>'
+    ).join('');
+    const photosGallery = d.photos.map(p=>
+      '<div class="thumb">'+weldImageSVG(null,{style:'width:100%;height:100%;'})+
+        '<button class="rm" onclick="NdtFlow.removePhoto('+p.n+')">'+ICON.x+'</button>'+
+      '</div>'
+    ).join('') + '<div class="thumb-add" onclick="NdtFlow.takePhoto()">'+ICON.camera+'<span>Take photo</span></div>';
+
+    return '<div class="stack">'+
+      '<div class="card"><div class="section-title">Create NDT report</div>'+
+        '<div class="grid2" style="gap:16px;">'+
+          formField('Report number', d.id, {required:true})+
+          '<div class="field"><label class="req">Date</label><div class="date-display"><span class="txt">'+formatDateDMY(d.date)+'</span><span class="cal">'+ICON.calendar+'</span></div></div>'+
+          formField('Type of test', 'PT — Penetrant Testing', {required:true})+
+          formField('Assembly', ASSEMBLY.id+' — '+ASSEMBLY.name, {required:true})+
+          formField('Weld', d.weldId, {required:true})+
+          formField('Inspector', ASSEMBLY.inspector.name, {})+
+          formField('Sites', d.site, {})+
+        '</div>'+
+      '</div>'+
+      '<div class="card collapsible">'+
+        '<div class="head'+(d.sectionsOpen.proc?'':' closed')+'" onclick="NdtFlow.toggleSection(\'proc\')"><h3>Procedure, Acceptance criteria</h3>'+ICON.chevronDown+'</div>'+
+        (d.sectionsOpen.proc ? '<div class="body">'+
+          '<div class="field" style="margin-bottom:8px;"><label>Procedure</label><div class="select-display">NDT-PT-01 rev 2 — per ISO 3452-1'+ICON.chevronDown+'</div>'+
+            '<button class="link-btn" style="margin-top:6px;" onclick="NdtFlow.newProcedureInfo()">'+ICON.linkExternal+' Create new procedure</button>'+
+          '</div>'+
+          '<div class="field" style="margin-top:14px;"><label>Acceptance criteria</label><div class="select-display">ISO 23277 — 2X'+ICON.chevronDown+'</div></div>'+
+        '</div>' : '')+
+      '</div>'+
+      '<div class="card collapsible">'+
+        '<div class="head'+(d.sectionsOpen.notes?'':' closed')+'" onclick="NdtFlow.toggleSection(\'notes\')"><h3>Notes, PDF file, Photos</h3>'+ICON.chevronDown+'</div>'+
+        (d.sectionsOpen.notes ? '<div class="body">'+
+          '<div class="field"><label>Notes</label><textarea class="input" rows="3" placeholder="Optional notes for this report…" oninput="NdtFlow.setNotes(this.value)">'+esc(d.notes)+'</textarea></div>'+
+          '<div class="field" style="margin-top:14px;"><label>PDF file</label>'+
+            '<div class="hstack">'+
+              '<div class="select-display" style="flex:1;">'+(d.pdfAttached? d.id+'.pdf' : 'No file attached')+
+                '<button class="btn btn-outline" style="min-height:34px;padding:0 10px;font-size:12px;" onclick="event.stopPropagation();'+(d.pdfAttached?'NdtFlow.removePdf()':'NdtFlow.attachPdf()')+'">'+(d.pdfAttached?'Remove':'Attach')+'</button>'+
+              '</div>'+
+            '</div>'+
+          '</div>'+
+          '<div class="field" style="margin-top:14px;"><label>Photos</label>'+
+            '<div class="thumb-strip">'+photosGallery+'</div>'+
+            '<div class="muted" style="font-size:12px;margin-top:6px;">Take a photo with the tablet camera — it saves directly to this report.</div>'+
+          '</div>'+
+        '</div>' : '')+
+      '</div>'+
+      '<div class="section-title" style="margin-top:4px;">Performing the test</div>'+
+      '<div class="card"><div class="section-title">Test conditions</div>'+
+        '<div class="field" style="margin-bottom:14px;"><label>Surface condition</label>'+
+          '<div class="hstack" style="gap:8px;">'+
+            ['as-welded','ground','blasted'].map(v=>'<button class="check-btn'+(d.surfaceCondition===v?' pass on':'')+'" onclick="NdtFlow.setCondition(\''+v+'\')">'+v[0].toUpperCase()+v.slice(1).replace('-',' ')+'</button>').join('')+
+          '</div>'+
+        '</div>'+
+        '<div class="grid2" style="gap:14px;">'+
+          '<div class="field"><label>Surface temperature (valid 5–50 °C)</label><div class="keypad-display" onclick="NdtFlow.openTemp()">'+(d.surfaceTemp==null?'Tap to enter':d.surfaceTemp+' °C')+'</div>'+
+            (d.surfaceTemp!=null && !inRange(d.surfaceTemp,[5,50]) ? '<div style="font-size:12px;color:var(--warning);">Outside valid range</div>' : '')+
+          '</div>'+
+          '<div class="field"><label>Dwell time</label><div class="keypad-display" onclick="NdtFlow.openDwell()">'+(d.dwellTime==null?'Tap to enter':d.dwellTime+' min')+'</div></div>'+
+          '<div class="field"><label>Penetrant batch no.</label><input class="input" placeholder="e.g. PN-2411-08" value="'+esc(d.penetrantBatch)+'" oninput="NdtFlow.setPenetrant(this.value)"/></div>'+
+          '<div class="field"><label>Developer batch no.</label><input class="input" placeholder="e.g. DV-2402-19" value="'+esc(d.developerBatch)+'" oninput="NdtFlow.setDeveloper(this.value)"/></div>'+
+        '</div>'+
+      '</div>'+
+      '<div class="card"><div class="section-title">Test timing / stage / location</div>'+
+        '<div class="hstack" style="gap:10px;flex-wrap:wrap;">'+
+          '<span class="chip">Post-weld</span><span class="chip">Post-weld</span><span class="chip">Weld</span>'+
+        '</div>'+
+      '</div>'+
+      '<div class="card"><div class="hstack" style="justify-content:space-between;"><div class="section-title" style="margin:0;">Coverage</div><div style="font-size:22px;font-weight:700;">100%</div></div></div>'+
+      '<div class="card"><div class="hstack" style="justify-content:space-between;"><div class="section-title" style="margin:0;">Indications</div>'+
+          '<button class="btn btn-outline" style="min-height:38px;padding:0 12px;font-size:13px;" onclick="NdtFlow.openAddIndication()">'+ICON.plus.replace('<svg','<svg style="width:15px;height:15px;"')+' Add indication</button>'+
+        '</div>'+
+        (d.indications.length ?
+          '<div class="wrap-table" style="margin-top:10px;"><table class="ind"><thead><tr><th>#</th><th>ISO 6520-1</th><th>Location</th><th>Type</th><th>Dimensions</th><th>Photo</th><th></th></tr></thead><tbody>'+indRows+'</tbody></table></div>'
+          : '<div class="muted" style="margin-top:10px;">No indications recorded — clean test.</div>')+
+      '</div>'+
+      '<div class="card"><div class="section-title">Result</div>'+
+        '<div class="result-toggle">'+
+          '<button class="result-btn acceptable'+(d.result==='Acceptable'?' on':'')+'" onclick="NdtFlow.setResult(\'Acceptable\')">Acceptable</button>'+
+          '<button class="result-btn failed'+(d.result==='Failed'?' on':'')+'" onclick="NdtFlow.setResult(\'Failed\')">Failed</button>'+
+        '</div>'+
+      '</div>'+
+      '<div class="card"><div class="section-title">Sign &amp; save</div>'+
+        '<div class="grid2">'+
+          '<div><div class="label-sm">Inspector</div><div class="val-lg">'+ASSEMBLY.inspector.name+'</div></div>'+
+          '<div><div class="label-sm">Method &amp; level</div><div class="val-lg">PT Level 2</div></div>'+
+          '<div><div class="label-sm">Certificate</div><div class="val-lg">'+ASSEMBLY.inspector.ptCert+'</div></div>'+
+          '<div><div class="label-sm">Date</div><div class="val-lg">'+d.date+'</div></div>'+
+        '</div>'+
+      '</div>'+
+    '</div>';
+  },
+  footer(){
+    return '<button class="btn btn-outline btn-lg" onclick="NdtFlow.cancel()">Cancel</button>'+
+      '<button class="btn btn-primary btn-lg" onclick="NdtFlow.save()">Sign &amp; save report</button>';
+  },
+};
+
+const NdtSummary = {
+  attachPdf(weldId){
+    DATA.ndtReports[weldId].pdfAttached = true;
+    toast('PDF attached to '+DATA.ndtReports[weldId].id+' (simulated)');
+    render();
+  },
+};
+
+SCREENS.ndtSummary = {
+  topbar(params){ return topbarBase({title:DATA.ndtReports[params.weldId].id, sub:'NDT report · '+params.weldId, variant:'assembly'}); },
+  render(params){
+    const r = DATA.ndtReports[params.weldId];
+    const badgeCls = r.result==='Acceptable' ? 'badge-success' : 'badge-error';
+    return '<div class="stack">'+
+      '<div class="card">'+
+        '<div class="hstack" style="justify-content:space-between;">'+
+          '<div><div style="font-weight:700;font-size:18px;">'+r.id+'</div><div class="muted">PT — Penetrant Testing · '+r.date+'</div></div>'+
+          '<span class="badge '+badgeCls+'">'+r.result+'</span>'+
+        '</div>'+
+      '</div>'+
+      '<div class="card"><div class="section-title">Conditions</div>'+
+        '<div class="grid2">'+
+          '<div><div class="label-sm">Surface condition</div><div class="val-lg">'+cap(r.surfaceCondition)+'</div></div>'+
+          '<div><div class="label-sm">Surface temperature</div><div class="val-lg">'+r.surfaceTemp+' °C</div></div>'+
+          '<div><div class="label-sm">Penetrant batch</div><div class="val-lg">'+esc(r.penetrantBatch)+'</div></div>'+
+          '<div><div class="label-sm">Developer batch</div><div class="val-lg">'+esc(r.developerBatch)+'</div></div>'+
+          '<div><div class="label-sm">Dwell time</div><div class="val-lg">'+r.dwellTime+' min</div></div>'+
+          '<div><div class="label-sm">Coverage</div><div class="val-lg">'+r.coverage+'</div></div>'+
+        '</div>'+
+      '</div>'+
+      '<div class="card"><div class="section-title">Procedure &amp; acceptance</div>'+
+        '<div class="grid2">'+
+          '<div><div class="label-sm">Procedure</div><div class="val-lg">'+r.procedure+'</div></div>'+
+          '<div><div class="label-sm">Acceptance criteria</div><div class="val-lg">'+r.acceptance+'</div></div>'+
+        '</div>'+
+      '</div>'+
+      '<div class="card"><div class="section-title">Indications ('+r.indications.length+')</div>'+
+        (r.indications.length ? r.indications.map(i=>'<div class="chip" style="margin:3px;">'+i.code+' — '+esc(i.location||'')+'</div>').join('') : '<div class="muted">None — clean test.</div>')+
+      '</div>'+
+      (r.notes || r.photos.length ? '<div class="card"><div class="section-title">Notes &amp; photos</div>'+
+        (r.notes ? '<div style="font-size:14px;margin-bottom:'+(r.photos.length?'14px':'0')+';">'+esc(r.notes)+'</div>' : '')+
+        (r.photos.length ? '<div class="thumb-strip">'+r.photos.map(()=>'<div class="thumb">'+weldImageSVG(null,{style:'width:100%;height:100%;'})+'</div>').join('')+'</div>' : '')+
+      '</div>' : '')+
+      '<div class="card"><div class="section-title">Sign-off</div>'+
+        '<div class="grid2">'+
+          '<div><div class="label-sm">Inspector</div><div class="val-lg">'+r.signedBy.name+'</div></div>'+
+          '<div><div class="label-sm">Method &amp; level</div><div class="val-lg">PT Level 2 · '+r.signedBy.ptCert+'</div></div>'+
+          '<div><div class="label-sm">Signed</div><div class="val-lg">'+r.signedAt+'</div></div>'+
+        '</div>'+
+      '</div>'+
+      '<div class="hstack" style="gap:12px;">'+
+        (r.pdfAttached
+          ? '<button class="btn btn-outline btn-block" disabled>'+ICON.doc.replace('<svg','<svg style="width:16px;height:16px;"')+' '+r.id+'.pdf attached</button>'
+          : '<button class="btn btn-outline btn-block" onclick="NdtSummary.attachPdf(\''+params.weldId+'\')">'+ICON.doc.replace('<svg','<svg style="width:16px;height:16px;"')+' Attach PDF</button>')+
+        '<button class="btn btn-primary btn-block" onclick="toast(\'Shared to WeldCloud Assembly\')">'+ICON.share.replace('<svg','<svg style="width:16px;height:16px;"')+' Share to Assembly</button>'+
+      '</div>'+
+    '</div>';
+  },
+};
+function cap(s){ if(!s) return '—'; return s.split('-').map(w=>w[0].toUpperCase()+w.slice(1)).join(' '); }
+</script>
+<script>
+/* ============================= FLEET / MACHINE ============================= */
+SCREENS.fleet = {
+  topbar(){ return topbarBase({title:'Machine fleet', sub:ASSEMBLY.site, variant:'fleet'}); },
+  render(){
+    return '<div class="grid2">'+MACHINES.map(m=>{
+      const dotColor = m.online ? 'var(--success)' : 'var(--text-muted)';
+      return '<div class="card tap" onclick="App.nav(\'machine\',{machineId:\''+m.id+'\'})">'+
+        '<div class="hstack" style="justify-content:space-between;">'+
+          '<div style="font-weight:700;font-size:16px;">'+m.name+'</div>'+
+          '<span class="dot-ind" style="background:'+dotColor+';width:12px;height:12px;"></span>'+
+        '</div>'+
+        '<div class="muted" style="font-size:13px;margin-top:2px;">'+m.site+'</div>'+
+        '<div class="hstack" style="margin-top:10px;gap:8px;">'+
+          '<span class="badge '+(m.online?'badge-success':'badge-muted')+'">'+(m.online?'Online':'Offline')+'</span>'+
+          '<span class="muted" style="font-size:13px;">'+m.activity+' · '+m.activityAt+'</span>'+
+        '</div>'+
+        (m.events.length ? '<div class="hstack" style="margin-top:10px;flex-wrap:wrap;gap:6px;">'+m.events.map(e=>'<span class="chip" style="border-color:var(--warning);color:#8a5c04;">'+esc(e.msg)+'</span>').join('')+'</div>' : '')+
+        (m.service.due ? '<div class="muted" style="font-size:13px;margin-top:10px;">Service due '+m.service.due+'</div>' : '')+
+      '</div>';
+    }).join('')+'</div>';
+  },
+};
+
+SCREENS.machine = {
+  topbar(params){ const m=findMachine(params.machineId); return topbarBase({title:m.name, sub:m.site, variant:'fleet'}); },
+  render(params){
+    const m = findMachine(params.machineId);
+    return '<div class="stack">'+
+      '<div class="card">'+
+        '<div class="hstack" style="justify-content:space-between;">'+
+          '<span class="badge '+(m.online?'badge-success':'badge-muted')+'">'+(m.online?'Online':'Offline')+'</span>'+
+          '<span class="muted">'+m.activityAt+'</span>'+
+        '</div>'+
+        '<div style="font-size:18px;font-weight:500;margin-top:8px;">'+m.activity+'</div>'+
+      '</div>'+
+      '<div class="card"><div class="section-title">Events</div>'+
+        (m.events.length ? m.events.map(e=>'<div class="param-row"><div class="param-name">'+esc(e.msg)+'</div><div class="muted">'+e.t+'</div></div>').join('') : '<div class="muted">No events recorded.</div>')+
+      '</div>'+
+      '<div class="card"><div class="hstack" style="justify-content:space-between;"><div class="section-title" style="margin:0;">Service log</div>'+
+          (m.service.due?'<span class="badge badge-warning">Due '+m.service.due+'</span>':'')+
+        '</div>'+
+        (m.service.log.length ? m.service.log.map(l=>'<div class="param-row"><div class="param-name">'+esc(l.summary)+'</div><div class="muted">'+l.t+'</div></div>').join('') : '<div class="muted" style="margin-top:6px;">No service history in this demo.</div>')+
+      '</div>'+
+      '<div class="hstack" style="gap:12px;">'+
+        '<button class="btn btn-outline btn-block" onclick="App.nav(\'machineSessions\',{machineId:\''+m.id+'\'})">Weld sessions</button>'+
+        '<button class="btn btn-fleet btn-block" onclick="App.nav(\'serviceChecklist\',{machineId:\''+m.id+'\'})">Run service checklist</button>'+
+      '</div>'+
+    '</div>';
+  },
+};
+
+SCREENS.machineSessions = {
+  topbar(params){ const m=findMachine(params.machineId); return topbarBase({title:'Weld sessions', sub:m.name, variant:'fleet'}); },
+  render(params){
+    const m = findMachine(params.machineId);
+    if(m.id!=='m1'){
+      return '<div class="card" style="text-align:center;padding:36px 18px;"><div class="muted">No weld sessions recorded for this machine in this demo.</div></div>';
+    }
+    const p1 = findPart('P-01');
+    const rows = p1.welds.map((w,idx)=>{
+      const s = w.session;
+      return '<tr><td>'+ASSEMBLY.welder.name+'</td><td>'+WPS.id+'</td><td>'+ASSEMBLY.id+'</td><td>P-01</td><td>'+w.id+'</td><td>Pass '+(idx%2===0?1:2)+'</td><td>'+(4+idx)+':'+(10+idx*3)+'</td><td>'+s.current+'A / '+s.voltage+'V</td></tr>';
+    }).join('');
+    return '<div class="wrap-table"><table class="ind"><thead><tr><th>Operator</th><th>WPS</th><th>Assembly</th><th>Part</th><th>Weld</th><th>Pass</th><th>Arc time</th><th>Avg I/V</th></tr></thead><tbody>'+rows+'</tbody></table></div>';
+  },
+};
+
+SCREENS.serviceChecklist = {
+  topbar(params){ const m=findMachine(params.machineId); return topbarBase({title:'Service checklist', sub:m.name, variant:'fleet'}); },
+  render(params){
+    if(!state.checklistDraft || state.checklistDraft.machineId!==params.machineId){
+      state.checklistDraft = {machineId:params.machineId, items:CHECKLIST_ITEMS.map(label=>({label, result:null, note:'', hasPhoto:false}))};
+    }
+    const d = state.checklistDraft;
+    const items = d.items.map((it,idx)=>
+      '<div class="check-item">'+
+        '<div class="hstack" style="justify-content:space-between;"><div style="font-weight:500;">'+it.label+'</div></div>'+
+        '<div class="check-toggle">'+
+          '<button class="check-btn pass'+(it.result==='pass'?' on':'')+'" onclick="Checklist.setResult('+idx+',\'pass\')">Pass</button>'+
+          '<button class="check-btn fail'+(it.result==='fail'?' on':'')+'" onclick="Checklist.setResult('+idx+',\'fail\')">Fail</button>'+
+        '</div>'+
+        '<input class="input" placeholder="Notes (optional)" value="'+esc(it.note)+'" oninput="Checklist.setNote('+idx+',this.value)"/>'+
+        '<button class="btn btn-outline" onclick="Checklist.togglePhoto('+idx+')">'+(it.hasPhoto?'✓ Photo attached':'Add photo')+'</button>'+
+      '</div>'
+    ).join('');
+    return '<div class="stack">'+items+'</div>';
+  },
+  footer(){
+    return '<button class="btn btn-fleet btn-lg" onclick="Checklist.save()">Save checklist</button>';
+  },
+};
+const Checklist = {
+  setResult(idx,v){ state.checklistDraft.items[idx].result=v; render(); },
+  setNote(idx,v){ state.checklistDraft.items[idx].note=v; },
+  togglePhoto(idx){ state.checklistDraft.items[idx].hasPhoto = !state.checklistDraft.items[idx].hasPhoto; render(); },
+  save(){
+    const d = state.checklistDraft;
+    const incomplete = d.items.some(it=>!it.result);
+    if(incomplete){ toast('Mark pass or fail for every item before saving'); return; }
+    const passCount = d.items.filter(it=>it.result==='pass').length;
+    const fails = d.items.filter(it=>it.result==='fail').map(it=>it.label);
+    const summary = passCount+'/'+d.items.length+' passed'+(fails.length?', '+fails.length+' fail: '+fails.join(', '):'');
+    const m = findMachine(d.machineId);
+    m.service.log.unshift({t:demoDateStr(), summary});
+    state.checklistDraft = null;
+    queueOrToast('Service checklist saved for '+m.name);
+    App.nav('machine', {machineId:d.machineId});
+  },
+};
+</script>
+<script>
+/* ============================= WPS VIEW ============================= */
+function jointSketchSVG(){
+  return '<svg viewBox="0 0 400 160" width="100%" height="160" style="display:block;">'+
+    '<rect x="30" y="60" width="150" height="40" fill="var(--stage-fitted)" opacity=".22"/>'+
+    '<rect x="220" y="60" width="150" height="40" fill="var(--stage-fitted)" opacity=".22"/>'+
+    '<path d="M180 60 L200 60 L190 100 L180 100 Z" fill="var(--surface-app)" stroke="var(--border-strong)"/>'+
+    '<path d="M200 60 L220 60 L210 100 L190 100 Z" fill="var(--surface-app)" stroke="var(--border-strong)"/>'+
+    '<path d="M170 58 C185 50, 205 50, 220 58 L220 66 C205 60, 185 60, 170 66 Z" fill="var(--stage-welded)"/>'+
+    '<rect x="30" y="60" width="150" height="40" fill="none" stroke="var(--border-strong)" stroke-width="1.5"/>'+
+    '<rect x="220" y="60" width="150" height="40" fill="none" stroke="var(--border-strong)" stroke-width="1.5"/>'+
+    '<line x1="30" y1="115" x2="180" y2="115" stroke="var(--text-muted)" stroke-width="1"/>'+
+    '<text x="105" y="132" text-anchor="middle" font-size="11" fill="var(--text-muted)">12 mm butt</text>'+
+    '<text x="200" y="45" text-anchor="middle" font-size="11" fill="var(--text-secondary)" font-weight="600">Root + fill + cap</text>'+
+  '</svg>';
+}
+function runSequenceSVG(){
+  const labels=['1 · Root','2 · Fill','3 · Cap'];
+  const colors=['var(--stage-fitted)','var(--stage-welded)','var(--stage-tested)'];
+  return '<div class="hstack" style="gap:18px;justify-content:center;padding:10px 0;">'+
+    labels.map((l,i)=>'<div style="text-align:center;">'+
+      '<div style="width:56px;height:56px;border-radius:10px;background:'+colors[i]+';color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:18px;">'+(i+1)+'</div>'+
+      '<div class="muted" style="font-size:12px;margin-top:6px;">'+l.split(' · ')[1]+'</div>'+
+    '</div>').join('<div style="align-self:center;color:var(--text-muted);">'+ICON.chevron.replace('<svg','<svg style="width:16px;height:16px;"')+'</div>')+
+  '</div>';
+}
+
+SCREENS.wps = {
+  topbar(){ return topbarBase({title:WPS.id, sub:'Welding Procedure Specification · read-only', variant:'assembly'}); },
+  render(){
+    return '<div class="stack">'+
+      '<div class="card"><div class="section-title">Joint</div>'+jointSketchSVG()+'</div>'+
+      '<div class="card"><div class="section-title">Run sequence</div>'+runSequenceSVG()+'</div>'+
+      '<div class="card">'+
+        '<div class="section-title">Base material &amp; consumables</div>'+
+        '<div class="grid2">'+
+          '<div><div class="label-sm">Process</div><div class="val-lg">'+WPS.process+'</div></div>'+
+          '<div><div class="label-sm">Parent material</div><div class="val-lg">'+WPS.material+'</div></div>'+
+          '<div><div class="label-sm">Thickness</div><div class="val-lg">'+WPS.thickness+'</div></div>'+
+          '<div><div class="label-sm">Filler</div><div class="val-lg">'+WPS.filler+'</div></div>'+
+          '<div><div class="label-sm">Shielding gas</div><div class="val-lg">'+WPS.gas+'</div></div>'+
+          '<div><div class="label-sm">Acceptance criteria</div><div class="val-lg">'+WPS.acceptance+'</div></div>'+
+        '</div>'+
+      '</div>'+
+      '<div class="card"><div class="section-title">Parameter ranges</div>'+
+        '<div class="grid2">'+
+          '<div><div class="label-sm">Current</div><div class="val-lg">'+WPS.current[0]+'–'+WPS.current[1]+' A</div></div>'+
+          '<div><div class="label-sm">Voltage</div><div class="val-lg">'+WPS.voltage[0]+'–'+WPS.voltage[1]+' V</div></div>'+
+          '<div><div class="label-sm">Travel speed</div><div class="val-lg">'+WPS.speed[0]+'–'+WPS.speed[1]+' cm/min</div></div>'+
+          '<div><div class="label-sm">Heat input</div><div class="val-lg">'+WPS.heat[0]+'–'+WPS.heat[1]+' kJ/mm</div></div>'+
+          '<div><div class="label-sm">Preheat</div><div class="val-lg">'+WPS.preheat+'</div></div>'+
+          '<div><div class="label-sm">Interpass</div><div class="val-lg">'+WPS.interpass+'</div></div>'+
+        '</div>'+
+      '</div>'+
+      '<div class="card"><div class="section-title">Positions</div>'+
+        '<div class="hstack" style="gap:8px;">'+WPS.positions.map(p=>'<span class="chip">'+p+'</span>').join('')+'</div>'+
+      '</div>'+
+    '</div>';
+  },
+};
+
+/* ============================= QR SCAN ============================= */
+SCREENS.qrScan = {
+  topbar(){ return topbarBase({title:'Scan part QR', variant:'assembly'}); },
+  render(){
+    return '<div class="stack" style="align-items:center;text-align:center;margin-top:10px;">'+
+      '<div class="scan-frame">'+
+        '<div class="corner c1"></div><div class="corner c2"></div><div class="corner c3"></div><div class="corner c4"></div>'+
+        '<div class="scan-line"></div>'+
+      '</div>'+
+      '<div class="muted" style="margin-top:16px;">Point the tablet camera at the QR code printed on the part traveler.</div>'+
+      '<button class="btn btn-primary btn-lg" style="margin-top:18px;" onclick="QrScan.simulate()">Simulate scan</button>'+
+    '</div>';
+  },
+};
+const QrScan = {
+  simulate(){
+    toast('Scanned P-01 — Base Frame');
+    setTimeout(()=>{ App.nav('part', {partId:'P-01'}); }, 250);
+  },
+};
+</script>
+<script>
+/* ============================= INIT ============================= */
+window.addEventListener('DOMContentLoaded', ()=>{ render(); });
+</script>
+

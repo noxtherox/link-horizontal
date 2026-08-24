@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { ViewMode } from '@/types/weldcloud';
 import { AVAILABILITY_CODES, AvailabilityCode } from '@/data/mockData';
 import { Zap, ChevronDown, Wifi, Sun, Moon, X } from 'lucide-react';
@@ -14,6 +15,7 @@ interface HeaderProps {
 
 export function Header({ viewMode, setViewMode, availability, onSetAvailability }: HeaderProps) {
   const { theme, toggleTheme } = useTheme();
+  const navigate = useNavigate();
   const [showAvailability, setShowAvailability] = useState(false);
 
   const current = AVAILABILITY_CODES.find(c => c.code === availability)!;
@@ -29,14 +31,18 @@ export function Header({ viewMode, setViewMode, availability, onSetAvailability 
         <div className="flex items-center justify-between px-4 py-3">
           {/* Left: logo + action controls */}
           <div className="flex items-center gap-3">
-            <div className="flex items-center gap-2">
+            <button
+              onClick={() => navigate('/')}
+              className="flex items-center gap-2"
+              aria-label="Back to app launcher"
+            >
               <div className="w-8 h-8 bg-yellow-500 rounded-md flex items-center justify-center">
                 <Zap className="w-5 h-5 text-black" />
               </div>
               <span className="font-bold text-[var(--text-hi)] tracking-tight">
                 WeldCloud<span className="text-yellow-500">Link</span>
               </span>
-            </div>
+            </button>
 
             <div className="w-px h-5 bg-[var(--c-border)]" />
 
