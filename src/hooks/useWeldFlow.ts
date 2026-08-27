@@ -1,6 +1,6 @@
 import { useState, useCallback, useEffect, useRef, useMemo } from 'react';
-import { WelderStep, ViewMode, Weld, Consumable, Part, CompletedWeld, Arc } from '@/types/weldcloud';
-import { parts as initialParts, consumables as initialConsumables } from '@/data/mockData';
+import { WelderStep, ViewMode, Weld, Consumable, Part, CompletedWeld, Arc, PrerequisiteProcess } from '@/types/weldcloud';
+import { parts as initialParts, consumables as initialConsumables, weldPrerequisites as initialWeldPrerequisites } from '@/data/mockData';
 import { showSuccess } from '@/utils/toast';
 
 export function useWeldFlow() {
@@ -24,6 +24,7 @@ export function useWeldFlow() {
   const [isArcPaused, setIsArcPaused] = useState(false);
   const [completedWelds, setCompletedWelds] = useState<CompletedWeld[]>([]);
   const [lastCompletedPartId, setLastCompletedPartId] = useState<string | null>(null);
+  const [weldPrerequisites, setWeldPrerequisites] = useState<Record<string, PrerequisiteProcess[]>>(initialWeldPrerequisites);
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   const nextWeld = useMemo(() => {
@@ -155,6 +156,18 @@ export function useWeldFlow() {
 
   const allConsumablesVerified = consumables.every((c) => c.verified);
 
+  const selectedWeldPrerequisites = selectedWeld ? (weldPrerequisites[selectedWeld.id] || []) : [];
+  const allPrerequisitesDone = selectedWeldPrerequisites.every((p) => p.status === 'done');
+
+  const markPrerequisiteDone = useCallback((weldId: string, prerequisiteId: string) => {
+    setWeldPrerequisites((prev) => ({
+      ...prev,
+      [weldId]: (prev[weldId] || []).map((p) =>
+        p.id === prerequisiteId ? { ...p, status: 'done' as const } : p
+      ),
+    }));
+  }, []);
+
   const startArc = useCallback(() => {
     setWeldActiveMode('arc');
     setIsArcPaused(false);
@@ -211,18 +224,20 @@ export function useWeldFlow() {
     setDeviations([]);
     setWeldActiveMode('setup');
     
-    if (remainingParts.length === 0) {
-      // All welds done - stay in weldActive context to show completion
-      // Don't change step
-    } else {
-      setStep('taskQueue');
-      setWorkflowStep('taskQueue');
-    }
+    setStep('taskQueue');
+    setWorkflowStep('taskQueue');
   }, [selectedWeld, addCompletedWeld, buildFinalArcs, parts, consumables]);
 
   const sendToInspection = useCallback(() => {
     setCompletedWelds((prev) => prev.map((cw) => ({ ...cw, locked: true })));
     showSuccess('All welds sent to inspection and locked');
+  }, []);
+
+  const sendPartToInspection = useCallback((partId: string) => {
+    setCompletedWelds((prev) =>
+      prev.map((cw) => cw.weld.partNumber === partId ? { ...cw, locked: true } : cw)
+    );
+    showSuccess(`Part ${partId} sent for review`);
   }, []);
 
   const finishAndStartNext = useCallback(() => {
@@ -263,36 +278,30 @@ export function useWeldFlow() {
     const nextWeldStillExists = nextWeldObj && remainingParts.some(p => p.welds.some(w => w.id === nextWeldObj?.id));
 
     if (nextWeldObj && nextWeldStillExists) {
-      // More welds remain on this part — keep welding
-      setSelectedWeld(nextWeldObj);
-      setWeldActiveMode('arc');
-      resetWeldState();
-      startArcTimer();
-    } else {
-      // Part complete — stay in the weldActive context to show the completion screen,
-      // which lets the welder go back to the task queue or move on to review.
-      // (remainingParts.length === 0 means every part is done.)
-      stopArcTimer();
-      setLastCompletedPartId(currentPart?.id ?? null);
-      setSelectedWeld(null);
-      resetWeldState();
-    }
-  }, [selectedWeld, parts, buildFinalArcs, stopArcTimer, startArcTimer, addCompletedWeld, consumables]);
+      // Multi-process welds must drop into setup (not straight into arc) so the
+      // welder sees the blocked-on-other-welders banner instead of skipping the gate.
+      const nextWeldBlocked = (weldPrerequisites[nextWeldObj.id] || []).some((p) => p.status !== 'done');
 
-  const chooseDifferentWeld = useCallback(() => {
-    if (selectedWeld) {
-      const finalArcs = buildFinalArcs();
-      addCompletedWeld(selectedWeld, 'done', finalArcs, consumables);
+      setSelectedWeld(nextWeldObj);
+      resetWeldState();
+      if (nextWeldBlocked) {
+        setWeldActiveMode('setup');
+      } else {
+        // More welds remain on this part — keep welding
+        setWeldActiveMode('arc');
+        startArcTimer();
+      }
+    } else {
+      // Part complete — go back to the task queue so the welder sees green weld pills
+      // and can click "Send for review".
+      stopArcTimer();
+      setSelectedWeld(null);
+      setLastCompletedPartId(null);
+      resetWeldState();
+      setStep('taskQueue');
+      setWorkflowStep('taskQueue');
     }
-    stopArcTimer();
-    setIsArcPaused(false);
-    setArcTime(0);
-    setArcs([]);
-    setArcStartOffset(0);
-    setWeldActiveMode('setup');
-    setDeviationText('');
-    setDeviations([]);
-  }, [selectedWeld, buildFinalArcs, stopArcTimer, addCompletedWeld, consumables]);
+  }, [selectedWeld, parts, buildFinalArcs, stopArcTimer, startArcTimer, addCompletedWeld, consumables, weldPrerequisites]);
 
   const backToQueue = useCallback(() => {
     stopArcTimer();
@@ -348,6 +357,8 @@ export function useWeldFlow() {
     confirmAction,
     confirmMessage,
     allConsumablesVerified,
+    selectedWeldPrerequisites,
+    allPrerequisitesDone,
     isArcPaused,
     completedWelds,
     lastCompletedPartId,
@@ -355,6 +366,7 @@ export function useWeldFlow() {
     verifyConsumable,
     updateConsumable,
     updateCompletedWeldConsumable,
+    markPrerequisiteDone,
     startArc,
     pauseArc,
     toggleArcPause,
@@ -362,8 +374,8 @@ export function useWeldFlow() {
     completeWeld,
     signWeld,
     sendToInspection,
+    sendPartToInspection,
     finishAndStartNext,
-    chooseDifferentWeld,
     backToQueue,
     goToReview,
     resumeStep,

@@ -19,7 +19,7 @@ export function FloorStatus() {
   return (
     <div className="p-4 md:p-6">
       <div className="mb-6">
-        <div className="text-[10px] uppercase tracking-wider text-[var(--text-dim)] mb-1">
+        <div className="text-xs uppercase tracking-wider text-[var(--text-dim)] mb-1">
           Supervisor · Cell B · 06:14 PM · Voice alerts push to earpiece
         </div>
         <h1 className="text-2xl md:text-3xl font-bold text-[var(--text-hi)]">Cell B — 4 stations</h1>
@@ -56,7 +56,7 @@ export function FloorStatus() {
               >
                 {station.heatInput?.toFixed(2) || '—'}
               </div>
-              <div className="text-[10px] text-[var(--text-dim)]">{station.id}</div>
+              <div className="text-xs text-[var(--text-dim)]">{station.id}</div>
             </div>
           </div>
         ))}
@@ -87,7 +87,7 @@ export function FloorStatus() {
                           : 'bg-gray-500'
                       }`}
                     />
-                    <span className="text-[10px] text-[var(--text-dim)]">
+                    <span className="text-xs text-[var(--text-dim)]">
                       {station.status === 'arc-on'
                         ? 'Arc on'
                         : station.status === 'pre-weld'
@@ -98,7 +98,7 @@ export function FloorStatus() {
                 </div>
               </div>
               <div className="text-right">
-                <div className="text-[10px] uppercase tracking-wider text-[var(--text-dim)]">WPS Conform.</div>
+                <div className="text-xs uppercase tracking-wider text-[var(--text-dim)]">WPS Conform.</div>
                 <div
                   className={`text-lg font-bold ${
                     station.wpsConformance && station.wpsConformance < 80

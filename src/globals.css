@@ -107,3 +107,9 @@
     font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   }
 }
+
+/* Light-mode yellow text contrast — yellow-500 (#eab308) is ~1.7:1 on white, unreadable.
+   Override to yellow-700 (#a16207, ~5:1) and darker variants for accessibility on tablet. */
+.light .text-yellow-500 { color: #a16207; }
+.light .text-yellow-400 { color: #b45309; }
+.light .text-yellow-200 { color: #92400e; }
