@@ -1,5 +1,5 @@
 import { useNavigate } from 'react-router-dom';
-import { Flame, ClipboardCheck, LayoutDashboard, LucideIcon } from 'lucide-react';
+import { Flame, ClipboardCheck, LayoutDashboard, Workflow, LucideIcon } from 'lucide-react';
 
 interface AppTile {
   name: string;
@@ -11,6 +11,14 @@ interface AppTile {
 }
 
 const apps: AppTile[] = [
+  {
+    name: 'Workflow overview',
+    description: 'How Assembly, Welder, and Inspector fit together — start here before a demo',
+    icon: Workflow,
+    path: '/journey.html',
+    available: true,
+    external: true,
+  },
   {
     name: 'Welder',
     description: 'Weld task queue, setup, arc tracking, and sign-off',

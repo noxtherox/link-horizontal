@@ -170,6 +170,9 @@ button{font-family:inherit;}
 .back-btn:active{transform:scale(.93);}
 .topbar h1{font-size:19px;letter-spacing:.01em;}
 .topbar .sub{font-size:12px;opacity:.85;font-weight:400;margin-top:1px;}
+.topbar .crumb-link{color:inherit;cursor:pointer;}
+.topbar .crumb-link:hover{text-decoration:underline;}
+.topbar .crumb-sep{opacity:.6;margin:0 5px;}
 .topbar .grow{flex:1;min-width:0;}
 .topbar-right{display:flex;align-items:center;gap:10px;flex:0 0 auto;}
 .pill{
@@ -439,7 +442,7 @@ table.ind td{padding:12px;font-size:15px;border-top:1px solid var(--border);}
 const ICON = {
   home:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-7 9 7"/><path d="M5 10v10h14V10"/></svg>',
   assembly:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l8 4-8 4-8-4 8-4z"/><path d="M4 11l8 4 8-4"/><path d="M4 15l8 4 8-4"/></svg>',
-  fleet:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="7" width="13" height="9" rx="1"/><path d="M16 10h3l2 3v3h-5z"/><circle cx="7.5" cy="18" r="1.6"/><circle cx="17.5" cy="18" r="1.6"/></svg>',
+  fleet:'<svg viewBox="0 0 37 58" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M7.07221 43.5241C7.93377 43.5241 8.63221 42.8256 8.63221 41.9641C8.63221 41.1025 7.93377 40.4041 7.07221 40.4041C6.21064 40.4041 5.51221 41.1025 5.51221 41.9641C5.51221 42.8256 6.21064 43.5241 7.07221 43.5241Z" fill="currentColor"/><path d="M33.2 8.112L28.392 0H7.982L3.2 8.112H0V54.6C0 55.2896 0.273928 55.9509 0.761522 56.4385C1.24912 56.9261 1.91044 57.2 2.6 57.2H33.8C34.4896 57.2 35.1509 56.9261 35.6385 56.4385C36.1261 55.9509 36.4 55.2896 36.4 54.6V8.112H33.2ZM9.308 3.276H27.092L29.952 8.112H6.552L9.308 3.276ZM4.108 14.976C4.108 14.6312 4.24496 14.3006 4.48876 14.0568C4.73256 13.813 5.06322 13.676 5.408 13.676H21.814C22.1588 13.676 22.4894 13.813 22.7332 14.0568C22.977 14.3006 23.114 14.6312 23.114 14.976V20.8C23.114 21.1448 22.977 21.4754 22.7332 21.7192C22.4894 21.963 22.1588 22.1 21.814 22.1H5.486C5.1433 22.0933 4.8165 21.9542 4.57413 21.7119C4.33176 21.4695 4.19266 21.1427 4.186 20.8L4.108 14.976ZM7.072 54.6C6.5012 54.6 5.94322 54.4307 5.46862 54.1136C4.99402 53.7965 4.62412 53.3458 4.40568 52.8184C4.18725 52.2911 4.1301 51.7108 4.24145 51.151C4.35281 50.5911 4.62768 50.0769 5.03129 49.6733C5.4349 49.2697 5.94914 48.9948 6.50897 48.8835C7.0688 48.7721 7.64908 48.8293 8.17642 49.0477C8.70377 49.2661 9.1545 49.636 9.47162 50.1106C9.78874 50.5852 9.958 51.1432 9.958 51.714C9.958 52.4794 9.65394 53.2135 9.11271 53.7547C8.57148 54.2959 7.83741 54.6 7.072 54.6ZM7.072 44.824C6.5012 44.824 5.94322 44.6547 5.46862 44.3376C4.99402 44.0205 4.62412 43.5698 4.40568 43.0424C4.18725 42.5151 4.1301 41.9348 4.24145 41.375C4.35281 40.8151 4.62768 40.3009 5.03129 39.8973C5.4349 39.4937 5.94914 39.2188 6.50897 39.1075C7.0688 38.9961 7.64908 39.0532 8.17642 39.2717C8.70377 39.4901 9.1545 39.86 9.47162 40.3346C9.78874 40.8092 9.958 41.3672 9.958 41.938C9.958 42.317 9.88335 42.6923 9.73832 43.0424C9.59328 43.3926 9.3807 43.7107 9.11271 43.9787C8.84472 44.2467 8.52657 44.4593 8.17642 44.6043C7.82628 44.7494 7.45099 44.824 7.072 44.824ZM17.316 34.606C16.8802 35.0148 16.3678 35.3332 15.8083 35.5428C15.2488 35.7524 14.6533 35.8492 14.0562 35.8274C13.4591 35.8056 12.8723 35.6658 12.3295 35.416C11.7868 35.1662 11.2989 34.8114 10.894 34.372C10.1625 33.6123 9.71419 32.6243 9.62425 31.5735C9.53432 30.5227 9.80819 29.4729 10.4 28.6L13.286 31.824L14.846 30.424L12.064 27.33C13.0332 26.8191 14.1548 26.6772 15.2207 26.9308C16.2865 27.1843 17.2242 27.8161 17.8595 28.7087C18.4948 29.6012 18.7846 30.6941 18.675 31.7842C18.5655 32.8743 18.0642 33.8876 17.264 34.636L17.316 34.606ZM20.54 53.118C20.5468 52.7088 20.7142 52.3186 21.006 52.0317C21.2978 51.7447 21.6907 51.5839 22.1 51.584H30.524C30.9333 51.5839 31.3262 51.7447 31.618 52.0317C31.9098 52.3186 32.0772 52.7088 32.084 53.118H20.54ZM20.54 47.71C20.54 47.5063 20.5805 47.3047 20.6592 47.1169C20.7379 46.9291 20.8532 46.7588 20.9985 46.616C21.1437 46.4732 21.3159 46.3608 21.505 46.2852C21.6941 46.2097 21.8964 46.1725 22.1 46.176H30.524C30.7276 46.1725 30.9299 46.2097 31.119 46.2852C31.3081 46.3608 31.4803 46.4732 31.6255 46.616C31.7708 46.7588 31.8861 46.9291 31.9648 47.1169C32.0435 47.3047 32.084 47.5063 32.084 47.71H20.54ZM20.54 42.276C20.5468 41.8668 20.7142 41.4766 21.006 41.1897C21.2978 40.9027 21.6907 40.7419 22.1 40.742H30.524C30.9333 40.7419 31.3262 40.9027 31.618 41.1897C31.9098 41.4766 32.0772 41.8668 32.084 42.276H20.54ZM29.354 27.144C28.5976 27.1372 27.8741 26.8337 27.3392 26.2988C26.8043 25.7639 26.5008 25.0404 26.494 24.284C26.522 23.6866 26.7383 23.1133 27.1119 22.6463C27.4855 22.1793 27.9973 21.8425 28.574 21.684V24.284H30.134V21.684C30.7127 21.8388 31.2267 22.1747 31.6009 22.6425C31.9752 23.1102 32.19 23.6854 32.214 24.284C32.214 25.0425 31.9127 25.77 31.3763 26.3063C30.84 26.8427 30.1125 27.144 29.354 27.144ZM31.382 16.744C30.8423 17.2693 30.1171 17.5604 29.364 17.5541C28.6109 17.5478 27.8907 17.2446 27.3598 16.7103C26.829 16.176 26.5304 15.4539 26.529 14.7008C26.5275 13.9476 26.8233 13.2243 27.352 12.688C27.7061 12.3789 28.1374 12.1715 28.6 12.088V14.688H30.16V12.088C30.6306 12.1932 31.0627 12.4273 31.408 12.764C31.6736 13.0315 31.8837 13.3488 32.0262 13.6978C32.1687 14.0468 32.2408 14.4205 32.2384 14.7974C32.236 15.1743 32.1591 15.5471 32.0121 15.8942C31.8651 16.2413 31.651 16.5559 31.382 16.82V16.744Z" fill="currentColor"/><path d="M7.07221 53.2999C7.93377 53.2999 8.63221 52.6015 8.63221 51.7399C8.63221 50.8784 7.93377 50.1799 7.07221 50.1799C6.21064 50.1799 5.51221 50.8784 5.51221 51.7399C5.51221 52.6015 6.21064 53.2999 7.07221 53.2999Z" fill="currentColor"/></svg>',
   wps:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 3h7l3 3v15H7z"/><path d="M14 3v3h3"/><path d="M9.5 12h5M9.5 15h5M9.5 18h3"/></svg>',
   back:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 6l-6 6 6 6"/></svg>',
   sun:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v3M12 19v3M4.2 4.2l2.1 2.1M17.7 17.7l2.1 2.1M2 12h3M19 12h3M4.2 19.8l2.1-2.1M17.7 6.3l2.1-2.1"/></svg>',
@@ -461,6 +464,9 @@ const ICON = {
   wrench:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a4 4 0 1 0-5.4 5.4L4 17l3 3 5.3-5.3a4 4 0 0 0 5.4-5.4l-2.7 2.7-2-2z"/></svg>',
   plus:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>',
   trash:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13"/></svg>',
+  thermometer:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 14.8V5a2 2 0 1 0-4 0v9.8a4 4 0 1 0 4 0z"/><path d="M10 8h1"/></svg>',
+  ruler:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="8" width="18" height="8" rx="1.5"/><path d="M7 8v3M11 8v3M15 8v3"/></svg>',
+  noValue:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M6 6l12 12"/></svg>',
 };
 
 /* ============================= DATA ============================= */
@@ -489,6 +495,8 @@ const IMPERFECTIONS = [
 
 const WPS = {
   id:'WPS-135-BW-S355-01',
+  standard:'EN ISO 15614-1',
+  weldType:'BW · Butt weld',
   process:'135 (MAG, solid wire)',
   material:'S355J2+N, group 1.2',
   thickness:'12 mm butt / 8 mm fillet',
@@ -501,6 +509,8 @@ const WPS = {
   voltage:[24,28],
   speed:[25,35],
   heat:[0.8,1.6],
+  wireFeedSpeed:[0.30,0.55],
+  power:[5.5,8.5],
   acceptance:'EN ISO 5817-C',
 };
 
@@ -524,18 +534,115 @@ function makeWeld(o){
   }, o);
 }
 
+/* ---- weld sessions (arc passes recorded by the welding machine for a weld) ---- */
+const PASS_LABELS = ['Root pass','Fill pass','Cap pass'];
+
+function sessionChartSeries(current,voltage,power,wfs){
+  const arr = [];
+  for(let t=0;t<5;t++){
+    const wobble = Math.sin(t*1.3)*0.18+1;
+    arr.push({
+      wfs:Math.round(wfs*wobble*100)/100,
+      current:Math.round(current*wobble),
+      voltage:Math.round(voltage*wobble*10)/10,
+      power:Math.round(power*wobble*10)/10,
+    });
+  }
+  return arr;
+}
+
+function chartAvg(chart, key){
+  return chart.reduce((sum,d)=>sum+d[key],0)/chart.length;
+}
+
+/* metrics that carry a WPS-defined tolerance band, shown as limit lines on the session charts */
+const METRIC_RANGES = {
+  wfs: {wps:()=>WPS.wireFeedSpeed, decimals:2},
+  current: {wps:()=>WPS.current, decimals:0},
+  voltage: {wps:()=>WPS.voltage, decimals:1},
+  power: {wps:()=>WPS.power, decimals:1},
+};
+
+function rangeStatus(chart, key){
+  const range = METRIC_RANGES[key].wps();
+  const vals = chart.map(d=>d[key]);
+  const avg = vals.reduce((a,b)=>a+b,0)/vals.length;
+  const pointBreaches = vals.map(v=>v<range[0]||v>range[1]);
+  return {
+    range,
+    avg,
+    avgBreach: avg<range[0] || avg>range[1],
+    pointBreaches,
+    hasPointBreach: pointBreaches.some(Boolean),
+  };
+}
+
+function genSessions(base, count){
+  const passes = PASS_LABELS.slice(0, count);
+  return passes.map((pass, i)=>{
+    const factor = 1 - (count-1-i)*0.04;
+    const current = Math.round(base.current*factor);
+    const voltage = Math.round(base.voltage*factor*10)/10;
+    const speed = Math.round(base.speed/factor);
+    const power = Math.round(current*voltage/1000*10)/10;
+    const wfs = Math.round(base.speed*0.014*factor*100)/100;
+    const chart = sessionChartSeries(current, voltage, power, wfs);
+    const fusionRate = Math.round(power*1.65*10)/10;
+    const arcSeconds = 150 + i*45;
+    return {
+      id:pass.toLowerCase().replace(' ','-'),
+      pass, operator:ASSEMBLY.welder.name,
+      timestamp:'Today '+String(8+i).padStart(2,'0')+':'+String(10+i*7).padStart(2,'0'),
+      arcSeconds,
+      current:Math.round(chartAvg(chart,'current')),
+      voltage:Math.round(chartAvg(chart,'voltage')*10)/10,
+      speed, power:Math.round(chartAvg(chart,'power')*10)/10,
+      wfs:Math.round(chartAvg(chart,'wfs')*100)/100,
+      fusionRate,
+      chart,
+      events: (count>1 && i===count-1) ? [{time:'00:02', timestamp:'4:38:29 AM Aug 25, 2026', category:'Machine stop', message:'Communication error (bus off)'}] : [],
+    };
+  });
+}
+
+/* Overrides a session's chart with a hand-authored "not so happy path": current
+   climbs and holds above the WPS max, so the average — not just a stray point —
+   reads out of tolerance, while voltage only spikes briefly (non-critical). */
+function makeOutOfToleranceSession(s){
+  s.chart = [
+    {wfs:0.47, current:248, voltage:26.6, power:6.6},
+    {wfs:0.48, current:262, voltage:27.4, power:7.2},
+    {wfs:0.50, current:278, voltage:29.6, power:8.3},
+    {wfs:0.49, current:285, voltage:27.1, power:8.0},
+    {wfs:0.46, current:271, voltage:26.3, power:7.3},
+  ];
+  s.current = Math.round(chartAvg(s.chart,'current'));
+  s.voltage = Math.round(chartAvg(s.chart,'voltage')*10)/10;
+  s.wfs = Math.round(chartAvg(s.chart,'wfs')*100)/100;
+  s.power = Math.round(chartAvg(s.chart,'power')*10)/10;
+  s.events = [{time:'00:02', timestamp:'4:41:05 AM Aug 25, 2026', category:'Process alarm', message:'Current exceeded WPS upper limit'}];
+  return s;
+}
+
+function formatArcTime(sec){
+  if(sec<60) return sec+' s';
+  return Math.floor(sec/60)+'m '+String(sec%60).padStart(2,'0')+'s';
+}
+
 function seedData(){
+  const w003Sessions = genSessions(session(245,26.5,32,1.0,150),1);
+  makeOutOfToleranceSession(w003Sessions[0]);
   return {
     parts:[
       {
         id:'P-01', name:'Base Frame', blocked:false,
         welds:[
-          makeWeld({id:'W-001',type:'BW',process:'135',position:'PB',tests:['VT 100%'],session:session(240,26.0,30,1.2,180)}),
-          makeWeld({id:'W-002',type:'BW',process:'135',position:'PF',tests:['VT 100%','PT 100%'],session:session(235,25.5,28,1.1,200),ndtRequired:true,status:'Pending'}),
-          makeWeld({id:'W-003',type:'FW',process:'136',position:'PB',tests:['VT 100%'],session:session(245,26.5,32,1.0,150)}),
-          makeWeld({id:'W-004',type:'BW',process:'135',position:'PF',tests:['VT 100%'],session:session(250,29.2,27,1.5,220)}),
-          makeWeld({id:'W-005',type:'FW',process:'136',position:'PA',tests:['VT 100%'],session:session(230,25.0,29,0.9,160)}),
-          makeWeld({id:'W-006',type:'BW',process:'135',position:'PC',tests:['VT 100%'],session:session(242,26.8,31,1.3,190)}),
+          makeWeld({id:'W-001',type:'BW',process:'135',position:'PB',tests:['VT 100%'],session:session(240,26.0,30,1.2,180),sessions:genSessions(session(240,26.0,30,1.2,180),1)}),
+          makeWeld({id:'W-002',type:'BW',process:'135',position:'PF',tests:['VT 100%','PT 100%'],session:session(235,25.5,28,1.1,200),sessions:genSessions(session(235,25.5,28,1.1,200),2),ndtRequired:true,status:'Pending'}),
+          makeWeld({id:'W-003',type:'FW',process:'136',position:'PB',tests:['VT 100%'],session:session(w003Sessions[0].current, w003Sessions[0].voltage, 32, 1.0, 150),sessions:w003Sessions}),
+          makeWeld({id:'W-004',type:'BW',process:'135',position:'PF',tests:['VT 100%'],session:session(250,29.2,27,1.5,220),sessions:genSessions(session(250,29.2,27,1.5,220),3)}),
+          makeWeld({id:'W-005',type:'FW',process:'136',position:'PA',tests:['VT 100%'],session:session(230,25.0,29,0.9,160),sessions:genSessions(session(230,25.0,29,0.9,160),2)}),
+          makeWeld({id:'W-006',type:'BW',process:'135',position:'PC',tests:['VT 100%'],session:session(242,26.8,31,1.3,190),sessions:genSessions(session(242,26.8,31,1.3,190),1)}),
         ],
       },
       {
@@ -598,6 +705,12 @@ function findWeld(weldId){
   return null;
 }
 function findMachine(id){ return MACHINES.find(m=>m.id===id); }
+function findSession(weldId, sessionId){
+  const found = findWeld(weldId);
+  if(!found) return null;
+  const s = (found.weld.sessions||[]).find(s=>s.id===sessionId);
+  return s ? {part:found.part, weld:found.weld, session:s} : null;
+}
 
 function cur(){ return state.stack[state.stack.length-1]; }
 
@@ -609,6 +722,10 @@ const App = {
   },
   back(){
     if(state.stack.length>1) state.stack.pop();
+    render();
+  },
+  gotoPart(partId){
+    state.stack = [{screen:'home', params:{}}, {screen:'assembly', params:{}}, {screen:'part', params:{partId}}];
     render();
   },
   home(){
@@ -710,6 +827,10 @@ const RAIL_ITEMS = [
 function render(){
   const {screen, params} = cur();
   const root = document.getElementById('screen');
+  const screenKey = screen+'|'+JSON.stringify(params);
+  const prevContent = document.getElementById('content');
+  const preserveScroll = !!prevContent && root.dataset.screenKey===screenKey;
+  const prevScroll = preserveScroll ? prevContent.scrollTop : 0;
   const railHtml = RAIL_ITEMS.map(r=>{
     const active = screen===r.screen;
     return '<button class="rail-btn'+(active?' active':'')+'" onclick="App.'+(r.screen==='home'?'home':'nav')+(r.screen==='home'?'()':"('"+r.screen+"')")+'">'+ICON[r.icon]+'<span>'+r.label+'</span></button>';
@@ -734,6 +855,12 @@ function render(){
     (state.modal ? renderModal() : '')+
     (state.keypad ? renderKeypad() : '');
 
+  root.dataset.screenKey = screenKey;
+  if(preserveScroll){
+    const content = document.getElementById('content');
+    if(content) content.scrollTop = prevScroll;
+  }
+
   renderToasts();
   if(sc.after) sc.after(params);
 }
@@ -743,9 +870,10 @@ function topbarBase(opts){
   const backBtn = opts.showBack===false ? '' :
     '<button class="back-btn" onclick="App.back()" aria-label="Back">'+ICON.back+'</button>';
   const right = opts.right || '';
+  const subHtml = opts.subHtml ? '<div class="sub">'+opts.subHtml+'</div>' : (opts.sub?'<div class="sub">'+esc(opts.sub)+'</div>':'');
   return '<div class="'+cls+'">'+
     backBtn+
-    '<div class="grow"><h1>'+esc(opts.title)+'</h1>'+(opts.sub?'<div class="sub">'+esc(opts.sub)+'</div>':'')+'</div>'+
+    '<div class="grow"><h1>'+esc(opts.title)+'</h1>'+subHtml+'</div>'+
     '<div class="topbar-right">'+syncPill(opts.variant)+themeToggle(opts.variant)+avatarChip(opts.variant)+right+'</div>'+
   '</div>';
 }
@@ -1032,10 +1160,13 @@ SCREENS.part = {
       const meta = w.type+' · '+w.process+' · '+w.position;
       const testsLine = w.tests ? w.tests.join(' + ') : '';
       const badge = part.blocked ? weldProgressBadge(w) : weldStatusBadge(w);
+      const ndtBadge = w.ndtRequired
+        ? (DATA.ndtReports[w.id] ? '<span class="badge badge-success">NDT report done</span>' : '<span class="badge badge-info">Requires NDT report</span>')
+        : '';
       return '<div class="list-row" onclick="App.nav(\'weld\',{weldId:\''+w.id+'\'})">'+
         '<div class="weld-id">'+w.id+'</div>'+
         '<div class="row-meta"><div>'+meta+'</div><div class="top">'+testsLine+'</div></div>'+
-        badge+
+        '<div class="stack" style="gap:6px;align-items:flex-end;">'+badge+ndtBadge+'</div>'+
         '<span class="chevron">'+ICON.chevron+'</span>'+
       '</div>';
     }).join('');
@@ -1152,10 +1283,49 @@ function recordCardHtml(rec, isHistory){
   return '<div class="card'+(isHistory?'' : '')+'" style="'+(isHistory?'background:var(--surface-sunken);border-style:dashed;':'')+'">'+inner+'</div>';
 }
 
+function weldBreadcrumbHtml(part){
+  return '<span class="crumb-link" onclick="App.nav(\'assembly\')">'+esc(ASSEMBLY.name)+'</span>'+
+    '<span class="crumb-sep">/</span>'+
+    '<span class="crumb-link" onclick="App.nav(\'part\',{partId:\''+part.id+'\'})">'+esc(part.id+' · '+part.name)+'</span>';
+}
+function weldSessionBreadcrumbHtml(part, weldId){
+  return weldBreadcrumbHtml(part)+
+    '<span class="crumb-sep">/</span>'+
+    '<span class="crumb-link" onclick="App.nav(\'weld\',{weldId:\''+weldId+'\'})">'+esc(weldId)+'</span>';
+}
+
+function sessionAvgBreaches(s){
+  return Object.keys(METRIC_RANGES).filter(k=>rangeStatus(s.chart,k).avgBreach);
+}
+
+function weldSessionsListCard(w){
+  if(!w.sessions || !w.sessions.length) return '';
+  const anyCritical = w.sessions.some(s=>sessionAvgBreaches(s).length>0);
+  const rows = w.sessions.map(s=>{
+    const critical = sessionAvgBreaches(s).length>0;
+    return '<div class="list-row" style="'+(critical?'border-color:var(--error);':'')+'" onclick="App.nav(\'weldSession\',{weldId:\''+w.id+'\',sessionId:\''+s.id+'\'})">'+
+      '<div style="flex:1;min-width:0;">'+
+        '<div class="hstack" style="gap:8px;flex-wrap:wrap;">'+
+          '<span style="font-weight:700;font-size:15px;">'+esc(s.pass)+'</span>'+
+          (critical?'<span class="badge badge-error" style="padding:2px 9px;font-size:11px;">Out of WPS range</span>':'')+
+        '</div>'+
+        '<div class="muted" style="font-size:13px;">'+esc(s.timestamp)+' · '+formatArcTime(s.arcSeconds)+' arc time'+(s.events.length?' · <span style="color:var(--warning);">1 event</span>':'')+'</div>'+
+      '</div>'+
+      '<div class="muted" style="font-size:13px;text-align:right;margin-right:4px;white-space:nowrap;">'+s.current+' A · '+s.voltage+' V</div>'+
+      '<span class="chevron">'+ICON.chevron+'</span>'+
+    '</div>';
+  }).join('');
+  return '<div class="card">'+
+    '<div class="section-title">Weld sessions ('+w.sessions.length+')</div>'+
+    (anyCritical ? '<div class="banner banner-warning" style="background:rgba(226,57,0,.1);border-color:rgba(226,57,0,.35);color:var(--error);">'+ICON.alert.replace('<svg','<svg style="width:18px;height:18px;flex:0 0 auto;"')+'<span>One or more sessions recorded an average outside the WPS tolerance band — review before accepting this weld.</span></div>' : '')+
+    '<div class="stack" style="gap:10px;">'+rows+'</div>'+
+  '</div>';
+}
+
 SCREENS.weld = {
   topbar(params){
     const {part} = findWeld(params.weldId);
-    return topbarBase({title:params.weldId, sub:part.id+' · '+part.name, variant:'assembly'});
+    return topbarBase({title:params.weldId, subHtml:weldBreadcrumbHtml(part), variant:'assembly'});
   },
   render(params){
     const found = findWeld(params.weldId);
@@ -1227,6 +1397,7 @@ SCREENS.weld = {
       historyHtml+
       wpsSummaryCard()+
       (w.session ? sessionParamsCard(w.session) : '')+
+      weldSessionsListCard(w)+
       '<div class="card"><div class="section-title">Photos</div>'+photoHtml+'</div>'+
       statusHtml+
     '</div>';
@@ -1242,6 +1413,134 @@ SCREENS.weld = {
     if(!showDecision) return '';
     return '<button class="btn btn-outline btn-lg" onclick="WeldActions.startReject(\''+w.id+'\')">Reject</button>'+
       '<button class="btn btn-success btn-lg" onclick="WeldActions.openAccept(\''+w.id+'\')">Accept</button>';
+  },
+};
+
+/* ============================= WELD SESSION DETAIL ============================= */
+function sessionInfoStripCard(part, w, s){
+  const fields = [
+    ['Operator', s.operator],
+    ['WPS', WPS.id],
+    ['Work order', 'Not set'],
+    ['Assembly', ASSEMBLY.name],
+    ['Part', part.id+' · '+part.name],
+    ['Weld ID', w.id],
+  ];
+  return '<div class="card">'+
+    '<div class="grid2" style="grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:16px;">'+
+      fields.map(([label,val])=>'<div><div class="label-sm">'+esc(label)+'</div><div class="val-lg" style="font-size:15px;margin-top:2px;">'+esc(val)+'</div></div>').join('')+
+    '</div>'+
+  '</div>';
+}
+
+function sessionValuesCard(s){
+  const tiles = [
+    {label:'Arc time', val:formatArcTime(s.arcSeconds), unit:''},
+    {label:'Wire feed speed', val:s.wfs, unit:'m/min', key:'wfs'},
+    {label:'Voltage', val:s.voltage, unit:'V', key:'voltage'},
+    {label:'Current', val:s.current, unit:'A', key:'current'},
+    {label:'Power', val:s.power, unit:'kW', key:'power'},
+    {label:'Fusion rate', val:s.fusionRate, unit:'kg/h'},
+  ];
+  return '<div class="card">'+
+    '<div class="section-title">Values</div>'+
+    '<div class="grid2" style="grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;">'+
+      tiles.map(t=>{
+        const breach = t.key ? rangeStatus(s.chart, t.key).avgBreach : false;
+        return '<div style="background:var(--surface-sunken);border:1px solid '+(breach?'var(--error)':'var(--border)')+';border-radius:12px;padding:14px;text-align:center;">'+
+          '<div class="label-sm">'+esc(t.label)+'</div>'+
+          '<div style="font-size:21px;font-weight:700;margin-top:4px;'+(breach?'color:var(--error);':'')+'">'+t.val+(t.unit?' <span style="font-size:12px;font-weight:500;color:var(--text-muted);">'+t.unit+'</span>':'')+'</div>'+
+          (breach ? '<div style="font-size:11px;color:var(--error);margin-top:4px;font-weight:600;">Out of WPS range</div>' : '')+
+        '</div>';
+      }).join('')+
+    '</div>'+
+  '</div>';
+}
+
+function roundTo(v, decimals){
+  const f = Math.pow(10, decimals);
+  return Math.round(v*f)/f;
+}
+
+function sparkChart(s, key, color, label, unit){
+  const chart = s.chart;
+  const status = rangeStatus(chart, key);
+  const decimals = METRIC_RANGES[key].decimals;
+  const [rMin, rMax] = status.range;
+  const vals = chart.map(d=>d[key]);
+  const dataMax = Math.max.apply(null, vals), dataMin = Math.min.apply(null, vals);
+  let domainMin = Math.min(dataMin, rMin), domainMax = Math.max(dataMax, rMax);
+  const domPad = (domainMax-domainMin)*0.18 || domainMax*0.1 || 1;
+  domainMin -= domPad; domainMax += domPad;
+  const W=600, H=70, padX=10, padY=6;
+  const stepX = (W-2*padX)/((chart.length-1)||1);
+  const scaleY = v => H-padY - ((v-domainMin)/(domainMax-domainMin))*(H-2*padY);
+  const pts = vals.map((v,i)=>(padX+i*stepX).toFixed(1)+','+scaleY(v).toFixed(1)).join(' ');
+  const lineColor = status.avgBreach ? 'var(--error)' : color;
+  const limitLine = v => '<line x1="'+padX+'" y1="'+scaleY(v).toFixed(1)+'" x2="'+(W-padX)+'" y2="'+scaleY(v).toFixed(1)+'" stroke="var(--text-muted)" stroke-width="1.2" stroke-dasharray="5 4" opacity="0.55"/>';
+  const markers = vals.map((v,i)=> status.pointBreaches[i]
+    ? '<circle cx="'+(padX+i*stepX).toFixed(1)+'" cy="'+scaleY(v).toFixed(1)+'" r="4.5" fill="var(--warning)" stroke="var(--surface-card)" stroke-width="1.5"/>'
+    : ''
+  ).join('');
+  const statusNote = status.avgBreach
+    ? '<span style="color:var(--error);font-weight:700;">avg '+roundTo(status.avg,decimals)+' '+unit+' — out of WPS range</span>'
+    : status.hasPointBreach
+      ? '<span style="color:var(--warning);">briefly outside WPS range</span>'
+      : '<span class="muted">WPS '+rMin+'–'+rMax+' '+unit+'</span>';
+  return '<div style="margin-bottom:14px;">'+
+    '<div class="hstack" style="justify-content:space-between;margin-bottom:2px;flex-wrap:wrap;gap:6px;">'+
+      '<span class="muted" style="font-size:12px;font-weight:600;">'+esc(label)+'</span>'+
+      '<span style="font-size:11px;">'+statusNote+'</span>'+
+    '</div>'+
+    '<svg viewBox="0 0 '+W+' '+H+'" preserveAspectRatio="none" style="width:100%;height:56px;display:block;">'+
+      limitLine(rMax)+limitLine(rMin)+
+      '<polyline points="'+pts+'" fill="none" stroke="'+lineColor+'" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>'+
+      markers+
+    '</svg>'+
+  '</div>';
+}
+
+function sessionChartCard(s){
+  const timeLabels = s.chart.map((d,i)=>'00:0'+i);
+  const anyAvgBreach = Object.keys(METRIC_RANGES).some(k=>rangeStatus(s.chart,k).avgBreach);
+  return '<div class="card">'+
+    '<div class="section-title">Measured values</div>'+
+    (anyAvgBreach ? '<div class="banner banner-warning" style="background:rgba(226,57,0,.1);border-color:rgba(226,57,0,.35);color:var(--error);">'+ICON.alert.replace('<svg','<svg style="width:18px;height:18px;flex:0 0 auto;"')+'<span>Average value out of WPS tolerance — this is more significant than a brief excursion and should be reviewed.</span></div>' : '')+
+    sparkChart(s,'wfs','#f1a30a','Wire feed speed (m/min)','m/min')+
+    sparkChart(s,'current','#6a5acd','Current (A)','A')+
+    sparkChart(s,'voltage','#2e7d32','Voltage (V)','V')+
+    sparkChart(s,'power','#a52850','Power (kW)','kW')+
+    '<div class="hstack" style="justify-content:space-between;font-size:11px;color:var(--text-muted);">'+
+      timeLabels.map(t=>'<span>'+t+'</span>').join('')+
+    '</div>'+
+  '</div>';
+}
+
+function sessionEventsCard(events){
+  const rows = events.map(e=>
+    '<tr><td>'+esc(e.time)+'</td><td>'+esc(e.timestamp)+'</td><td>'+esc(e.category)+'</td>'+
+    '<td style="color:var(--error);"><span class="hstack" style="gap:6px;">'+ICON.alert.replace('<svg','<svg style="width:14px;height:14px;flex:0 0 auto;"')+'<span>'+esc(e.message)+'</span></span></td></tr>'
+  ).join('');
+  return '<div class="card">'+
+    '<div class="section-title">Events</div>'+
+    '<div class="wrap-table"><table class="ind"><thead><tr><th>Time</th><th>Timestamp</th><th>Category</th><th>Event</th></tr></thead><tbody>'+rows+'</tbody></table></div>'+
+  '</div>';
+}
+
+SCREENS.weldSession = {
+  topbar(params){
+    const rec = findSession(params.weldId, params.sessionId);
+    return topbarBase({title:rec.session.pass, subHtml:weldSessionBreadcrumbHtml(rec.part, params.weldId), variant:'assembly'});
+  },
+  render(params){
+    const rec = findSession(params.weldId, params.sessionId);
+    const {part, weld:w, session:s} = rec;
+    return '<div class="stack">'+
+      sessionInfoStripCard(part, w, s)+
+      sessionValuesCard(s)+
+      sessionChartCard(s)+
+      (s.events.length ? sessionEventsCard(s.events) : '')+
+    '</div>';
   },
 };
 </script>
@@ -1300,7 +1599,12 @@ const RejectFlow = {
     queueOrToast(d.weldId+' — Not acceptable, '+ncrId+' raised');
     App.nav('rejectConfirm');
   },
-  done(){ state.draft = null; App.home(); },
+  done(){
+    const d = state.draft;
+    const found = findWeld(d.weldId);
+    state.draft = null;
+    if(found) App.gotoPart(found.part.id); else App.home();
+  },
 };
 
 function renderReasonList(){
@@ -1310,7 +1614,7 @@ function renderReasonList(){
   const items = IMPERFECTIONS.filter(i=> i.code.indexOf(q)!==-1 || i.label.toLowerCase().indexOf(q)!==-1);
   list.innerHTML = items.map(i=>{
     const sel = state.draft.reasonCode===i.code;
-    return '<div class="reason-row'+(sel?' selected':'')+'" onclick="RejectFlow.selectReason(\''+i.code+'\', '+JSON.stringify(i.label)+')">'+
+    return '<div class="reason-row'+(sel?' selected':'')+'" onclick="RejectFlow.selectReason(\''+i.code+'\', '+esc(JSON.stringify(i.label))+')">'+
       '<div class="reason-code">'+i.code+'</div><div style="flex:1;font-size:16px;">'+i.label+'</div>'+
       (sel? '<span style="color:var(--assembly-solid);">'+ICON.check+'</span>' : '')+
     '</div>';
@@ -1525,6 +1829,7 @@ const NdtFlow = {
     const report = {
       ...d, signedBy:{...ASSEMBLY.inspector}, signedAt:demoTimestampFull(),
       procedure:'NDT-PT-01 rev 2 per ISO 3452-1', acceptance:'ISO 23277 — 2X', coverage:'100%',
+      shared:true,
     };
     DATA.ndtReports[d.weldId] = report;
     DATA.ndtCounter++;
@@ -1532,7 +1837,7 @@ const NdtFlow = {
     if(d.result==='Acceptable'){ w.status='Acceptable'; w.stage='Finishing'; }
     else { w.status='Not acceptable'; w.disposition='awaiting QA'; }
     queueOrToast(d.weldId+' — NDT report '+d.id+' saved ('+d.result+')');
-    App.nav('ndtSummary', {weldId:d.weldId});
+    App.nav('ndtSummary', {weldId:d.weldId, justCreated:true});
   },
 };
 
@@ -1546,7 +1851,7 @@ function indicationModalHtml(){
   const d = state.indicationDraft;
   const codeList = IMPERFECTIONS.map(i=>{
     const sel = d.code===i.code;
-    return '<div class="reason-row" style="padding:12px 14px;margin-bottom:6px;'+(sel?'border-color:var(--assembly-solid);background:rgba(165,40,80,.06);':'')+'" onclick="NdtFlow.pickCode(\''+i.code+'\','+JSON.stringify(i.label)+')">'+
+    return '<div class="reason-row" style="padding:12px 14px;margin-bottom:6px;'+(sel?'border-color:var(--assembly-solid);background:rgba(165,40,80,.06);':'')+'" onclick="NdtFlow.pickCode(\''+i.code+'\','+esc(JSON.stringify(i.label))+')">'+
       '<div class="reason-code" style="font-size:15px;min-width:48px;">'+i.code+'</div><div style="flex:1;font-size:14px;">'+i.label+'</div>'+
       (sel?'<span style="color:var(--assembly-solid);">'+ICON.check.replace('<svg','<svg style="width:16px;height:16px;"')+'</span>':'')+
     '</div>';
@@ -1679,6 +1984,10 @@ const NdtSummary = {
     toast('PDF attached to '+DATA.ndtReports[weldId].id+' (simulated)');
     render();
   },
+  done(weldId){
+    const found = findWeld(weldId);
+    if(found) App.gotoPart(found.part.id); else App.home();
+  },
 };
 
 SCREENS.ndtSummary = {
@@ -1723,11 +2032,14 @@ SCREENS.ndtSummary = {
           '<div><div class="label-sm">Signed</div><div class="val-lg">'+r.signedAt+'</div></div>'+
         '</div>'+
       '</div>'+
+      (r.shared ? '<div class="banner banner-success" style="background:rgba(43,138,62,.1);border-color:rgba(43,138,62,.35);color:var(--success);">'+ICON.check.replace('<svg','<svg style="width:18px;height:18px;flex:0 0 auto;"')+'<span>Report sent to WeldCloud Assembly.</span></div>' : '')+
       '<div class="hstack" style="gap:12px;">'+
         (r.pdfAttached
           ? '<button class="btn btn-outline btn-block" disabled>'+ICON.doc.replace('<svg','<svg style="width:16px;height:16px;"')+' '+r.id+'.pdf attached</button>'
           : '<button class="btn btn-outline btn-block" onclick="NdtSummary.attachPdf(\''+params.weldId+'\')">'+ICON.doc.replace('<svg','<svg style="width:16px;height:16px;"')+' Attach PDF</button>')+
-        '<button class="btn btn-primary btn-block" onclick="toast(\'Shared to WeldCloud Assembly\')">'+ICON.share.replace('<svg','<svg style="width:16px;height:16px;"')+' Share to Assembly</button>'+
+        (params.justCreated
+          ? '<button class="btn btn-primary btn-block" onclick="NdtSummary.done(\''+params.weldId+'\')">Done</button>'
+          : '<button class="btn btn-primary btn-block" onclick="toast(\'Shared to WeldCloud Assembly\')">'+ICON.share.replace('<svg','<svg style="width:16px;height:16px;"')+' Share to Assembly</button>')+
       '</div>'+
     '</div>';
   },
@@ -1847,60 +2159,85 @@ const Checklist = {
 </script>
 <script>
 /* ============================= WPS VIEW ============================= */
-function jointSketchSVG(){
-  return '<svg viewBox="0 0 400 160" width="100%" height="160" style="display:block;">'+
-    '<rect x="30" y="60" width="150" height="40" fill="var(--stage-fitted)" opacity=".22"/>'+
-    '<rect x="220" y="60" width="150" height="40" fill="var(--stage-fitted)" opacity=".22"/>'+
-    '<path d="M180 60 L200 60 L190 100 L180 100 Z" fill="var(--surface-app)" stroke="var(--border-strong)"/>'+
-    '<path d="M200 60 L220 60 L210 100 L190 100 Z" fill="var(--surface-app)" stroke="var(--border-strong)"/>'+
-    '<path d="M170 58 C185 50, 205 50, 220 58 L220 66 C205 60, 185 60, 170 66 Z" fill="var(--stage-welded)"/>'+
-    '<rect x="30" y="60" width="150" height="40" fill="none" stroke="var(--border-strong)" stroke-width="1.5"/>'+
-    '<rect x="220" y="60" width="150" height="40" fill="none" stroke="var(--border-strong)" stroke-width="1.5"/>'+
-    '<line x1="30" y1="115" x2="180" y2="115" stroke="var(--text-muted)" stroke-width="1"/>'+
-    '<text x="105" y="132" text-anchor="middle" font-size="11" fill="var(--text-muted)">12 mm butt</text>'+
-    '<text x="200" y="45" text-anchor="middle" font-size="11" fill="var(--text-secondary)" font-weight="600">Root + fill + cap</text>'+
-  '</svg>';
-}
-function runSequenceSVG(){
-  const labels=['1 · Root','2 · Fill','3 · Cap'];
-  const colors=['var(--stage-fitted)','var(--stage-welded)','var(--stage-tested)'];
-  return '<div class="hstack" style="gap:18px;justify-content:center;padding:10px 0;">'+
-    labels.map((l,i)=>'<div style="text-align:center;">'+
-      '<div style="width:56px;height:56px;border-radius:10px;background:'+colors[i]+';color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:18px;">'+(i+1)+'</div>'+
-      '<div class="muted" style="font-size:12px;margin-top:6px;">'+l.split(' · ')[1]+'</div>'+
-    '</div>').join('<div style="align-self:center;color:var(--text-muted);">'+ICON.chevron.replace('<svg','<svg style="width:16px;height:16px;"')+'</div>')+
+function wpsHeroHtml(){
+  const cols = [
+    ['Standard', WPS.standard],
+    ['Weld type', WPS.weldType],
+    ['Process', WPS.process],
+    ['Base metal', WPS.material],
+  ];
+  return '<div class="card" style="padding:0;overflow:hidden;">'+
+    '<div style="background:linear-gradient(90deg,var(--assembly-1),var(--assembly-2));color:#fff;padding:24px 26px;">'+
+      '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:20px;text-align:center;">'+
+        cols.map(([label,val])=>'<div><div style="font-size:17px;font-weight:700;">'+esc(val)+'</div>'+
+          '<div style="font-size:12px;opacity:.85;font-style:italic;margin-top:4px;">'+label+'</div></div>').join('')+
+      '</div>'+
+    '</div>'+
   '</div>';
 }
+function wpsNoValueHtml(){
+  return '<div class="muted" style="display:flex;align-items:center;justify-content:center;">'+ICON.noValue.replace('<svg','<svg style="width:22px;height:22px;"')+'</div>';
+}
+function wpsMetricCardHtml(icon, label, valueHtml){
+  return '<div class="card" style="text-align:center;">'+
+    '<div class="hstack" style="justify-content:center;gap:8px;color:var(--text-muted);margin-bottom:10px;">'+
+      icon.replace('<svg','<svg style="width:16px;height:16px;"')+'<span class="label-sm" style="margin:0;">'+label+'</span>'+
+    '</div>'+
+    valueHtml+
+  '</div>';
+}
+function wpsPassRange(range, i, decimals){
+  const band = (range[1]-range[0])/3;
+  const f = v=>{ const p=Math.pow(10,decimals); return Math.round((range[0]+band*v)*p)/p; };
+  return f(i)+'–'+f(i+1);
+}
+const WPS_PASSES = ['1 · Root','2 · Fill','3 · Cap'];
 
 SCREENS.wps = {
   topbar(){ return topbarBase({title:WPS.id, sub:'Welding Procedure Specification · read-only', variant:'assembly'}); },
   render(){
     return '<div class="stack">'+
-      '<div class="card"><div class="section-title">Joint</div>'+jointSketchSVG()+'</div>'+
-      '<div class="card"><div class="section-title">Run sequence</div>'+runSequenceSVG()+'</div>'+
+      wpsHeroHtml()+
+      '<div class="grid2">'+
+        wpsMetricCardHtml(ICON.ruler, 'Thickness', '<div style="font-size:19px;font-weight:700;">'+esc(WPS.thickness)+'</div>')+
+        wpsMetricCardHtml(ICON.noValue, 'Diameter', '<div class="muted" style="font-size:13px;">Not applicable — plate joint</div>')+
+      '</div>'+
       '<div class="card">'+
-        '<div class="section-title">Base material &amp; consumables</div>'+
+        '<div class="section-title">Additional variables · '+esc(WPS.process)+'</div>'+
         '<div class="grid2">'+
-          '<div><div class="label-sm">Process</div><div class="val-lg">'+WPS.process+'</div></div>'+
-          '<div><div class="label-sm">Parent material</div><div class="val-lg">'+WPS.material+'</div></div>'+
-          '<div><div class="label-sm">Thickness</div><div class="val-lg">'+WPS.thickness+'</div></div>'+
-          '<div><div class="label-sm">Filler</div><div class="val-lg">'+WPS.filler+'</div></div>'+
-          '<div><div class="label-sm">Shielding gas</div><div class="val-lg">'+WPS.gas+'</div></div>'+
-          '<div><div class="label-sm">Acceptance criteria</div><div class="val-lg">'+WPS.acceptance+'</div></div>'+
+          '<div><div class="label-sm">Method</div><div class="val-lg">Semi-automatic</div></div>'+
+          '<div><div class="label-sm">Polarity</div><div class="val-lg">DC+</div></div>'+
+          '<div><div class="label-sm">Filler</div><div class="val-lg">'+esc(WPS.filler)+'</div></div>'+
+          '<div><div class="label-sm">Shielding gas</div><div class="val-lg">'+esc(WPS.gas)+'</div></div>'+
         '</div>'+
       '</div>'+
-      '<div class="card"><div class="section-title">Parameter ranges</div>'+
-        '<div class="grid2">'+
-          '<div><div class="label-sm">Current</div><div class="val-lg">'+WPS.current[0]+'–'+WPS.current[1]+' A</div></div>'+
-          '<div><div class="label-sm">Voltage</div><div class="val-lg">'+WPS.voltage[0]+'–'+WPS.voltage[1]+' V</div></div>'+
-          '<div><div class="label-sm">Travel speed</div><div class="val-lg">'+WPS.speed[0]+'–'+WPS.speed[1]+' cm/min</div></div>'+
-          '<div><div class="label-sm">Heat input</div><div class="val-lg">'+WPS.heat[0]+'–'+WPS.heat[1]+' kJ/mm</div></div>'+
-          '<div><div class="label-sm">Preheat</div><div class="val-lg">'+WPS.preheat+'</div></div>'+
-          '<div><div class="label-sm">Interpass</div><div class="val-lg">'+WPS.interpass+'</div></div>'+
-        '</div>'+
+      '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:14px;">'+
+        wpsMetricCardHtml(ICON.thermometer, 'Preheat', '<div style="font-size:16px;font-weight:700;">'+esc(WPS.preheat)+'</div>')+
+        wpsMetricCardHtml(ICON.thermometer, 'Interpass', '<div style="font-size:16px;font-weight:700;">'+esc(WPS.interpass)+'</div>')+
+        wpsMetricCardHtml(ICON.thermometer, 'Post heat', wpsNoValueHtml())+
+        wpsMetricCardHtml(ICON.thermometer, 'PWHT', wpsNoValueHtml())+
       '</div>'+
-      '<div class="card"><div class="section-title">Positions</div>'+
-        '<div class="hstack" style="gap:8px;">'+WPS.positions.map(p=>'<span class="chip">'+p+'</span>').join('')+'</div>'+
+      '<div class="card">'+
+        '<div class="section-title">Welding passes</div>'+
+        '<div class="wrap-table"><table class="ind"><thead><tr>'+
+          '<th>Pass</th><th>Process</th><th>Filler</th><th>Current (A)</th><th>Voltage (V)</th><th>Travel speed (cm/min)</th><th>Wire feed (m/min)</th><th>Heat input (kJ/mm)</th>'+
+        '</tr></thead><tbody>'+
+          WPS_PASSES.map((label,i)=>'<tr>'+
+            '<td>'+label+'</td>'+
+            '<td>'+esc(WPS.process)+'</td>'+
+            '<td>'+esc(WPS.filler)+'</td>'+
+            '<td>'+wpsPassRange(WPS.current,i,0)+'</td>'+
+            '<td>'+wpsPassRange(WPS.voltage,i,1)+'</td>'+
+            '<td>'+wpsPassRange(WPS.speed,i,0)+'</td>'+
+            '<td>'+wpsPassRange(WPS.wireFeedSpeed,i,2)+'</td>'+
+            '<td>'+wpsPassRange(WPS.heat,i,2)+'</td>'+
+          '</tr>').join('')+
+        '</tbody></table></div>'+
+      '</div>'+
+      '<div class="card"><div class="section-title">Positions &amp; acceptance</div>'+
+        '<div class="hstack" style="gap:8px;flex-wrap:wrap;">'+WPS.positions.map(p=>'<span class="chip">'+p+'</span>').join('')+
+          '<span class="chip" style="margin-left:auto;">'+esc(WPS.acceptance)+'</span>'+
+        '</div>'+
       '</div>'+
     '</div>';
   },

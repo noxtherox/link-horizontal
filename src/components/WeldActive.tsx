@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { AlertTriangle, Play, ChevronDown, ChevronUp, Package, ArrowRight, Zap, ArrowLeft, CheckCircle2, ClipboardCheck, Users } from 'lucide-react';
 import { Weld, Part, CompletedWeld, PrerequisiteProcess, Arc, Consumable } from '@/types/weldcloud';
-import { machineSpec } from '@/data/mockData';
+import { gasSpec } from '@/data/mockData';
 import { DrawingWithHighlight } from './DrawingWithHighlight';
 import { CompletedWelds } from './CompletedWelds';
 import { Badge } from '@/components/ui/badge';
@@ -436,34 +436,64 @@ function WeldActiveArc({
           </div>
         )}
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          <div className="lg:col-span-2" />
+        <WeldTagsPanel selectedWeld={selectedWeld} currentPart={currentPart} filler={filler} />
+      </div>
+    </div>
+  );
+}
 
-          <div className="space-y-4">
-            <div className="p-4 bg-[var(--c-raised)] border border-[var(--c-border)] rounded-lg">
-              <div className="text-xs uppercase tracking-wider text-[var(--text-dim)] mb-3">
-                {isPaused ? 'Paused · Fleet · 4 Hz' : 'Live · Fleet · 4 Hz'}
-              </div>
-              <div className="space-y-3">
-                <div className="flex justify-between text-sm">
-                  <span className="text-[var(--text-lo)]">Machine</span>
-                  <span className="text-[var(--text-hi)] font-medium">{machineSpec.name}</span>
-                </div>
-                <div className="flex justify-between text-sm">
-                  <span className="text-[var(--text-lo)]">Layer</span>
-                  <span className="text-[var(--text-hi)] font-medium">{machineSpec.layer}</span>
-                </div>
-                <div className="flex justify-between text-sm">
-                  <span className="text-[var(--text-lo)]">Deposition</span>
-                  <span className="text-[var(--text-hi)] font-medium">{machineSpec.deposition}</span>
-                </div>
-                <div className="flex justify-between text-sm">
-                  <span className="text-[var(--text-lo)]">WPS heat max</span>
-                  <span className="text-yellow-500 font-medium">{machineSpec.wpsHeatMax}</span>
-                </div>
-              </div>
-            </div>
-          </div>
+/* ───────── WELD TAGS ───────── */
+
+function TagField({ label, value }: { label: string; value?: string | null }) {
+  return (
+    <div>
+      <div className="text-xs text-[var(--text-lo)] mb-1">{label}</div>
+      <div className="text-sm font-medium text-[var(--text-hi)] truncate">{value || 'Not set'}</div>
+    </div>
+  );
+}
+
+function WeldTagsPanel({
+  selectedWeld,
+  currentPart,
+  filler,
+}: {
+  selectedWeld: Weld | null;
+  currentPart: Part | undefined;
+  filler: string;
+}) {
+  const fieldGrid = 'grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4';
+
+  return (
+    <div className="p-4 bg-[var(--c-raised)] border border-[var(--c-border)] rounded-lg">
+      <div className="text-xs uppercase tracking-wider text-[var(--text-dim)] mb-4">Weld tags</div>
+
+      <div className="mb-4">
+        <div className="text-sm font-semibold text-[var(--text-hi)] mb-3">Information</div>
+        <div className={`${fieldGrid} mb-4`}>
+          <TagField label="Operator" value="M. Costa" />
+          <TagField label="WPS" value={selectedWeld?.wps} />
+          <TagField label="Work order" value="Not set" />
+          <TagField label="Assembly" value={currentPart?.name} />
+          <TagField label="Part" value={currentPart?.id} />
+          <TagField label="Weld ID" value={selectedWeld?.id} />
+        </div>
+        <div className={fieldGrid}>
+          <TagField label="WPS Parameter ID" value="Not set" />
+          <TagField label="Tags" value="Not set" />
+        </div>
+      </div>
+
+      <div className="pt-4 border-t border-[var(--c-border)]">
+        <div className="text-sm font-semibold text-[var(--text-hi)] mb-3">Consumption data</div>
+        <div className={`${fieldGrid} mb-4`}>
+          <TagField label="Filler metal" value={filler} />
+          <TagField label="Flux" value="Not set" />
+          <TagField label="Gas types" value={gasSpec.mix} />
+        </div>
+        <div className={fieldGrid}>
+          <TagField label="Lot number" value="L24-08812" />
+          <TagField label="Lot number" value="Not set" />
         </div>
       </div>
     </div>
