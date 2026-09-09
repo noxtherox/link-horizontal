@@ -4,28 +4,29 @@
 <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
 <style>
 :root{
-  --bg-page:#EAE6E1;
-  --frame-bezel:#232323;
-  --surface-app:#EBE6E2;
-  --surface-card:#FFFFFF;
-  --surface-raised:#FFFFFF;
-  --surface-sunken:#F4F1EE;
-  --border:#CECFD0;
-  --border-strong:#B7B3AE;
-  --text:#1A171B;
-  --text-secondary:#445771;
-  --text-muted:#6C7075;
-  --text-on-accent:#FFFFFF;
-  --assembly-1:#731642;
-  --assembly-2:#B62850;
-  --assembly-solid:#A52850;
-  --fleet-1:#7A2B1C;
-  --fleet-2:#C0210E;
-  --success:#4CAF50;
-  --error:#E23900;
-  --warning:#F1A30A;
-  --info:#0B7DA8;
-  --mandatory:#F44336;
+  /* semantic tokens mirrored from the Welder app's palette (src/globals.css) so both
+     apps in the WeldCloudLink suite read as one product — light values here */
+  --bg-page:#f0ede8;
+  --surface-app:#f0ede8;
+  --surface-card:#ffffff;
+  --surface-raised:#eceae5;
+  --surface-sunken:#f0ede8;
+  --border:#d5d2cc;
+  --border-strong:#b8b4ac;
+  --text:#111111;
+  --text-secondary:#3d3c3a;
+  --text-muted:#6b6865;
+  --text-dim:#948f89;
+  --text-on-accent:#000000;
+  --assembly-1:#eab308;
+  --assembly-2:#facc15;
+  --assembly-solid:#eab308;
+  --accent-text:#a16207;
+  --success:#16a34a;
+  --error:#dc2626;
+  --warning:#f97316;
+  --info:#0284c7;
+  --mandatory:#dc2626;
   --stage-waiting:#9AA0A6;
   --stage-fitted:#2E5B78;
   --stage-welded:#F2AA3C;
@@ -38,64 +39,46 @@
   --shadow-modal:0 20px 60px rgba(0,0,0,.35);
   --badge-success-bg:rgba(76,175,80,.14);
   --badge-success-fg:#2f7a33;
-  --badge-warning-bg:rgba(241,163,10,.16);
-  --badge-warning-fg:#8a5c04;
+  --badge-warning-bg:rgba(249,115,22,.14);
+  --badge-warning-fg:#9a3412;
+  --badge-purple-bg:rgba(234,179,8,.16);
+  --badge-purple-fg:#8a5c04;
 }
-:root[data-theme="dark"], :root:not([data-theme="light"]) {
-}
-@media (prefers-color-scheme: dark){
-  :root:not([data-theme="light"]){
-    --bg-page:#101010;
-    --surface-app:#1E1E1E;
-    --surface-card:#262626;
-    --surface-raised:#2C2C2C;
-    --surface-sunken:#181818;
-    --border:#3A3A3C;
-    --border-strong:#4A4A4C;
-    --text:#F1EFED;
-    --text-secondary:#9DB4CC;
-    --text-muted:#A6A9AC;
-    --shadow-1:0 1px 2px rgba(0,0,0,.4);
-    --shadow-2:0 4px 18px rgba(0,0,0,.5);
-    --shadow-modal:0 20px 60px rgba(0,0,0,.6);
-    --badge-success-bg:rgba(76,175,80,.22);
-    --badge-success-fg:#7bd47f;
-    --badge-warning-bg:rgba(241,163,10,.22);
-    --badge-warning-fg:#f4c15e;
-  }
-}
+/* light is the default regardless of OS preference — dark only applies when the
+   inspector explicitly toggles it via the theme button (data-theme="dark") */
 :root[data-theme="dark"]{
-  --bg-page:#101010;
-  --surface-app:#1E1E1E;
-  --surface-card:#262626;
-  --surface-raised:#2C2C2C;
-  --surface-sunken:#181818;
-  --border:#3A3A3C;
-  --border-strong:#4A4A4C;
-  --text:#F1EFED;
-  --text-secondary:#9DB4CC;
-  --text-muted:#A6A9AC;
+  --bg-page:#0f0f0f;
+  --surface-app:#141414;
+  --surface-card:#1a1a1a;
+  --surface-raised:#1f1f1f;
+  --surface-sunken:#0f0f0f;
+  --border:#2a2a2a;
+  --border-strong:#3a3a3a;
+  --text:#ffffff;
+  --text-secondary:#d1d5db;
+  --text-muted:#9ca3af;
+  --text-dim:#6b7280;
+  --accent-text:#eab308;
   --shadow-1:0 1px 2px rgba(0,0,0,.4);
   --shadow-2:0 4px 18px rgba(0,0,0,.5);
   --shadow-modal:0 20px 60px rgba(0,0,0,.6);
   --badge-success-bg:rgba(76,175,80,.22);
   --badge-success-fg:#7bd47f;
-  --badge-warning-bg:rgba(241,163,10,.22);
-  --badge-warning-fg:#f4c15e;
+  --badge-warning-bg:rgba(249,115,22,.22);
+  --badge-warning-fg:#fdba74;
+  --badge-purple-bg:rgba(234,179,8,.22);
+  --badge-purple-fg:#f4c15e;
 }
 *{box-sizing:border-box;}
-html,body{margin:0;padding:0;}
+html,body{margin:0;padding:0;height:100%;}
 body{
   background:var(--bg-page);
   color:var(--text);
   font-family:'Roboto',sans-serif;
   min-height:100vh;
+  min-height:100dvh;
   display:flex;
   flex-direction:column;
-  align-items:center;
-  justify-content:flex-start;
-  gap:16px;
-  padding:28px 16px 40px;
 }
 h1,h2,h3,h4{
   font-family:'Museo Sans','Roboto',sans-serif;
@@ -104,45 +87,19 @@ h1,h2,h3,h4{
   text-wrap:balance;
 }
 button{font-family:inherit;}
-::selection{background:var(--assembly-2);color:#fff;}
+::selection{background:var(--assembly-solid);color:var(--text-on-accent);}
 :focus-visible{outline:3px solid var(--info);outline-offset:2px;}
 
-/* ---- facilitator bar ---- */
-.facilitator{
-  display:flex;align-items:center;gap:10px;flex-wrap:wrap;justify-content:center;
-  background:transparent;color:var(--text-muted);font-size:13px;
-  max-width:1280px;width:100%;
-}
-.facilitator .label{font-weight:500;letter-spacing:.04em;text-transform:uppercase;font-size:11px;color:var(--text-muted);margin-right:4px;}
-.fac-btn{
-  border:1px solid var(--border-strong);background:var(--surface-card);color:var(--text);
-  border-radius:8px;padding:8px 14px;font-size:13px;font-weight:500;cursor:pointer;
-  transition:transform .08s ease, background .15s ease;
-}
-.fac-btn:active{transform:scale(.96);background:var(--surface-sunken);}
-.fac-btn.on{background:var(--warning);color:#221a02;border-color:var(--warning);}
-
-/* ---- device frame ---- */
-.device-wrap{
-  width:1280px;max-width:100%;
-}
-.device-frame{
-  width:1280px;height:800px;max-width:100%;
-  background:linear-gradient(180deg,#2b2b2b,#161616);
-  border-radius:34px;
-  padding:16px;
-  box-shadow:var(--shadow-modal), 0 0 0 1px rgba(0,0,0,.4);
-  margin:0 auto;
-}
+/* ---- app shell: fills the remaining viewport, no device-frame chrome ---- */
 .screen{
-  width:100%;height:100%;
+  flex:1;min-height:0;
+  width:100%;
   background:var(--surface-app);
-  border-radius:20px;
-  overflow:hidden;
-  display:flex;
+  display:flex;flex-direction:column;
   position:relative;
-  box-shadow:inset 0 0 0 1px rgba(0,0,0,.25);
 }
+/* topbar now runs the full width of the page; rail + content sit in a row below it */
+.below-topbar{flex:1;min-height:0;display:flex;}
 
 /* ---- rail ---- */
 .rail{
@@ -150,7 +107,8 @@ button{font-family:inherit;}
   background:var(--surface-card);
   border-right:1px solid var(--border);
   display:flex;flex-direction:column;align-items:center;
-  padding:16px 0;gap:6px;
+  padding:12px 0;gap:6px;
+  overflow-y:auto;
 }
 .rail-btn{
   width:56px;height:56px;border-radius:14px;border:none;background:transparent;
@@ -160,50 +118,53 @@ button{font-family:inherit;}
 .rail-btn svg{width:22px;height:22px;}
 .rail-btn span{font-size:10px;font-weight:500;}
 .rail-btn:active{transform:scale(.94);}
-.rail-btn.active{background:var(--surface-sunken);color:var(--assembly-solid);}
+.rail-btn.active{background:var(--surface-sunken);color:var(--accent-text);}
 .rail-btn:not(.active):active{background:var(--surface-sunken);}
 
 /* ---- main column ---- */
 .col{flex:1;display:flex;flex-direction:column;min-width:0;}
 .topbar{
-  min-height:72px;flex:0 0 auto;
+  min-height:64px;flex:0 0 auto;
   display:flex;align-items:center;gap:14px;
   padding:0 22px;
-  color:#fff;
-  background:linear-gradient(90deg,var(--assembly-1),var(--assembly-2));
+  color:var(--text);
+  background:var(--surface-card);
+  border-bottom:1px solid var(--border);
 }
-.topbar.neutral{background:var(--surface-card);color:var(--text);border-bottom:1px solid var(--border);}
-.topbar.fleet{background:linear-gradient(90deg,var(--fleet-1),var(--fleet-2));}
+.topbar-logo{
+  width:44px;height:44px;min-width:44px;border-radius:12px;border:none;
+  background:var(--assembly-solid);color:var(--text-on-accent);
+  display:flex;align-items:center;justify-content:center;cursor:pointer;flex:0 0 auto;
+  transition:transform .08s ease;
+}
+.topbar-logo svg{width:22px;height:22px;}
+.topbar-logo:active{transform:scale(.93);}
 .back-btn{
   width:44px;height:44px;min-width:44px;border-radius:12px;border:none;
-  background:rgba(255,255,255,.16);color:inherit;display:flex;align-items:center;justify-content:center;cursor:pointer;
+  background:var(--surface-sunken);color:inherit;display:flex;align-items:center;justify-content:center;cursor:pointer;
 }
-.topbar.neutral .back-btn{background:var(--surface-sunken);}
 .back-btn:active{transform:scale(.93);}
 .topbar h1{font-size:19px;letter-spacing:.01em;}
-.topbar .sub{font-size:12px;opacity:.85;font-weight:400;margin-top:1px;}
+.topbar .sub{font-size:12px;opacity:.75;font-weight:400;margin-top:1px;color:var(--text-muted);}
 .topbar .crumb-link{color:inherit;cursor:pointer;}
 .topbar .crumb-link:hover{text-decoration:underline;}
-.topbar .crumb-sep{opacity:.6;margin:0 5px;}
+.topbar .crumb-sep{opacity:.5;margin:0 5px;}
 .topbar .grow{flex:1;min-width:0;}
 .topbar-right{display:flex;align-items:center;gap:10px;flex:0 0 auto;}
 .pill{
   display:flex;align-items:center;gap:6px;padding:7px 12px;border-radius:20px;font-size:12px;font-weight:500;
-  background:rgba(255,255,255,.16);color:inherit;white-space:nowrap;
+  background:var(--surface-sunken);border:1px solid var(--border);color:var(--text);white-space:nowrap;
 }
-.topbar.neutral .pill{background:var(--surface-sunken);border:1px solid var(--border);}
 .pill .dot{width:8px;height:8px;border-radius:50%;flex:0 0 auto;}
 .icon-toggle{
-  width:44px;height:44px;border-radius:12px;border:none;background:rgba(255,255,255,.16);
+  width:44px;height:44px;border-radius:12px;border:none;background:var(--surface-sunken);
   color:inherit;display:flex;align-items:center;justify-content:center;cursor:pointer;
 }
-.topbar.neutral .icon-toggle{background:var(--surface-sunken);}
 .icon-toggle:active{transform:scale(.93);}
 .avatar{
-  width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,.22);
-  display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px;color:#fff;flex:0 0 auto;
+  width:36px;height:36px;border-radius:50%;background:var(--assembly-solid);
+  display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px;color:var(--text-on-accent);flex:0 0 auto;
 }
-.topbar.neutral .avatar{background:var(--assembly-solid);}
 
 .content{flex:1;overflow-y:auto;padding:22px 26px 100px;position:relative;}
 .content.no-pad-b{padding-bottom:26px;}
@@ -233,15 +194,35 @@ button{font-family:inherit;}
   white-space:nowrap;
 }
 .badge-success{background:var(--badge-success-bg);color:var(--badge-success-fg);}
-.badge-error{background:rgba(226,57,0,.12);color:var(--error);}
+.badge-error{background:rgba(220,38,38,.12);color:var(--error);}
 .badge-warning{background:var(--badge-warning-bg);color:var(--badge-warning-fg);}
-.badge-info{background:rgba(11,125,168,.12);color:var(--info);}
+.badge-info{background:rgba(2,132,199,.12);color:var(--info);}
+.badge-purple{background:var(--badge-purple-bg);color:var(--badge-purple-fg);}
 .badge-muted{background:var(--surface-sunken);color:var(--text-muted);border:1px solid var(--border);}
 
 .chip{
   display:inline-flex;align-items:center;padding:4px 10px;border-radius:8px;font-size:12px;font-weight:500;
   background:var(--surface-sunken);border:1px solid var(--border);color:var(--text-secondary);
 }
+
+.filter-row{display:flex;gap:8px;flex-wrap:wrap;}
+.filter-chip{
+  padding:8px 14px;border-radius:20px;border:1.5px solid var(--border-strong);background:var(--surface-sunken);
+  color:var(--text);font-size:13px;font-weight:500;cursor:pointer;white-space:nowrap;
+}
+.filter-chip:active{transform:scale(.96);}
+.filter-chip.on{background:var(--assembly-solid);border-color:var(--assembly-solid);color:var(--text-on-accent);}
+
+.report-title{
+  width:100%;border:1.5px solid transparent;background:transparent;border-radius:10px;
+  font-family:'Museo Sans','Roboto',sans-serif;font-weight:700;font-size:23px;color:var(--text);
+  padding:8px 10px;margin:0 0 2px -10px;
+}
+.report-title:hover{background:var(--surface-sunken);border-color:var(--border);}
+.report-title:focus{background:var(--surface-card);border-color:var(--accent-text);outline:none;}
+.report-title[disabled]{color:var(--text);opacity:1;cursor:default;}
+.report-title[disabled]:hover{background:transparent;border-color:transparent;}
+.report-title::placeholder{color:var(--text-muted);font-weight:500;}
 
 .btn{
   border:none;border-radius:12px;font-weight:500;font-size:15px;cursor:pointer;
@@ -250,8 +231,8 @@ button{font-family:inherit;}
 }
 .btn:active{transform:scale(.96);}
 .btn[disabled]{opacity:.45;cursor:not-allowed;transform:none;}
-.btn-primary{background:var(--assembly-solid);color:#fff;}
-.btn-fleet{background:var(--fleet-2);color:#fff;}
+.btn-primary{background:var(--assembly-solid);color:var(--text-on-accent);}
+.btn-fleet{background:var(--assembly-solid);color:var(--text-on-accent);}
 .btn-success{background:var(--success);color:#fff;}
 .btn-danger{background:var(--error);color:#fff;}
 .btn-outline{background:transparent;border:1.5px solid var(--border-strong);color:var(--text);}
@@ -289,6 +270,7 @@ textarea.input{min-height:90px;resize:vertical;}
 .list-row.locked{cursor:default;opacity:.65;}
 .list-row.locked:active{transform:none;}
 .weld-id{font-size:18px;font-weight:700;min-width:74px;}
+.weld-check{width:32px;height:32px;flex:0 0 auto;accent-color:var(--assembly-solid);cursor:pointer;}
 .row-meta{display:flex;flex-direction:column;gap:2px;flex:1;min-width:0;}
 .row-meta .top{font-size:14px;color:var(--text-muted);}
 .chevron{color:var(--text-muted);flex:0 0 auto;}
@@ -331,7 +313,7 @@ textarea.input{min-height:90px;resize:vertical;}
 }
 .key:active{transform:scale(.94);background:var(--border);}
 .key.wide{grid-column:span 1;}
-.key.done{background:var(--assembly-solid);color:#fff;grid-row:span 2;}
+.key.done{background:var(--assembly-solid);color:var(--text-on-accent);grid-row:span 2;}
 
 /* reason picker */
 .search-input{
@@ -343,8 +325,8 @@ textarea.input{min-height:90px;resize:vertical;}
   background:var(--surface-card);cursor:pointer;margin-bottom:10px;
 }
 .reason-row:active{transform:scale(.985);}
-.reason-row.selected{border-color:var(--assembly-solid);background:rgba(165,40,80,.06);}
-.reason-code{font-size:18px;font-weight:700;min-width:56px;color:var(--assembly-solid);}
+.reason-row.selected{border-color:var(--accent-text);background:rgba(234,179,8,.08);}
+.reason-code{font-size:18px;font-weight:700;min-width:56px;color:var(--accent-text);}
 
 /* photo annotate */
 .photo-wrap{position:relative;border-radius:14px;overflow:hidden;border:1px solid var(--border);cursor:crosshair;user-select:none;}
@@ -367,9 +349,8 @@ textarea.input{min-height:90px;resize:vertical;}
   display:flex;align-items:center;gap:10px;padding:12px 16px;border-radius:12px;font-size:14px;font-weight:500;
   margin-bottom:16px;
 }
-.banner-warning{background:rgba(241,163,10,.14);color:#8a5c04;border:1px solid rgba(241,163,10,.35);}
-.banner-info{background:rgba(11,125,168,.1);color:var(--info);border:1px solid rgba(11,125,168,.3);}
-:root[data-theme="dark"] .banner-warning, :root:not([data-theme="light"]) .banner-warning{color:#f4c15e;}
+.banner-warning{background:var(--badge-warning-bg);color:var(--badge-warning-fg);border:1px solid var(--warning);}
+.banner-info{background:rgba(2,132,199,.1);color:var(--info);border:1px solid rgba(2,132,199,.3);}
 
 .history-block{background:var(--surface-sunken);border:1px dashed var(--border-strong);border-radius:14px;padding:16px;}
 .history-block .tag{font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--text-muted);}
@@ -377,12 +358,12 @@ textarea.input{min-height:90px;resize:vertical;}
 .scan-frame{
   width:280px;height:280px;margin:0 auto;position:relative;border-radius:20px;background:var(--surface-sunken);
 }
-.scan-frame .corner{position:absolute;width:36px;height:36px;border:4px solid var(--assembly-solid);}
+.scan-frame .corner{position:absolute;width:36px;height:36px;border:4px solid var(--accent-text);}
 .scan-frame .c1{top:14px;left:14px;border-right:none;border-bottom:none;border-radius:8px 0 0 0;}
 .scan-frame .c2{top:14px;right:14px;border-left:none;border-bottom:none;border-radius:0 8px 0 0;}
 .scan-frame .c3{bottom:14px;left:14px;border-right:none;border-top:none;border-radius:0 0 0 8px;}
 .scan-frame .c4{bottom:14px;right:14px;border-left:none;border-top:none;border-radius:0 0 8px 0;}
-.scan-line{position:absolute;left:14px;right:14px;height:3px;background:var(--assembly-solid);border-radius:2px;box-shadow:0 0 10px var(--assembly-solid);animation:scan 1.4s ease-in-out infinite;}
+.scan-line{position:absolute;left:14px;right:14px;height:3px;background:var(--accent-text);border-radius:2px;box-shadow:0 0 10px var(--accent-text);animation:scan 1.4s ease-in-out infinite;}
 @keyframes scan{0%{top:20px;}50%{top:250px;}100%{top:20px;}}
 @media (prefers-reduced-motion: reduce){.scan-line{animation:none;top:120px;}}
 
@@ -434,20 +415,24 @@ table.ind td{padding:12px;font-size:15px;border-top:1px solid var(--border);}
 
 ::-webkit-scrollbar{width:10px;height:10px;}
 ::-webkit-scrollbar-thumb{background:var(--border-strong);border-radius:6px;}
+
+/* ---- responsive: tablet is the primary target, this just keeps phone-width viewports usable ---- */
+@media (max-width:720px){
+  .rail{width:60px;flex:0 0 60px;padding:10px 0;}
+  .rail-btn{width:48px;height:48px;}
+  .rail-btn span{display:none;}
+  .topbar{padding:0 14px;gap:10px;}
+  .topbar-logo{width:38px;height:38px;min-width:38px;}
+  .topbar-logo svg{width:19px;height:19px;}
+  .content{padding:16px 16px 100px;}
+  .content.no-pad-b{padding-bottom:16px;}
+}
+@media (max-width:640px){
+  .grid2{grid-template-columns:1fr;}
+  .footer-bar{padding:12px 16px;}
+}
 </style>
-<div class="facilitator">
-  <span class="label">Facilitator</span>
-  <button class="fac-btn" onclick="window.location.href='/'">&larr; Home apps</button>
-  <button class="fac-btn" onclick="App.reset()">Reset demo</button>
-  <button class="fac-btn" id="facOffline" onclick="App.toggleOffline()">Go offline</button>
-  <button class="fac-btn" onclick="App.jumpToStep7()">Jump to step 7 (W-004 ready for re-test)</button>
-  <button class="fac-btn" onclick="App.seedDraftReport()">Seed draft VT report</button>
-</div>
-<div class="device-wrap">
-  <div class="device-frame">
-    <div class="screen" id="screen"></div>
-  </div>
-</div>
+<div class="screen" id="screen"></div>
 <script>
 /* ============================= ICONS ============================= */
 const ICON = {
@@ -478,6 +463,9 @@ const ICON = {
   thermometer:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 14.8V5a2 2 0 1 0-4 0v9.8a4 4 0 1 0 4 0z"/><path d="M10 8h1"/></svg>',
   ruler:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="8" width="18" height="8" rx="1.5"/><path d="M7 8v3M11 8v3M15 8v3"/></svg>',
   noValue:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M6 6l12 12"/></svg>',
+  reports:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="3" width="16" height="18" rx="2"/><path d="M9 3v2h6V3"/><path d="M8 11.5l2 2 4-4.5"/><path d="M8 16.5h6"/></svg>',
+  search:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>',
+  appLogo:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="8" height="4" x="8" y="2" rx="1" ry="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><path d="m9 14 2 2 4-4"/></svg>',
 };
 
 /* ============================= DATA ============================= */
@@ -525,13 +513,25 @@ const WPS = {
   acceptance:'EN ISO 5817-C',
 };
 
-const ASSEMBLY = {
-  id:'ASM-2026-0412', name:'Skid Frame S4', client:'Nordic Energy AB', site:'Aalborg Plant',
-  inspector:{name:'A. Lindqvist', method:'VT', level:2, cert:'SE-VT2-11487', expires:'2028-04-30',
-             ptCert:'SE-PT2-11487'},
-  welder:{name:'Sven Wik', stamp:'SW4', qualification:'ISO 9606-1 135 P BW FM1 S t12 PF ss nb', validTo:'2027-03-31'},
-  machine:{name:'ESAB Warrior EDGE 500 CX', station:'EDGE Carbon Solid', site:'Aalborg Plant'},
+/* the logged-in inspector — one person, may hold work across several assemblies.
+   credentials mirror what WeldCloud Notes holds on file: VT Level 2, no UT credential —
+   deliberately, so the credential gate in change 7 has something to demonstrate. */
+const INSPECTOR = {name:'A. Lindqvist', level:2, cert:'SE-VT2-11487', expires:'2028-04-30', ptCert:'SE-PT2-11487'};
+
+/* an NDT report belongs to exactly one assembly, so every part is pinned to one via assemblyId */
+const ASSEMBLIES = {
+  'ASM-2026-0412':{
+    id:'ASM-2026-0412', name:'Skid Frame S4', client:'Nordic Energy AB', site:'Aalborg Plant',
+    welder:{name:'Sven Wik', stamp:'SW4', qualification:'ISO 9606-1 135 P BW FM1 S t12 PF ss nb', validTo:'2027-03-31'},
+    machine:{name:'ESAB Warrior EDGE 500 CX', station:'EDGE Carbon Solid', site:'Aalborg Plant'},
+  },
+  'ASM-2026-0455':{
+    id:'ASM-2026-0455', name:'Filter Housing Unit', client:'Baltic Marine Works', site:'Aalborg Plant',
+    welder:{name:'Ines Callas', stamp:'IC2', qualification:'ISO 9606-1 135 P BW FM1 S t12 PF ss nb', validTo:'2027-11-15'},
+    machine:{name:'ESAB Warrior EDGE 500 CX', station:'EDGE Stainless Solid', site:'Aalborg Plant'},
+  },
 };
+function assemblyFor(part){ return ASSEMBLIES[part.assemblyId]; }
 
 /* every non-destructive test method funnels through the same report model — VT included */
 const METHOD_INFO = {
@@ -542,12 +542,51 @@ const METHOD_INFO = {
   MT:{name:'Magnetic Particle Testing', procedure:'NDT-MT-01 per ISO 17638', acceptance:'ISO 23278 — 2X'},
 };
 function inspectorCertFor(method){
-  if(method==='VT') return ASSEMBLY.inspector.cert;
-  if(method==='PT') return ASSEMBLY.inspector.ptCert;
+  if(method==='VT') return INSPECTOR.cert;
+  if(method==='PT') return INSPECTOR.ptCert;
   return null;
 }
+function missingCredentialReason(method){
+  return 'No '+method+' credential on file';
+}
+
+/* ---- test type variables: the fields on a report change with its test type (change 2) ----
+   VT is exact, taken from Assembly's VT Variables screenshot. PT is a plausible stand-in that
+   proves the shape changes per method — it has NOT been checked against Assembly's real PT
+   Variables dialog, so treat its field list as illustrative only, not a spec. */
+const LIGHT_CONDITIONS = ['Natural daylight','Workshop lighting','Portable flashlight','Inspection lamp'];
+const VIEWING_CONDITIONS = ['Direct','Indirect — mirror','Indirect — boroscope','Remote camera'];
+const PT_PENETRANT_TYPES = ['Visible dye — solvent removable','Visible dye — water washable','Fluorescent — post-emulsifiable'];
+const PT_DEVELOPER_TYPES = ['Non-aqueous wet developer','Dry powder developer','Aqueous developer'];
+const TEST_TYPE_VAR_FIELDS = {
+  VT: [
+    {key:'lightCondition', label:'Light Conditions', type:'select', options:LIGHT_CONDITIONS},
+    {key:'lightConditionDetails', label:'Light Condition Details', type:'text'},
+    {key:'viewingCondition', label:'Viewing Conditions', type:'select', options:VIEWING_CONDITIONS},
+  ],
+  // unverified against Assembly — see comment above
+  PT: [
+    {key:'penetrantType', label:'Penetrant Type', type:'select', options:PT_PENETRANT_TYPES},
+    {key:'developerType', label:'Developer Type', type:'select', options:PT_DEVELOPER_TYPES},
+    {key:'dwellTime', label:'Dwell Time', type:'number', unit:'min'},
+    {key:'surfaceTemp', label:'Surface Temperature', type:'number', unit:'°C'},
+  ],
+};
+function defaultTestTypeVars(method){
+  const fields = TEST_TYPE_VAR_FIELDS[method] || [];
+  const vars = {};
+  fields.forEach(f=>{ vars[f.key] = f.type==='text' ? '' : null; });
+  return vars;
+}
+
+/* ---- NDT materials: consumables & equipment used on a report (change 3) ---- */
+const NDT_MATERIAL_TYPES = ['Lighting','Gauge & measuring','Consumable','Calibration block','PPE'];
+function makeMaterial(name, type, serial){
+  return {id:'mat-'+String(DATA_MATERIAL_SEQ++), name, type, serial};
+}
+let DATA_MATERIAL_SEQ = 1;
 function makeInspection(method, assignedTo){
-  return {method, assignedTo:assignedTo||null, reportId:null, result:null, indications:[]};
+  return {method, assignedTo:assignedTo||null, reportId:null, result:null, indications:[], photos:[], remarks:''};
 }
 
 function inRange(v,r){return v>=r[0]&&v<=r[1];}
@@ -556,9 +595,40 @@ function session(current,voltage,speed,heat,interpass){
   return {current,voltage,speed,heat,interpass};
 }
 
+/* shared report shape — both engineering-prepared and inspector-created reports build from this */
+function makeReportBase(id, method, assemblyId, scopePartId, date){
+  const info = METHOD_INFO[method];
+  return {
+    id, method, assemblyId, scopePartId: scopePartId||null,
+    title:'', created:date, welds:[], status:'draft', signedBy:null, signedAt:null,
+    date, site:ASSEMBLIES[assemblyId].site,
+    procedure:info.procedure, acceptance:info.acceptance,
+    notes:'', pdfAttached:false, photos:[],
+    testTypeVars: defaultTestTypeVars(method),
+    ndtMaterials: [],
+    sectionsOpen:{identity:false, procedure:false},
+  };
+}
+
+/* engineering-prepared report: seeded already attached to every matching inspection on the
+   part, so for parts like these the inspector's job is purely to work through welds —
+   not to create the report themselves */
+function makePreparedReport(id, method, assemblyId, part, title, date){
+  const report = makeReportBase(id, method, assemblyId, part.id, date);
+  report.preparedByEngineering = true; // doesn't count against the inspector's own concurrent-draft cap
+  report.title = title;
+  report.notes = 'Prepared by welding engineering — work through each weld below.';
+  part.welds.forEach(w=>{
+    const insp = w.inspections.find(i=>i.method===method);
+    if(insp){ insp.reportId = id; report.welds.push(w.id); }
+  });
+  return report;
+}
+
 function makeWeld(o){
   return Object.assign({
     status:'Pending', stage:'Testing', ncr:null, records:[], photo:null, inspections:[],
+    detailSectionsOpen:{traceability:false, groove:false},
   }, o);
 }
 
@@ -605,7 +675,7 @@ function rangeStatus(chart, key){
   };
 }
 
-function genSessions(base, count){
+function genSessions(base, count, operatorName){
   const passes = PASS_LABELS.slice(0, count);
   return passes.map((pass, i)=>{
     const factor = 1 - (count-1-i)*0.04;
@@ -619,7 +689,10 @@ function genSessions(base, count){
     const arcSeconds = 150 + i*45;
     return {
       id:pass.toLowerCase().replace(' ','-'),
-      pass, operator:ASSEMBLY.welder.name,
+      pass, operator:operatorName,
+      // "WPS Parameter ID" — the pass row this session is judged against. Sessions are
+      // never averaged together; each is compared only to its own parameter row.
+      wpsParamId:WPS.id+' · Pass '+(i+1),
       timestamp:'Today '+String(8+i).padStart(2,'0')+':'+String(10+i*7).padStart(2,'0'),
       arcSeconds,
       current:Math.round(chartAvg(chart,'current')),
@@ -631,6 +704,25 @@ function genSessions(base, count){
       events: (count>1 && i===count-1) ? [{time:'00:02', timestamp:'4:38:29 AM Aug 25, 2026', category:'Machine stop', message:'Communication error (bus off)'}] : [],
     };
   });
+}
+
+/* grey — a tack weld, not judged against WPS welding parameters at all */
+function makeTackSession(operatorName){
+  return {
+    id:'tack', pass:'Tack weld', operator:operatorName, wpsParamId:WPS.id+' · Tack',
+    timestamp:'Today 07:52', arcSeconds:35,
+    current:90, voltage:16, speed:0, power:1.4, wfs:0.2, fusionRate:0,
+    chart:sessionChartSeries(90,16,1.4,0.2), events:[], tack:true,
+  };
+}
+/* teal — the weld is currently being performed; nothing to judge yet */
+function makeInProgressSession(operatorName){
+  return {
+    id:'live', pass:'Fill pass', operator:operatorName, wpsParamId:WPS.id+' · Pass 2',
+    timestamp:'Now', arcSeconds:40,
+    current:240, voltage:26, speed:30, power:6.2, wfs:0.5, fusionRate:10,
+    chart:sessionChartSeries(240,26,6.2,0.5), events:[], inProgress:true,
+  };
 }
 
 /* Overrides a session's chart with a hand-authored "not so happy path": current
@@ -670,12 +762,19 @@ function makeAmberSession(s){
   return s;
 }
 
+/* traffic-light convention, matching Assembly's:
+   red = average outside WPS limit · amber = some values outside WPS limit ·
+   green = all values inside WPS limit · grey = tack weld · teal = weld being performed */
 function sessionTrafficLight(s){
+  if(s.tack) return 'grey';
+  if(s.inProgress) return 'teal';
   const statuses = Object.keys(METRIC_RANGES).map(k=>rangeStatus(s.chart,k));
   if(statuses.some(st=>st.avgBreach)) return 'red';
   if(statuses.some(st=>st.hasPointBreach)) return 'amber';
   return 'green';
 }
+const TRAFFIC_LIGHT_COLOR = {red:'var(--error)', amber:'var(--warning)', green:'var(--success)', grey:'var(--text-dim)', teal:'#0d9488'};
+const TRAFFIC_LIGHT_LABEL = {red:'Average value outside of WPS limit', amber:'Some values outside of WPS limit', green:'All values inside WPS limit', grey:'Tack weld', teal:'Weld being performed'};
 
 function formatArcTime(sec){
   if(sec<60) return sec+' s';
@@ -683,27 +782,28 @@ function formatArcTime(sec){
 }
 
 function seedData(){
-  const AL = ASSEMBLY.inspector.name;
-  const w003Sessions = genSessions(session(245,26.5,32,1.0,150),1);
+  const AL = INSPECTOR.name;
+  const sw = ASSEMBLIES['ASM-2026-0412'].welder.name;
+  const ic = ASSEMBLIES['ASM-2026-0455'].welder.name;
+  const w003Sessions = genSessions(session(245,26.5,32,1.0,150),1,sw);
   makeOutOfToleranceSession(w003Sessions[0]);
-  const w004Sessions = genSessions(session(250,29.2,27,1.5,220),3);
+  const w004Sessions = genSessions(session(250,29.2,27,1.5,220),3,sw);
   makeAmberSession(w004Sessions[1]);
-  const w011Sessions = genSessions(session(238,26.2,30,1.1,170),1);
-  return {
-    parts:[
+  const w011Sessions = genSessions(session(238,26.2,30,1.1,170),1,sw);
+  const parts = [
       {
-        id:'P-01', name:'Base Frame', blocked:false,
+        id:'P-01', name:'Base Frame', assemblyId:'ASM-2026-0412', assigned:true, blocked:false,
         welds:[
-          makeWeld({id:'W-001',type:'BW',process:'135',position:'PB',inspections:[makeInspection('VT',AL)],session:session(240,26.0,30,1.2,180),sessions:genSessions(session(240,26.0,30,1.2,180),1)}),
-          makeWeld({id:'W-002',type:'BW',process:'135',position:'PF',inspections:[makeInspection('VT',AL),makeInspection('PT',null)],session:session(235,25.5,28,1.1,200),sessions:genSessions(session(235,25.5,28,1.1,200),2)}),
+          makeWeld({id:'W-001',type:'BW',process:'135',position:'PB',inspections:[makeInspection('VT',AL)],session:session(240,26.0,30,1.2,180),sessions:genSessions(session(240,26.0,30,1.2,180),1,sw)}),
+          makeWeld({id:'W-002',type:'BW',process:'135',position:'PF',inspections:[makeInspection('VT',AL),makeInspection('PT',null)],session:session(235,25.5,28,1.1,200),sessions:genSessions(session(235,25.5,28,1.1,200),2,sw)}),
           makeWeld({id:'W-003',type:'FW',process:'136',position:'PB',inspections:[makeInspection('VT',AL)],session:session(w003Sessions[0].current, w003Sessions[0].voltage, 32, 1.0, 150),sessions:w003Sessions}),
-          makeWeld({id:'W-004',type:'BW',process:'135',position:'PF',inspections:[makeInspection('VT',AL)],session:session(250,29.2,27,1.5,220),sessions:w004Sessions}),
-          makeWeld({id:'W-005',type:'FW',process:'136',position:'PA',inspections:[makeInspection('VT',AL)],session:session(230,25.0,29,0.9,160),sessions:genSessions(session(230,25.0,29,0.9,160),2)}),
-          makeWeld({id:'W-006',type:'BW',process:'135',position:'PC',inspections:[makeInspection('VT',AL)],session:session(242,26.8,31,1.3,190),sessions:genSessions(session(242,26.8,31,1.3,190),1)}),
+          makeWeld({id:'W-004',type:'BW',process:'135',position:'PF',pwhtRequired:true,inspections:[makeInspection('VT',AL)],session:session(250,29.2,27,1.5,220),sessions:w004Sessions}),
+          makeWeld({id:'W-005',type:'FW',process:'136',position:'PA',inspections:[makeInspection('VT',AL)],session:session(230,25.0,29,0.9,160),sessions:genSessions(session(230,25.0,29,0.9,160),2,sw)}),
+          makeWeld({id:'W-006',type:'BW',process:'135',position:'PC',inspections:[makeInspection('VT',AL)],session:session(242,26.8,31,1.3,190),sessions:genSessions(session(242,26.8,31,1.3,190),1,sw)}),
         ],
       },
       {
-        id:'P-02', name:'Manifold Bracket', blocked:true,
+        id:'P-02', name:'Manifold Bracket', assemblyId:'ASM-2026-0412', assigned:true, blocked:true,
         welds:[
           makeWeld({id:'W-007',type:'BW',process:'135',position:'PF',weldStatus:'Welded'}),
           makeWeld({id:'W-008',type:'BW',process:'135',position:'PF',weldStatus:'Welded'}),
@@ -712,18 +812,81 @@ function seedData(){
         ],
       },
       {
-        id:'P-03', name:'Pump Skid Bracket', blocked:false,
+        id:'P-03', name:'Pump Skid Bracket', assemblyId:'ASM-2026-0412', assigned:true, blocked:false,
         welds:[
           makeWeld({id:'W-011',type:'BW',process:'135',position:'PB',inspections:[makeInspection('VT',AL)],session:session(w011Sessions[0].current,w011Sessions[0].voltage,30,1.1,170),sessions:w011Sessions}),
-          makeWeld({id:'W-012',type:'FW',process:'136',position:'PA',inspections:[makeInspection('VT',AL)],session:session(233,25.4,29,1.0,165),sessions:genSessions(session(233,25.4,29,1.0,165),1)}),
-          makeWeld({id:'W-013',type:'BW',process:'135',position:'PC',inspections:[makeInspection('VT',AL)],session:session(244,27.1,31,1.2,185),sessions:genSessions(session(244,27.1,31,1.2,185),1)}),
-          makeWeld({id:'W-014',type:'FW',process:'136',position:'PF',inspections:[makeInspection('VT',AL)],session:session(236,25.9,28,1.0,175),sessions:genSessions(session(236,25.9,28,1.0,175),1)}),
+          // carries the grey (tack) and teal (in progress) traffic-light states, alongside the
+          // green root pass, so the full legend is demonstrable on one weld
+          makeWeld({id:'W-012',type:'FW',process:'136',position:'PA',inspections:[makeInspection('VT',AL)],session:session(233,25.4,29,1.0,165),sessions:[makeTackSession(sw)].concat(genSessions(session(233,25.4,29,1.0,165),1,sw)).concat([makeInProgressSession(sw)])}),
+          makeWeld({id:'W-013',type:'BW',process:'135',position:'PC',inspections:[makeInspection('VT',AL)],session:session(244,27.1,31,1.2,185),sessions:genSessions(session(244,27.1,31,1.2,185),1,sw)}),
+          // requires UT in addition to VT — the inspector holds no UT credential, so this
+          // demonstrates the disabled-with-reason state in change 7
+          makeWeld({id:'W-014',type:'FW',process:'136',position:'PF',inspections:[makeInspection('VT',AL),makeInspection('UT',null)],session:session(236,25.9,28,1.0,175),sessions:genSessions(session(236,25.9,28,1.0,175),1,sw)}),
         ],
       },
-    ],
+      {
+        id:'P-04', name:'Filter Housing Shell', assemblyId:'ASM-2026-0455', assigned:true, blocked:false,
+        welds:[
+          makeWeld({id:'W-015',type:'BW',process:'135',position:'PB',inspections:[makeInspection('VT',AL)],session:session(238,25.8,30,1.1,175),sessions:genSessions(session(238,25.8,30,1.1,175),1,ic)}),
+          makeWeld({id:'W-016',type:'BW',process:'135',position:'PF',pwhtRequired:true,inspections:[makeInspection('VT',AL),makeInspection('PT',null)],session:session(241,26.4,29,1.2,190),sessions:genSessions(session(241,26.4,29,1.2,190),2,ic)}),
+          makeWeld({id:'W-017',type:'FW',process:'136',position:'PA',inspections:[makeInspection('VT',AL)],session:session(233,25.2,31,1.0,160),sessions:genSessions(session(233,25.2,31,1.0,160),1,ic)}),
+          makeWeld({id:'W-018',type:'FW',process:'136',position:'PC',inspections:[makeInspection('VT',AL)],session:session(236,25.6,30,1.1,170),sessions:genSessions(session(236,25.6,30,1.1,170),1,ic)}),
+        ],
+      },
+      {
+        id:'P-05', name:'Inlet Manifold', assemblyId:'ASM-2026-0455', assigned:true, blocked:false,
+        welds:[
+          makeWeld({id:'W-019',type:'BW',process:'135',position:'PB',inspections:[makeInspection('VT',AL)],session:session(239,26.1,30,1.2,180),sessions:genSessions(session(239,26.1,30,1.2,180),1,ic)}),
+          makeWeld({id:'W-020',type:'FW',process:'136',position:'PF',inspections:[makeInspection('VT',AL)],session:session(234,25.3,29,1.0,165),sessions:genSessions(session(234,25.3,29,1.0,165),1,ic)}),
+          makeWeld({id:'W-021',type:'BW',process:'135',position:'PC',inspections:[makeInspection('VT',AL)],session:session(243,26.9,31,1.3,195),sessions:genSessions(session(243,26.9,31,1.3,195),1,ic)}),
+        ],
+      },
+      {
+        /* finished and inspectable, but no one has been assigned to it — reachable only via
+           self-directed discovery (scan / browse all parts), never through the assigned-work groups */
+        id:'P-07', name:'Outlet Flange', assemblyId:'ASM-2026-0412', assigned:false, blocked:false,
+        welds:[
+          makeWeld({id:'W-022',type:'BW',process:'135',position:'PB',inspections:[makeInspection('VT',null)],session:session(237,25.7,30,1.1,175),sessions:genSessions(session(237,25.7,30,1.1,175),1,sw)}),
+          makeWeld({id:'W-023',type:'FW',process:'136',position:'PA',inspections:[makeInspection('VT',null)],session:session(231,25.1,29,0.9,160),sessions:genSessions(session(231,25.1,29,0.9,160),1,sw)}),
+          makeWeld({id:'W-024',type:'BW',process:'135',position:'PF',inspections:[makeInspection('VT',null)],session:session(240,26.2,30,1.2,185),sessions:genSessions(session(240,26.2,30,1.2,185),1,sw)}),
+        ],
+      },
+      {
+        /* no inspection has ever been assigned to these welds — zero-inspection state, reachable
+           only through the Assemblies page (change 10), never through home, the assembly part
+           list, or the QR/scan paths — assembliesOnly enforces that below */
+        id:'P-06', name:'Discharge Elbow', assemblyId:'ASM-2026-0455', assigned:false, blocked:false, assembliesOnly:true,
+        welds:[
+          makeWeld({id:'W-025',type:'BW',process:'135',position:'PB',inspections:[],session:session(239,26.0,30,1.1,175),sessions:genSessions(session(239,26.0,30,1.1,175),1,ic)}),
+          makeWeld({id:'W-026',type:'FW',process:'136',position:'PA',inspections:[],session:session(232,25.2,29,1.0,160),sessions:genSessions(session(232,25.2,29,1.0,160),1,ic)}),
+        ],
+      },
+  ];
+
+  // Filter Housing Unit: engineering already prepared one VT report per part — the
+  // inspector's path is to open the report and work through the welds, not create one.
+  const p04 = parts.find(p=>p.id==='P-04');
+  const p05 = parts.find(p=>p.id==='P-05');
+  const p04Report = makePreparedReport('NDT-2026-0398', 'VT', 'ASM-2026-0455', p04, 'VT — Filter Housing Shell', '2026-09-05');
+  const p05Report = makePreparedReport('NDT-2026-0402', 'VT', 'ASM-2026-0455', p05, 'VT — Inlet Manifold', '2026-09-06');
+  p04Report.ndtMaterials.push(makeMaterial('Inspection lamp', 'Lighting', 'LMP-4471'));
+  p04Report.ndtMaterials.push(makeMaterial('Weld gauge set', 'Gauge & measuring', 'WG-1187'));
+
+  // Skid Frame S4: a draft the inspector already started, so "Add to report" offers a
+  // real existing-draft option on this assembly instead of only "New report".
+  const p01 = parts.find(p=>p.id==='P-01');
+  const skidDraft1 = makeReportBase('NDT-2026-0410', 'VT', 'ASM-2026-0412', null, '2026-09-07');
+  skidDraft1.title = 'VT — Base Frame batch 1';
+  [p01.welds[3]].forEach(w=>{
+    const insp = w.inspections.find(i=>i.method==='VT');
+    if(insp && !insp.reportId){ insp.reportId = skidDraft1.id; skidDraft1.welds.push(w.id); }
+  });
+
+  return {
+    parts,
     ncrCounter:88,
     reportCounter:417,
-    reports:{},
+    reports:{ [p04Report.id]:p04Report, [p05Report.id]:p05Report, [skidDraft1.id]:skidDraft1 },
   };
 }
 
@@ -760,11 +923,17 @@ let state = {
   modal:null,        // {type, ...}
   keypad:null,       // {title, unit, value, onCommit}
   toasts:[],
-  activeReport:null,       // id of the report currently being worked
-  draft:null,              // imperfection wizard draft (reject flow AND accepted-weld "add imperfection")
+  draft:null,              // imperfection wizard draft, opened from a weld row's "Add imperfection"
   checklistDraft:null,
   addWeldsSelection:null,       // Set of weldIds ticked on the report "add welds" screen
   addWeldsSelectionReport:null, // which report that selection belongs to
+  currentAssemblyId:Object.keys(ASSEMBLIES)[0], // which assembly the rail's "Assembly" tab and breadcrumbs point to
+  partSelection:null,      // {partId, ids:Set} welds ticked on the part weld list, feeds "Add to report"
+  pendingReportScope:null, // {assemblyId, partId, weldIds} captured while the "add to report" sheet is open
+  reportsFilter:{tab:'drafts', method:'all', assemblyId:'all', search:''}, // "NDT reports" screen
+  assembliesFilter:{search:'', onlyWithInspections:false}, // the Assemblies page (change 10)
+  pendingInspectionScope:null, // {weldId} captured while "Create inspection" test-type modal is open
+  weldSessionFilters:{quality:'all', wpsParam:'all', excludeTack:false}, // weld detail sessions card
 };
 
 function findPart(id){ return DATA.parts.find(p=>p.id===id); }
@@ -782,6 +951,17 @@ function findSession(weldId, sessionId){
 
 function cur(){ return state.stack[state.stack.length-1]; }
 
+/* keeps state.currentAssemblyId pointed at whichever assembly the screen currently on
+   top of the stack belongs to, so the rail's Assembly tab and breadcrumbs stay correct
+   without every onclick having to thread an assemblyId through */
+function deriveAssemblyId(params){
+  if(params.assemblyId) return params.assemblyId;
+  if(params.partId){ const p = findPart(params.partId); if(p) return p.assemblyId; }
+  if(params.weldId){ const f = findWeld(params.weldId); if(f) return f.part.assemblyId; }
+  if(params.reportId){ const r = DATA.reports[params.reportId]; if(r) return r.assemblyId; }
+  return null;
+}
+
 /* ============================= NAV ============================= */
 const App = {
   nav(screen, params={}){
@@ -793,97 +973,19 @@ const App = {
     render();
   },
   gotoPart(partId){
-    state.stack = [{screen:'home', params:{}}, {screen:'assembly', params:{}}, {screen:'part', params:{partId}}];
+    const part = findPart(partId);
+    state.stack = [{screen:'home', params:{}}, {screen:'assembly', params:{assemblyId:part.assemblyId}}, {screen:'part', params:{partId}}];
     render();
   },
   home(){
     state.stack = [{screen:'home', params:{}}];
     render();
   },
-  reset(){
-    DATA = seedData();
-    state.offline = false;
-    state.queued = 0;
-    state.stack = [{screen:'home', params:{}}];
-    state.modal = null; state.keypad = null; state.draft = null; state.checklistDraft = null;
-    state.activeReport = null; state.addWeldsSelection = null; state.addWeldsSelectionReport = null;
-    state.toasts = [];
-    document.getElementById('facOffline').classList.remove('on');
-    document.getElementById('facOffline').textContent = 'Go offline';
-    render();
-    toast('Demo reset');
-  },
   toggleTheme(){
     const root = document.documentElement;
-    const isDark = root.getAttribute('data-theme')==='dark' || (!root.hasAttribute('data-theme') && window.matchMedia('(prefers-color-scheme: dark)').matches);
+    const isDark = root.getAttribute('data-theme')==='dark';
     root.setAttribute('data-theme', isDark ? 'light' : 'dark');
     render();
-  },
-  toggleOffline(){
-    state.offline = !state.offline;
-    const btn = document.getElementById('facOffline');
-    if(state.offline){
-      btn.classList.add('on'); btn.textContent='Go online';
-      toast('Facilitator: app is now offline');
-    } else {
-      btn.classList.remove('on'); btn.textContent='Go offline';
-      if(state.queued>0){
-        const n = state.queued;
-        toast('Syncing '+n+' queued item'+(n===1?'':'s')+'…');
-        setTimeout(()=>{ state.queued=0; toast('All caught up — synced with WeldCloud Assembly'); render(); }, 900);
-      } else {
-        toast('Facilitator: app is back online');
-      }
-    }
-    render();
-  },
-  jumpToStep7(){
-    const rec = findWeld('W-004');
-    if(!rec) return;
-    const w = rec.weld;
-    const insp = w.inspections.find(i=>i.method==='VT');
-    if(w.records.length===0){
-      const ncrId = 'NCR-2026-'+String(DATA.ncrCounter).padStart(4,'0');
-      const markers = [{n:1,x:38,y:46,code:'2013'},{n:2,x:52,y:58,code:'2013'}];
-      w.records.push({
-        type:'inspection', verdict:'Not acceptable', timestamp:demoTimestamp(),
-        inspector:{...ASSEMBLY.inspector}, method:'VT',
-        reasonCode:'2013', reasonLabel:'Clustered porosity',
-        sizing:{qty:6, width:2.4, length:14, height:0, depth:1.1, angle:0},
-        markers, remarks:'Clustered porosity across root pass, mid-length. See markers.',
-        ncr:ncrId,
-      });
-      insp.indications.push({n:insp.indications.length+1, code:'2013', label:'Clustered porosity',
-        qty:6, width:2.4, length:14, height:0, depth:1.1, angle:0, markers,
-        remarks:'Clustered porosity across root pass, mid-length. See markers.', causedRejection:true});
-      insp.result = 'Failed';
-      w.ncr = ncrId;
-      w.status = 'Not acceptable';
-      w.disposition = 'awaiting QA';
-      w.stage = 'Welding';
-    }
-    w.status = 'Repair — re-test';
-    w.stage = 'Testing';
-    w.readyForRetest = true;
-    insp.result = null;
-    w.session = session(250, 26.4, 28, 1.3, 200); // repaired session, voltage back in range
-    App.home();
-    toast('Facilitator: W-004 repaired by Sven Wik and returned for re-test');
-  },
-  seedDraftReport(){
-    const r = ReportFlow.createNewSilent('VT');
-    ['W-001','W-003'].forEach(id=>{
-      const {weld:w} = findWeld(id);
-      const insp = w.inspections.find(i=>i.method==='VT');
-      if(insp && !insp.reportId) addWeldToReport(r.id, id);
-    });
-    const {weld:w1} = findWeld('W-001');
-    const insp1 = w1.inspections.find(i=>i.method==='VT');
-    insp1.result = 'Acceptable';
-    if(w1.inspections.every(i=>i.result==='Acceptable')){ w1.status='Acceptable'; w1.stage='Finishing'; }
-    state.activeReport = r.id;
-    App.nav('report', {reportId:r.id});
-    toast('Facilitator: seeded draft VT report '+r.id+' with 2 welds');
   },
 };
 
@@ -911,12 +1013,15 @@ function esc(s){ return String(s==null?'':s).replace(/[&<>"']/g, c=>({'&':'&amp;
 const RAIL_ITEMS = [
   {screen:'home', icon:'home', label:'Home'},
   {screen:'assembly', icon:'assembly', label:'Assembly'},
+  {screen:'reports', icon:'reports', label:'NDT reports'},
   {screen:'fleet', icon:'fleet', label:'Fleet'},
   {screen:'wps', icon:'wps', label:'WPS'},
 ];
 
 function render(){
   const {screen, params} = cur();
+  const derivedAssemblyId = deriveAssemblyId(params);
+  if(derivedAssemblyId) state.currentAssemblyId = derivedAssemblyId;
   const root = document.getElementById('screen');
   const screenKey = screen+'|'+JSON.stringify(params);
   const prevContent = document.getElementById('content');
@@ -924,7 +1029,10 @@ function render(){
   const prevScroll = preserveScroll ? prevContent.scrollTop : 0;
   const railHtml = RAIL_ITEMS.map(r=>{
     const active = screen===r.screen;
-    return '<button class="rail-btn'+(active?' active':'')+'" onclick="App.'+(r.screen==='home'?'home':'nav')+(r.screen==='home'?'()':"('"+r.screen+"')")+'">'+ICON[r.icon]+'<span>'+r.label+'</span></button>';
+    const onclick = r.screen==='home' ? 'App.home()'
+      : r.screen==='assembly' ? "App.nav('assembly',{assemblyId:'"+state.currentAssemblyId+"'})"
+      : "App.nav('"+r.screen+"')";
+    return '<button class="rail-btn'+(active?' active':'')+'" onclick="'+onclick+'">'+ICON[r.icon]+'<span>'+r.label+'</span></button>';
   }).join('');
 
   const sc = SCREENS[screen] || SCREENS.home;
@@ -933,15 +1041,17 @@ function render(){
   const footer = sc.footer ? sc.footer(params) : '';
 
   root.innerHTML =
-    '<div class="rail">'+railHtml+'</div>'+
-    '<div class="col">'+
-      topbar+
-      '<div class="content'+(sc.noPadBottom?' no-pad-b':'')+'" id="content">'+
-        (state.offline && state.queued>0 ? '<div class="banner banner-warning">'+ICON.wifiOff.replace('<svg','<svg style="width:18px;height:18px;flex:0 0 auto;"')+'<span>'+state.queued+' inspection'+(state.queued===1?'':'s')+' queued — will sync when connected</span></div>' : '')+
-        body+
+    topbar+
+    '<div class="below-topbar">'+
+      '<div class="rail">'+railHtml+'</div>'+
+      '<div class="col">'+
+        '<div class="content'+(sc.noPadBottom?' no-pad-b':'')+'" id="content">'+
+          (state.offline && state.queued>0 ? '<div class="banner banner-warning">'+ICON.wifiOff.replace('<svg','<svg style="width:18px;height:18px;flex:0 0 auto;"')+'<span>'+state.queued+' inspection'+(state.queued===1?'':'s')+' queued — will sync when connected</span></div>' : '')+
+          body+
+        '</div>'+
+        (footer ? '<div class="footer-bar">'+footer+'</div>' : '')+
+        '<div class="toast-wrap" id="toastHost"></div>'+
       '</div>'+
-      (footer ? '<div class="footer-bar">'+footer+'</div>' : '')+
-      '<div class="toast-wrap" id="toastHost"></div>'+
     '</div>'+
     (state.modal ? renderModal() : '')+
     (state.keypad ? renderKeypad() : '');
@@ -958,14 +1068,16 @@ function render(){
 
 function topbarBase(opts){
   const cls = 'topbar'+(opts.variant?(' '+opts.variant):'');
+  const logoBtn = '<button class="topbar-logo" onclick="window.location.href=\'/\'" aria-label="Back to app launcher" title="WeldCloudLink — back to app launcher">'+ICON.appLogo+'</button>';
   const backBtn = opts.showBack===false ? '' :
     '<button class="back-btn" onclick="App.back()" aria-label="Back">'+ICON.back+'</button>';
   const right = opts.right || '';
   const subHtml = opts.subHtml ? '<div class="sub">'+opts.subHtml+'</div>' : (opts.sub?'<div class="sub">'+esc(opts.sub)+'</div>':'');
   return '<div class="'+cls+'">'+
+    logoBtn+
     backBtn+
     '<div class="grow"><h1>'+esc(opts.title)+'</h1>'+subHtml+'</div>'+
-    '<div class="topbar-right">'+syncPill(opts.variant)+themeToggle(opts.variant)+avatarChip(opts.variant)+right+'</div>'+
+    '<div class="topbar-right">'+syncPill(opts.variant)+themeToggle(opts.variant)+facilitatorToggle()+avatarChip(opts.variant)+right+'</div>'+
   '</div>';
 }
 
@@ -979,11 +1091,16 @@ function syncPill(variant){
 }
 function themeToggle(){
   const root = document.documentElement;
-  const isDark = root.getAttribute('data-theme')==='dark' || (!root.hasAttribute('data-theme') && window.matchMedia('(prefers-color-scheme: dark)').matches);
+  const isDark = root.getAttribute('data-theme')==='dark';
   return '<button class="icon-toggle" onclick="App.toggleTheme()" aria-label="Toggle dark mode">'+(isDark?ICON.sun:ICON.moon)+'</button>';
 }
 function avatarChip(){
-  return '<div class="avatar" title="A. Lindqvist">AL</div>';
+  return '<div class="avatar" title="'+esc(INSPECTOR.name)+'">AL</div>';
+}
+/* demo-only shortcuts for whoever is running the prototype in front of a welder or inspector —
+   not part of the product, see Facilitator (change 12) */
+function facilitatorToggle(){
+  return '<button class="icon-toggle" onclick="Facilitator.open()" aria-label="Facilitator controls" title="Facilitator controls">'+ICON.wrench+'</button>';
 }
 
 /* generic modal renderer: state.modal = {title, body(html), actions(html)} built by callers via html strings */
@@ -1058,8 +1175,9 @@ function weldProgressBadge(w){
 }
 function partSummary(part){
   if(part.blocked){
+    const welder = assemblyFor(part).welder;
     const done = part.welds.filter(w=>w.weldStatus==='Welded').length;
-    return {blocked:true, text: done+' of '+part.welds.length+' welds complete — waiting on '+ASSEMBLY.welder.name+' ('+ASSEMBLY.welder.stamp+')'};
+    return {blocked:true, text: done+' of '+part.welds.length+' welds complete — waiting on '+welder.name+' ('+welder.stamp+')'};
   }
   const total = part.welds.length;
   const acceptable = part.welds.filter(w=>w.status==='Acceptable').length;
@@ -1094,58 +1212,19 @@ function stageBar(welds){
   ).join('');
   return '<div class="stage-track">'+segs+'</div><div class="stage-legend">'+legend+'</div>';
 }
-/* ---- weld sessions vs WPS: one merged card, each session judged on its own ---- */
-function weldSessionsCard(w){
-  if(!w.sessions || !w.sessions.length){
-    return '<div class="card"><div class="section-title">Weld sessions vs WPS</div><div class="muted">No weld sessions recorded for this weld yet.</div></div>';
-  }
-  const rows = w.sessions.map(s=>{
-    const light = sessionTrafficLight(s);
-    const color = light==='red' ? 'var(--error)' : light==='amber' ? 'var(--warning)' : 'var(--success)';
-    return '<div class="list-row" onclick="App.nav(\'weldSession\',{weldId:\''+w.id+'\',sessionId:\''+s.id+'\'})">'+
-      '<span class="dot-ind" style="background:'+color+';width:14px;height:14px;"></span>'+
-      '<div style="flex:1;min-width:0;">'+
-        '<div class="hstack" style="gap:8px;flex-wrap:wrap;">'+
-          '<span style="font-weight:700;font-size:15px;">'+esc(s.pass)+'</span>'+
-          '<span class="muted" style="font-size:12px;">'+WPS.id+'</span>'+
-        '</div>'+
-        '<div class="muted" style="font-size:13px;">'+esc(s.timestamp)+' · '+esc(s.operator)+(s.events.length?' · <span style="color:var(--warning);">1 event</span>':'')+'</div>'+
-      '</div>'+
-      '<div class="muted" style="font-size:13px;text-align:right;margin-right:4px;white-space:nowrap;">'+s.current+' A · '+s.voltage+' V</div>'+
-      '<span class="chevron">'+ICON.chevron+'</span>'+
-    '</div>';
-  }).join('');
-  return '<div class="card">'+
-    '<div class="hstack" style="justify-content:space-between;">'+
-      '<div class="section-title" style="margin:0;">Weld sessions vs WPS ('+w.sessions.length+')</div>'+
-      '<button class="btn btn-ghost" style="min-height:34px;padding:0 10px;font-size:12px;" onclick="App.nav(\'wps\')">View WPS '+ICON.chevron.replace('<svg','<svg style="width:14px;height:14px;"')+'</button>'+
-    '</div>'+
-    '<div class="muted" style="font-size:12px;margin:6px 0 12px;">Each session is judged individually against '+WPS.id+' — sessions are never averaged together.</div>'+
-    '<div class="stack" style="gap:10px;">'+rows+'</div>'+
-  '</div>';
-}
-
-/* ---- active report: topbar pills present across the whole inspection section ---- */
+/* ---- reports: no more active-report pills in the topbar (change 9) — a weld row always
+   knows its own report from the screen it's rendered on, so nothing needs to be resolved ---- */
 function draftReportsList(){ return Object.values(DATA.reports).filter(r=>r.status==='draft'); }
 function addWeldToReport(reportId, weldId){
   const report = DATA.reports[reportId];
-  const {weld:w} = findWeld(weldId);
-  if(!report || !w) return;
+  const found = findWeld(weldId);
+  if(!report || !found) return;
+  const {weld:w, part} = found;
+  if(report.assemblyId!==part.assemblyId) return; // a report never spans two assemblies
   const insp = w.inspections.find(i=>i.method===report.method);
   if(!insp || insp.reportId) return;
   insp.reportId = reportId;
   if(report.welds.indexOf(weldId)===-1) report.welds.push(weldId);
-}
-function reportPillsHtml(){
-  const drafts = draftReportsList();
-  const pills = drafts.map(r=>{
-    const active = r.id===state.activeReport;
-    return '<div class="pill" style="cursor:pointer;'+(active?'background:var(--warning);color:#221a02;':'')+'" onclick="ReportFlow.openReport(\''+r.id+'\')">'+r.method+' · '+r.id+' · '+r.welds.length+' weld'+(r.welds.length===1?'':'s')+'</div>';
-  }).join('');
-  return pills+'<button class="icon-toggle" style="width:auto;padding:0 12px;gap:6px;" onclick="ReportFlow.promptNew()">'+ICON.plus.replace('<svg','<svg style="width:15px;height:15px;"')+'<span style="font-size:12px;font-weight:500;">New report</span></button>';
-}
-function topbarWithReports(opts){
-  return topbarBase(Object.assign({}, opts, {right:(opts.right||'')+reportPillsHtml()}));
 }
 
 /* ---- "Weld N of M · P-01", and jumping straight to the next weld on the part ---- */
@@ -1186,61 +1265,137 @@ const SCREENS = {};
 
 SCREENS.home = {
   topbar(){
-    return topbarWithReports({title:'WeldCloud Inspect', sub:ASSEMBLY.site, showBack:false, variant:'neutral'});
+    return topbarBase({title:'WeldCloud Inspect', sub:ASSEMBLIES[state.currentAssemblyId].site, showBack:false, variant:'neutral'});
   },
   render(){
+    const groups = Object.values(ASSEMBLIES).map(asm=>{
+      const parts = DATA.parts.filter(p=>p.assemblyId===asm.id && p.assigned);
+      return assemblyGroupHtml(asm, parts);
+    }).join('');
     return '<div class="stack">'+
-      '<div class="card tap" style="display:flex;align-items:center;gap:16px;background:var(--surface-card);" onclick="App.nav(\'qrScan\')">'+
-        '<div style="width:52px;height:52px;border-radius:14px;background:var(--surface-sunken);display:flex;align-items:center;justify-content:center;color:var(--assembly-solid);flex:0 0 auto;">'+ICON.qr.replace('<svg','<svg style="width:26px;height:26px;"')+'</div>'+
-        '<div style="flex:1;"><div style="font-weight:700;font-size:16px;">Scan part QR</div><div class="muted" style="font-size:13px;">Jump straight to a part by scanning its printed code</div></div>'+
-        '<span class="chevron">'+ICON.chevron+'</span>'+
-      '</div>'+
-      '<div class="section-title" style="margin-top:6px;">Today\'s assigned work</div>'+
+      '<div class="section-title">Find work yourself</div>'+
       '<div class="grid2">'+
-        DATA.parts.map(part=>partCardHtml(part, partSummary(part))).join('')+
+        '<div class="card tap" style="display:flex;align-items:center;gap:16px;background:var(--surface-card);" onclick="App.nav(\'qrScan\',{mode:\'selfDirected\'})">'+
+          '<div style="width:52px;height:52px;border-radius:14px;background:var(--surface-sunken);display:flex;align-items:center;justify-content:center;color:var(--accent-text);flex:0 0 auto;">'+ICON.qr.replace('<svg','<svg style="width:26px;height:26px;"')+'</div>'+
+          '<div style="flex:1;"><div style="font-weight:700;font-size:16px;">Scan part QR</div><div class="muted" style="font-size:13px;">Jump straight to a part by scanning its printed code — assigned or not</div></div>'+
+          '<span class="chevron">'+ICON.chevron+'</span>'+
+        '</div>'+
+        '<div class="card tap" style="display:flex;align-items:center;gap:16px;background:var(--surface-card);" onclick="App.nav(\'assemblies\')">'+
+          '<div style="width:52px;height:52px;border-radius:14px;background:var(--surface-sunken);display:flex;align-items:center;justify-content:center;color:var(--accent-text);flex:0 0 auto;">'+ICON.doc.replace('<svg','<svg style="width:24px;height:24px;"')+'</div>'+
+          '<div style="flex:1;"><div style="font-weight:700;font-size:16px;">Assemblies</div><div class="muted" style="font-size:13px;">Every assembly, part and weld at your sites</div></div>'+
+          '<span class="chevron">'+ICON.chevron+'</span>'+
+        '</div>'+
       '</div>'+
+      groups+
     '</div>';
   },
 };
+/* when every open part in the group already has a prepared report (or is already done),
+   there's nothing left for "New report" to do here — so it steps back visually rather
+   than competing with the parts that actually need the inspector's attention */
+function assemblyAllPartsPrepared(parts){
+  const eligible = parts.filter(p=>!p.blocked);
+  if(!eligible.length) return false;
+  return eligible.every(p=>partSummary(p).complete || !!findPreparedReportForPart(p));
+}
+function assemblyGroupHtml(asm, parts){
+  const allPrepared = assemblyAllPartsPrepared(parts);
+  return '<div style="margin-top:8px;">'+
+    '<div class="hstack" style="justify-content:space-between;align-items:flex-end;flex-wrap:wrap;gap:10px;">'+
+      '<div><div class="section-title" style="margin-bottom:2px;">'+esc(asm.name)+'</div><div class="muted" style="font-size:13px;">'+asm.id+' · '+esc(asm.client)+'</div></div>'+
+      '<button class="btn btn-outline" onclick="App.nav(\'qrScan\',{mode:\'traceability\',assemblyId:\''+asm.id+'\'})">'+ICON.qr.replace('<svg','<svg style="width:16px;height:16px;"')+' Scan to confirm</button>'+
+    '</div>'+
+    (allPrepared ? '<div class="muted" style="font-size:13px;margin-top:6px;">Reports already prepared by engineering — just work through the welds.</div>' : '')+
+    '<div class="grid2" style="margin-top:10px;">'+
+      (parts.length ? parts.map(part=>partCardHtml(part, partSummary(part))).join('') : '<div class="muted" style="padding:8px 2px;">No parts assigned to you yet on this assembly.</div>')+
+    '</div>'+
+  '</div>';
+}
+/* a part with a still-draft report already scoped to it means engineering prepared the
+   report ahead of time — the inspector's path is straight into that report, not the part screen */
+function findPreparedReportForPart(part){
+  return Object.values(DATA.reports).find(r=>r.status==='draft' && r.scopePartId===part.id) || null;
+}
+/* every report that carries at least one inspection from this part — a part's welds can land
+   on more than one report (different methods, or a report shared with another part) */
+function reportsForPart(part){
+  const ids = [];
+  part.welds.forEach(w=>(w.inspections||[]).forEach(i=>{ if(i.reportId && ids.indexOf(i.reportId)===-1) ids.push(i.reportId); }));
+  return ids.map(id=>DATA.reports[id]).filter(Boolean);
+}
+/* "4 of 6 inspections recorded" — every inspection on every weld on the part, whether or not
+   it's on a report yet, counted against how many already carry a result */
+function partInspectionProgress(part){
+  let total=0, recorded=0;
+  part.welds.forEach(w=>(w.inspections||[]).forEach(i=>{ total++; if(i.result!=null) recorded++; }));
+  return {total, recorded};
+}
 function partCardHtml(part, sum){
   const disabledNote = part.blocked ? '<div class="muted" style="font-size:13px;margin-top:8px;">Open to view — inspection unavailable until welding is complete.</div>' : '';
-  return '<div class="card tap" onclick="App.nav(\'part\',{partId:\''+part.id+'\'})">'+
+  const reports = part.blocked ? [] : reportsForPart(part);
+  const onclick = (reports.length===1) ? "ReportFlow.openReport('"+reports[0].id+"')" : "App.nav('part',{partId:'"+part.id+"'})";
+  const statusBadge = part.blocked ? '<span class="badge badge-muted">Blocked</span>'
+    : sum.complete ? '<span class="badge badge-success">Done</span>'
+    : '<span class="badge badge-info">In progress</span>';
+  const prog = partInspectionProgress(part);
+  const pct = prog.total ? Math.round(prog.recorded/prog.total*100) : 0;
+  const progressHtml = (!part.blocked && prog.total) ? '<div style="margin-top:10px;">'+
+      '<div class="hstack" style="justify-content:space-between;font-size:12px;color:var(--text-muted);margin-bottom:4px;">'+
+        '<span>'+prog.recorded+' of '+prog.total+' inspections recorded</span><span>'+pct+'%</span>'+
+      '</div>'+
+      '<div style="height:8px;border-radius:4px;background:var(--surface-sunken);overflow:hidden;"><div style="height:100%;width:'+pct+'%;background:var(--success);"></div></div>'+
+    '</div>' : '';
+  // resuming a started draft is the whole point of this chip row — a part with an unfinished
+  // draft reads as clearly resumable, not just "in progress"
+  const reportChips = reports.length ? '<div class="hstack" style="gap:6px;flex-wrap:wrap;margin-top:10px;">'+
+      reports.map(r=>'<span class="chip" style="cursor:pointer;'+(r.status==='draft'?'border-color:var(--accent-text);color:var(--accent-text);':'')+'" onclick="event.stopPropagation();ReportFlow.openReport(\''+r.id+'\')">'+r.method+' · '+r.id+' · '+r.status+'</span>').join('')+
+    '</div>' : '';
+  return '<div class="card tap" onclick="'+onclick+'">'+
     '<div class="hstack" style="justify-content:space-between;">'+
       '<div style="font-weight:700;font-size:17px;">'+part.id+' · '+part.name+'</div>'+
-      (part.blocked ? '<span class="badge badge-muted">Blocked</span>' : (sum.complete ? '<span class="badge badge-success">Complete</span>' : '<span class="badge badge-info">In progress</span>'))+
+      statusBadge+
     '</div>'+
     '<div class="muted" style="font-size:14px;margin-top:6px;">'+part.welds.length+' welds</div>'+
-    '<div style="margin-top:10px;font-size:14px;color:var(--text);">'+esc(sum.text)+'</div>'+
+    progressHtml+
+    reportChips+
     (sum.repair ? '<div class="badge badge-warning" style="margin-top:10px;">'+sum.repair+' returned for repair — part cannot complete</div>' : '')+
     disabledNote+
   '</div>';
 }
 
 SCREENS.assembly = {
-  topbar(){
-    return topbarWithReports({title:'Assembly overview', sub:ASSEMBLY.id, variant:'assembly'});
+  topbar(params){
+    const asm = ASSEMBLIES[params.assemblyId] || ASSEMBLIES[state.currentAssemblyId];
+    return topbarBase({title:asm.name, sub:asm.id, variant:'assembly'});
   },
-  render(){
+  render(params){
+    const asm = ASSEMBLIES[params.assemblyId] || ASSEMBLIES[state.currentAssemblyId];
+    const parts = DATA.parts.filter(p=>p.assemblyId===asm.id && !p.assembliesOnly);
     return '<div class="stack">'+
       '<div class="card">'+
         '<div class="hstack" style="justify-content:space-between;flex-wrap:wrap;">'+
-          '<div><div style="font-weight:700;font-size:18px;">'+ASSEMBLY.name+'</div><div class="muted">'+ASSEMBLY.id+'</div></div>'+
-          '<div class="chip">'+ASSEMBLY.site+'</div>'+
+          '<div><div style="font-weight:700;font-size:18px;">'+esc(asm.name)+'</div><div class="muted">'+asm.id+'</div></div>'+
+          '<div class="chip">'+esc(asm.site)+'</div>'+
         '</div>'+
         '<div class="divider"></div>'+
         '<div class="grid2">'+
-          '<div><div class="label-sm">Client</div><div class="val-lg">'+ASSEMBLY.client+'</div></div>'+
+          '<div><div class="label-sm">Client</div><div class="val-lg">'+esc(asm.client)+'</div></div>'+
           '<div><div class="label-sm">WPS</div><div class="val-lg">'+WPS.id+'</div></div>'+
-          '<div><div class="label-sm">Inspector</div><div class="val-lg">'+ASSEMBLY.inspector.name+'</div><div class="muted" style="font-size:13px;">VT Level '+ASSEMBLY.inspector.level+' · '+ASSEMBLY.inspector.cert+'</div></div>'+
-          '<div><div class="label-sm">Welder</div><div class="val-lg">'+ASSEMBLY.welder.name+' · '+ASSEMBLY.welder.stamp+'</div><div class="muted" style="font-size:13px;">Qualified to '+ASSEMBLY.welder.validTo+'</div></div>'+
+          '<div><div class="label-sm">Inspector</div><div class="val-lg">'+esc(INSPECTOR.name)+'</div><div class="muted" style="font-size:13px;">VT Level '+INSPECTOR.level+' · '+INSPECTOR.cert+'</div></div>'+
+          '<div><div class="label-sm">Welder</div><div class="val-lg">'+esc(asm.welder.name)+' · '+asm.welder.stamp+'</div><div class="muted" style="font-size:13px;">Qualified to '+asm.welder.validTo+'</div></div>'+
         '</div>'+
       '</div>'+
-      '<div class="section-title">Parts</div>'+
-      DATA.parts.map(part=>{
+      '<div class="hstack" style="justify-content:space-between;">'+
+        '<div class="section-title" style="margin:0;">Parts</div>'+
+        '<button class="btn btn-outline" style="min-height:38px;" onclick="App.nav(\'qrScan\',{mode:\'traceability\',assemblyId:\''+asm.id+'\'})">'+ICON.qr.replace('<svg','<svg style="width:15px;height:15px;"')+' Scan to confirm part</button>'+
+      '</div>'+
+      parts.map(part=>{
         const sum = partSummary(part);
-        return '<div class="card tap" onclick="App.nav(\'part\',{partId:\''+part.id+'\'})">'+
+        const prepared = (!part.blocked && !sum.complete) ? findPreparedReportForPart(part) : null;
+        const onclick = prepared ? "ReportFlow.openReport('"+prepared.id+"')" : "App.nav('part',{partId:'"+part.id+"'})";
+        return '<div class="card tap" onclick="'+onclick+'">'+
           '<div class="hstack" style="justify-content:space-between;">'+
-            '<div style="font-weight:700;font-size:16px;">'+part.id+' · '+part.name+'</div>'+
+            '<div style="font-weight:700;font-size:16px;">'+part.id+' · '+part.name+(part.assigned?'':' <span class="badge badge-info" style="margin-left:6px;">Unassigned</span>')+(prepared?' <span class="badge badge-purple" style="margin-left:6px;">On '+prepared.id+'</span>':'')+'</div>'+
             '<div class="muted">'+part.welds.length+' welds</div>'+
           '</div>'+
           '<div style="margin-top:12px;">'+stageBar(part.welds)+'</div>'+
@@ -1250,35 +1405,63 @@ SCREENS.assembly = {
   },
 };
 
-function assignPillsHtml(w){
-  if(!w.inspections || !w.inspections.length) return '';
-  const active = state.activeReport ? DATA.reports[state.activeReport] : null;
-  return w.inspections.filter(insp=>!insp.reportId).map(insp=>{
-    const disabled = active && active.method!==insp.method;
-    return '<button class="btn btn-outline" style="min-height:32px;padding:0 10px;font-size:12px;'+(disabled?'opacity:.4;pointer-events:none;':'')+'" onclick="event.stopPropagation();PartActions.assignPill(\''+w.id+'\',\''+insp.method+'\')">+ '+insp.method+'</button>';
-  }).join(' ');
+/* ---- weld selection on the part screen: feeds "Add to report" directly, no +VT/+PT pills ---- */
+function getPartSelection(partId){
+  if(!state.partSelection || state.partSelection.partId!==partId){
+    state.partSelection = {partId, ids:new Set()};
+  }
+  return state.partSelection.ids;
 }
 const PartActions = {
-  assignPill(weldId, method){
-    const {weld:w} = findWeld(weldId);
-    const insp = w.inspections.find(i=>i.method===method);
-    if(!insp || insp.reportId) return;
-    let rid = state.activeReport;
-    const active = rid ? DATA.reports[rid] : null;
-    if(!active || active.method!==method || active.status!=='draft'){
-      rid = ReportFlow.createNewSilent(method).id;
-    }
-    addWeldToReport(rid, weldId);
-    state.activeReport = rid;
-    queueOrToast(weldId+' '+method+' added to '+rid);
+  toggleWeldSelect(partId, weldId){
+    const ids = getPartSelection(partId);
+    if(ids.has(weldId)) ids.delete(weldId); else ids.add(weldId);
     render();
   },
+  toggleSelectAll(partId){
+    const part = findPart(partId);
+    const ids = getPartSelection(partId);
+    if(ids.size===part.welds.length) ids.clear();
+    else part.welds.forEach(w=>ids.add(w.id));
+    render();
+  },
+  addToReportFromPart(partId){
+    const part = findPart(partId);
+    const ids = Array.from(getPartSelection(partId));
+    if(ids.length===0){ toast('Select at least one weld first'); return; }
+    AddToReport.open({assemblyId:part.assemblyId, partId, weldIds:ids});
+  },
 };
+function partSelectionBarHtml(part){
+  const ids = getPartSelection(part.id);
+  const total = part.welds.length;
+  const allSelected = total>0 && ids.size===total;
+  return '<div class="hstack" style="justify-content:space-between;padding:2px 4px 8px;">'+
+    '<label class="hstack" style="gap:10px;cursor:pointer;">'+
+      '<input type="checkbox" class="weld-check" '+(allSelected?'checked':'')+' onclick="PartActions.toggleSelectAll(\''+part.id+'\')"/>'+
+      '<span style="font-weight:500;font-size:14px;">Select all</span>'+
+    '</label>'+
+    '<span class="muted" style="font-size:13px;">'+ids.size+' of '+total+' selected</span>'+
+  '</div>';
+}
+function partWeldRowHtml(part, w){
+  const meta = w.type+' · '+w.process+' · '+w.position;
+  const reqText = (w.inspections||[]).map(i=>i.method).join(' + ') || '—';
+  const badge = part.blocked ? weldProgressBadge(w) : weldStatusBadge(w);
+  const selected = !part.blocked && getPartSelection(part.id).has(w.id);
+  return '<div class="list-row" onclick="App.nav(\'weld\',{weldId:\''+w.id+'\'})">'+
+    (part.blocked ? '' : '<input type="checkbox" class="weld-check" '+(selected?'checked':'')+' onclick="event.stopPropagation();PartActions.toggleWeldSelect(\''+part.id+'\',\''+w.id+'\')" aria-label="Select '+w.id+'"/>')+
+    '<div class="weld-id">'+w.id+'</div>'+
+    '<div class="row-meta"><div>'+meta+'</div><div class="top"><span class="chip" style="pointer-events:none;">Requires '+esc(reqText)+'</span></div></div>'+
+    '<div class="stack" style="gap:6px;align-items:flex-end;">'+badge+'</div>'+
+    '<span class="chevron">'+ICON.chevron+'</span>'+
+  '</div>';
+}
 
 SCREENS.part = {
   topbar(params){
     const part = findPart(params.partId);
-    return topbarWithReports({title:part.id+' · '+part.name, sub:ASSEMBLY.client+' — '+ASSEMBLY.site, variant:'assembly'});
+    return topbarBase({title:part.id+' · '+part.name, subHtml:weldBreadcrumbHtml(part), variant:'assembly'});
   },
   render(params){
     const part = findPart(params.partId);
@@ -1286,182 +1469,167 @@ SCREENS.part = {
     let banner = '';
     if(part.blocked) banner = '<div class="banner banner-info">'+ICON.alert.replace('<svg','<svg style="width:18px;height:18px;flex:0 0 auto;"')+'<span>'+esc(sum.text)+'. You can open a weld to look, but inspection is unavailable until welding is complete.</span></div>';
     else if(sum.repair) banner = '<div class="banner banner-warning">'+ICON.alert.replace('<svg','<svg style="width:18px;height:18px;flex:0 0 auto;"')+'<span>'+sum.repair+' weld returned for repair — this part cannot complete until it is re-tested and accepted.</span></div>';
-    const rows = part.welds.map(w=>{
-      const meta = w.type+' · '+w.process+' · '+w.position;
-      const inspLine = (w.inspections||[]).map(i=>i.method+(i.assignedTo?'':' · unassigned')).join(' + ');
-      const badge = part.blocked ? weldProgressBadge(w) : weldStatusBadge(w);
-      return '<div class="list-row" onclick="App.nav(\'weld\',{weldId:\''+w.id+'\'})">'+
-        '<div class="weld-id">'+w.id+'</div>'+
-        '<div class="row-meta"><div>'+meta+'</div><div class="top">'+esc(inspLine)+'</div></div>'+
-        (part.blocked ? '' : '<div class="hstack" style="gap:6px;flex-wrap:wrap;justify-content:flex-end;max-width:150px;">'+assignPillsHtml(w)+'</div>')+
-        '<div class="stack" style="gap:6px;align-items:flex-end;">'+badge+'</div>'+
-        '<span class="chevron">'+ICON.chevron+'</span>'+
-      '</div>';
-    }).join('');
-    return banner + '<div class="stack" style="gap:10px;">'+rows+'</div>';
+    const selectionBar = part.blocked ? '' : partSelectionBarHtml(part);
+    const rows = part.welds.map(w=>partWeldRowHtml(part, w)).join('');
+    return banner + selectionBar + '<div class="stack" style="gap:10px;">'+rows+'</div>';
+  },
+  footer(params){
+    const part = findPart(params.partId);
+    if(part.blocked) return '<span class="hint">Inspection unavailable — weld not yet complete.</span>';
+    const n = getPartSelection(part.id).size;
+    return '<span class="hint">'+(n===0?'Select welds to add to a report.':n+' weld'+(n===1?'':'s')+' selected')+'</span>'+
+      '<button class="btn btn-primary btn-lg" '+(n===0?'disabled':'')+' onclick="PartActions.addToReportFromPart(\''+part.id+'\')">Add to report</button>';
   },
 };
 </script>
 <script>
-/* ============================= WELD DETAIL ============================= */
+/* ============================= WELD DETAIL — reference view (change 6) ============================= */
+/* The weld screen no longer records a verdict — that moved onto the report's weld row
+   (change 5). This screen exists so an inspector can understand the weld before, or instead
+   of, recording anything: progress, identity, traceability, geometry, who welded it, and the
+   weld sessions vs WPS. Modelled on Assembly's weld page, simplified for a tablet. */
 function queueOrToast(msg){
   if(state.offline){ state.queued++; toast(msg+' — queued, will sync when connected'); }
   else toast(msg);
 }
 
-/* Resolves which report an accept/reject on weldId/method should write into.
-   Returns a reportId if one is already known (on the inspection, or the active
-   report matches by method); returns null when the caller must ask the inspector. */
-function resolveReportFor(weldId, method){
-  const {weld:w} = findWeld(weldId);
-  const insp = w.inspections.find(i=>i.method===method);
-  if(insp.reportId) return insp.reportId;
-  const active = state.activeReport ? DATA.reports[state.activeReport] : null;
-  if(active && active.method===method && active.status==='draft'){
-    addWeldToReport(active.id, weldId);
-    return active.id;
-  }
-  return null;
-}
-function showReportChooserModal(weldId, method, kind){
-  const drafts = draftReportsList().filter(r=>r.method===method);
-  const list = drafts.map(r=>
-    '<div class="reason-row" onclick="WeldActions.resolveReportChoice(\''+kind+'\',\''+weldId+'\',\''+method+'\',\''+r.id+'\')">'+
-      '<div style="flex:1;"><div style="font-weight:600;">'+r.id+'</div><div class="muted" style="font-size:13px;">'+r.welds.length+' weld'+(r.welds.length===1?'':'s')+' on this draft</div></div>'+
-    '</div>'
-  ).join('');
-  Modal.open(
-    '<h2>Not yet on a report</h2>'+
-    '<p class="muted">This '+method+' inspection is not yet on a report. Create a new '+method+' report, or add it to an existing draft?</p>'+
-    '<div class="reason-row" style="border-color:var(--assembly-solid);" onclick="WeldActions.resolveReportChoice(\''+kind+'\',\''+weldId+'\',\''+method+'\',\'__new__\')">'+
-      '<div style="flex:1;font-weight:600;color:var(--assembly-solid);">+ New '+method+' report</div>'+
-    '</div>'+
-    list+
-    '<div class="modal-actions"><button class="btn btn-outline" onclick="Modal.close()">Cancel</button></div>'
-  );
+const WELD_STAGE_LABEL = {Waiting:'Started', Fitting:'Fitting', Welding:'Welding', 'PWHT Completing':'PWHT Completing', Testing:'Testing', Finishing:'Finishing', Shipping:'Shipping'};
+function weldStepperHtml(w){
+  const seq = STAGES.filter(s=> s!=='PWHT Completing' || w.pwhtRequired);
+  const currentIdx = Math.max(0, seq.indexOf(w.stage||'Waiting'));
+  const steps = seq.map((s,i)=>{
+    const st = i<currentIdx ? 'done' : i===currentIdx ? 'active' : 'todo';
+    const color = st==='todo' ? 'var(--border-strong)' : STAGE_COLOR[s];
+    return '<div style="flex:1;text-align:center;min-width:0;">'+
+      '<div style="height:6px;border-radius:3px;background:'+color+';margin-bottom:6px;"></div>'+
+      '<div style="font-size:10px;font-weight:'+(st==='active'?'700':'500')+';text-transform:uppercase;letter-spacing:.03em;color:'+(st==='todo'?'var(--text-muted)':'var(--text)')+';">'+WELD_STAGE_LABEL[s]+'</div>'+
+    '</div>';
+  }).join('');
+  return '<div class="card"><div class="hstack" style="gap:6px;align-items:flex-start;">'+steps+'</div></div>';
 }
 
-const WeldActions = {
-  openAccept(weldId, method){
-    const {weld:w} = findWeld(weldId);
-    const insp = w.inspections.find(i=>i.method===method);
-    const ts = demoTimestamp();
-    const cert = inspectorCertFor(method);
-    Modal.open(
-      '<h2>Confirm acceptance</h2>'+
-      '<p class="muted" style="margin:0 0 14px;">'+weldId+' — '+method+' — '+METHOD_INFO[method].name+'</p>'+
-      '<div class="card" style="background:var(--surface-sunken);">'+
-        '<div class="grid2">'+
-          '<div><div class="label-sm">Inspector</div><div class="val-lg">'+ASSEMBLY.inspector.name+'</div></div>'+
-          '<div><div class="label-sm">Qualification</div><div class="val-lg">'+method+' Level '+ASSEMBLY.inspector.level+'</div></div>'+
-          '<div><div class="label-sm">Certificate</div><div class="val-lg">'+(cert||'—')+'</div></div>'+
-          '<div><div class="label-sm">Timestamp</div><div class="val-lg">'+ts+'</div></div>'+
+/* plausible, derived per-weld detail fields — this prototype has no real drawing/traceability
+   database behind it, so these are computed deterministically from the weld itself */
+const WELD_TYPE_LABEL = {BW:'GW - Groove Weld', FW:'FW - Fillet Weld'};
+const PROCESS_LABEL = {'135':'135 – MAG solid wire (GMAW)', '136':'136 – MAG flux cored (FCAW)'};
+const PROCESS_FILLER = {'135':'OK Aristorod 12.50 Ø1.2 mm', '136':'OK Tubrod 14.03 Ø1.2 mm'};
+const FITTERS = {'ASM-2026-0412':{name:'Marcus Iversen', stamp:'MI2'}, 'ASM-2026-0455':{name:'Elin Torres', stamp:'ET7'}};
+const TACK_WELDERS = {'ASM-2026-0412':{name:'Otto Berg', stamp:'OB5'}, 'ASM-2026-0455':{name:'Priya Nandy', stamp:'PN3'}};
+function weldDetailInfo(part, w){
+  const idx = part.welds.findIndex(x=>x.id===w.id);
+  return {
+    partNumber: w.id.replace('W-','WP-'),
+    weldType: WELD_TYPE_LABEL[w.type] || w.type,
+    baseMaterial1: WPS.material,
+    baseMaterial2: WPS.material,
+    length: (180+idx*15)+' mm',
+    isoDrawing: 'ISO-DRW-'+part.id+' Rev.2',
+    wpsWithRevision: WPS.id+' (Rev. 0)',
+  };
+}
+function weldTraceabilityHtml(part, w){
+  const idx = part.welds.findIndex(x=>x.id===w.id);
+  const emptyOr = v=> (v==null||v==='') ? '<span class="muted">—</span>' : esc(v);
+  const rows = [
+    ['Base material heat number', 'H'+(70000+idx*37)],
+    ['PWHT', w.pwhtRequired ? 'Completed — 620 °C / 60 min' : null],
+    ['Filler metal lot number · '+(PROCESS_LABEL[w.process]||w.process), 'FL-'+(2400+idx*3)],
+    ['Flux lot number', null], // no SAW process on this weld — Assembly renders "—" the same way
+  ];
+  return '<div class="card collapsible">'+
+    '<div class="head'+(w.detailSectionsOpen.traceability?'':' closed')+'" onclick="WeldDetail.toggleSection(\''+w.id+'\',\'traceability\')"><h3>Traceability</h3>'+ICON.chevronDown+'</div>'+
+    (w.detailSectionsOpen.traceability ? '<div class="body">'+
+      rows.map(([label,val])=>'<div class="param-row"><div class="param-name">'+label+'</div><div>'+emptyOr(val)+'</div></div>').join('')+
+    '</div>' : '')+
+  '</div>';
+}
+function grooveDesignHtml(w){
+  return '<div class="card collapsible">'+
+    '<div class="head'+(w.detailSectionsOpen.groove?'':' closed')+'" onclick="WeldDetail.toggleSection(\''+w.id+'\',\'groove\')"><h3>Groove design &amp; weld layers</h3>'+ICON.chevronDown+'</div>'+
+    (w.detailSectionsOpen.groove ? '<div class="body"><div class="grid2">'+
+      ['Groove design','Weld layer configuration'].map(label=>
+        '<div style="text-align:center;padding:28px 12px;border:1.5px dashed var(--border-strong);border-radius:12px;">'+
+          '<div style="color:var(--text-muted);margin-bottom:8px;">'+ICON.noValue.replace('<svg','<svg style="width:22px;height:22px;"')+'</div>'+
+          '<div class="muted" style="font-size:13px;">'+label+' — no data to display</div>'+
+        '</div>'
+      ).join('')+
+    '</div></div>' : '')+
+  '</div>';
+}
+function whoDidTheWorkHtml(part, w){
+  const asm = assemblyFor(part);
+  const idx = part.welds.findIndex(x=>x.id===w.id);
+  const date = '2026-09-0'+((idx%6)+1);
+  const fitter = FITTERS[asm.id], tack = TACK_WELDERS[asm.id];
+  const rows = [
+    ['Fitter', fitter.name+' ('+fitter.stamp+')'],
+    ['Tack welder', tack.name+' ('+tack.stamp+')'],
+    [(PROCESS_LABEL[w.process]||w.process), asm.welder.name+' ('+asm.welder.stamp+') · '+date],
+  ];
+  return '<div class="card"><div class="section-title">Who did the work</div>'+
+    rows.map(([label,val])=>'<div class="param-row"><div class="param-name">'+esc(label)+'</div><div>'+esc(val)+'</div></div>').join('')+
+  '</div>';
+}
+
+/* ---- weld sessions vs WPS: filterable, with the traffic-light legend on screen ---- */
+function weldSessionsSectionHtml(w){
+  const all = w.sessions||[];
+  if(!all.length){
+    return '<div class="card"><div class="section-title">Weld sessions</div><div class="muted">No weld sessions recorded for this weld yet.</div></div>';
+  }
+  const f = state.weldSessionFilters;
+  const paramOptions = Array.from(new Set(all.map(s=>s.wpsParamId)));
+  const filtered = all.filter(s=>{
+    if(f.excludeTack && s.tack) return false;
+    if(f.quality!=='all' && sessionTrafficLight(s)!==f.quality) return false;
+    if(f.wpsParam!=='all' && s.wpsParamId!==f.wpsParam) return false;
+    return true;
+  });
+  const legend = ['red','amber','green','grey','teal'].map(k=>
+    '<div class="item"><span class="sw" style="background:'+TRAFFIC_LIGHT_COLOR[k]+';border-radius:50%;"></span>'+esc(TRAFFIC_LIGHT_LABEL[k])+'</div>'
+  ).join('');
+  const qualityChips = ['all','red','amber','green','grey','teal'].map(k=>
+    '<button class="filter-chip'+(f.quality===k?' on':'')+'" onclick="WeldDetail.setSessionFilter(\'quality\',\''+k+'\')">'+(k==='all'?'All qualities':k.charAt(0).toUpperCase()+k.slice(1))+'</button>'
+  ).join('');
+  const paramChips = ['all'].concat(paramOptions).map(k=>
+    '<button class="filter-chip'+(f.wpsParam===k?' on':'')+'" onclick="WeldDetail.setSessionFilter(\'wpsParam\','+esc(JSON.stringify(k))+')">'+(k==='all'?'All parameter IDs':esc(k))+'</button>'
+  ).join('');
+  const rows = filtered.map(s=>{
+    const light = sessionTrafficLight(s);
+    return '<div class="list-row" onclick="App.nav(\'weldSession\',{weldId:\''+w.id+'\',sessionId:\''+s.id+'\'})">'+
+      '<span class="dot-ind" style="background:'+TRAFFIC_LIGHT_COLOR[light]+';width:14px;height:14px;"></span>'+
+      '<div style="flex:1;min-width:0;">'+
+        '<div class="hstack" style="gap:8px;flex-wrap:wrap;">'+
+          '<span style="font-weight:700;font-size:15px;">'+esc(s.pass)+'</span>'+
+          '<span class="muted" style="font-size:12px;">'+esc(s.wpsParamId)+'</span>'+
         '</div>'+
+        '<div class="muted" style="font-size:13px;">'+esc(s.timestamp)+' · '+esc(s.operator)+((s.events&&s.events.length)?' · <span style="color:var(--warning);">1 event</span>':'')+'</div>'+
       '</div>'+
-      '<p style="font-size:13px;color:var(--text-muted);margin-top:12px;">This context — your name, ISO 9712 level and certificate number — travels with the result. Verdict: <strong style="color:var(--text)">Acceptable</strong>. The report is signed once, when it\'s complete.</p>'+
-      '<div class="modal-actions"><button class="btn btn-outline" onclick="Modal.close()">Cancel</button><button class="btn btn-success" onclick="WeldActions.confirmAccept(\''+weldId+'\',\''+method+'\')">Confirm — Acceptable</button></div>'
-    );
-  },
-  confirmAccept(weldId, method){
-    const {weld:w} = findWeld(weldId);
-    if(w.readyForRetest){
-      const ts = demoTimestamp();
-      const rec = {type:'retest', verdict:'Acceptable', timestamp:ts, inspector:{...ASSEMBLY.inspector}, method,
-        refersTo:w.records[w.records.length-1], closesNcr:w.ncr};
-      w.records.push(rec);
-      w.ncrClosed = true;
-      w.status = 'Acceptable';
-      w.stage = 'Finishing';
-      w.readyForRetest = false;
-      const insp = w.inspections.find(i=>i.method===method);
-      insp.result = 'Acceptable';
-      Modal.close();
-      queueOrToast('NCR '+w.ncr+' closed — '+weldId+' accepted on re-test');
-      App.back();
-      return;
-    }
-    const rid = resolveReportFor(weldId, method);
-    if(rid==null){ Modal.close(); showReportChooserModal(weldId, method, 'accept'); return; }
-    WeldActions.finalizeResult(weldId, method, rid);
-  },
-  finalizeResult(weldId, method, reportId){
-    const {weld:w} = findWeld(weldId);
-    const insp = w.inspections.find(i=>i.method===method);
-    insp.result = 'Acceptable';
-    addWeldToReport(reportId, weldId);
-    state.activeReport = reportId;
-    if(w.inspections.every(i=>i.result==='Acceptable')){ w.status = 'Acceptable'; w.stage = 'Finishing'; }
-    else w.status = 'Pending';
-    Modal.close();
-    queueOrToast(weldId+' '+method+' recorded — Acceptable · '+reportId);
-    App.back();
-  },
-  claimInspection(weldId, method){
-    const {weld:w} = findWeld(weldId);
-    const insp = w.inspections.find(i=>i.method===method);
-    if(!insp || insp.assignedTo || !inspectorCertFor(method)) return;
-    insp.assignedTo = ASSEMBLY.inspector.name;
-    queueOrToast(method+' on '+weldId+' claimed');
-    render();
-  },
-  resolveReportChoice(kind, weldId, method, reportIdOrNew){
-    let rid = reportIdOrNew;
-    if(rid==='__new__') rid = ReportFlow.createNewSilent(method).id;
-    if(kind==='accept') WeldActions.finalizeResult(weldId, method, rid);
-    else RejectFlow.finalizeReject(weldId, method, rid);
-  },
-  startReject(weldId, method){
-    RejectFlow.startReject(weldId, method);
-  },
+      '<div class="muted" style="font-size:13px;text-align:right;margin-right:4px;white-space:nowrap;">'+s.current+' A · '+s.voltage+' V</div>'+
+      '<span class="chevron">'+ICON.chevron+'</span>'+
+    '</div>';
+  }).join('');
+  return '<div class="card">'+
+    '<div class="hstack" style="justify-content:space-between;flex-wrap:wrap;gap:8px;">'+
+      '<div class="section-title" style="margin:0;">Weld sessions ('+filtered.length+' of '+all.length+')</div>'+
+      '<label class="hstack" style="gap:8px;font-size:13px;cursor:pointer;"><input type="checkbox" '+(f.excludeTack?'checked':'')+' onclick="WeldDetail.toggleExcludeTack()"/>Exclude tack welds</label>'+
+    '</div>'+
+    '<div class="filter-row" style="margin-top:10px;">'+qualityChips+'</div>'+
+    '<div class="filter-row" style="margin-top:8px;">'+paramChips+'</div>'+
+    '<div class="stage-legend" style="margin-top:12px;">'+legend+'</div>'+
+    '<div class="muted" style="font-size:12px;margin:10px 0 4px;">Each session is judged individually against its own WPS Parameter ID — sessions are never averaged together.</div>'+
+    '<div class="stack" style="gap:10px;margin-top:8px;">'+(rows||'<div class="muted" style="padding:16px;text-align:center;">No sessions match these filters.</div>')+'</div>'+
+  '</div>';
+}
+const WeldDetail = {
+  toggleSection(weldId, key){ const {weld:w}=findWeld(weldId); w.detailSectionsOpen[key] = !w.detailSectionsOpen[key]; render(); },
+  setSessionFilter(key, val){ state.weldSessionFilters[key] = val; render(); },
+  toggleExcludeTack(){ state.weldSessionFilters.excludeTack = !state.weldSessionFilters.excludeTack; render(); },
 };
 
-function recordCardHtml(rec, isHistory){
-  const badgeCls = rec.verdict==='Acceptable' ? 'badge-success' : 'badge-error';
-  const title = isHistory ? 'Original inspection record' : (rec.type==='retest' ? 'Re-test record' : 'Inspection record');
-  let inner = '<div class="hstack" style="justify-content:space-between;">'+
-      '<div class="tag" style="'+(isHistory?'':'display:none;')+'text-transform:uppercase;font-size:11px;font-weight:700;color:var(--text-muted);letter-spacing:.05em;">'+(isHistory?'Read-only history':'')+'</div>'+
-      '<span class="badge '+badgeCls+'">'+rec.verdict+'</span>'+
-    '</div>'+
-    '<div style="font-weight:700;font-size:15px;margin-top:6px;">'+title+'</div>'+
-    '<div class="grid2" style="margin-top:10px;">'+
-      '<div><div class="label-sm">Inspector</div><div class="val-lg">'+rec.inspector.name+'</div></div>'+
-      '<div><div class="label-sm">Timestamp</div><div class="val-lg">'+rec.timestamp+'</div></div>'+
-    '</div>';
-  if(rec.verdict==='Not acceptable'){
-    const sizes = [];
-    if(rec.sizing){
-      const s = rec.sizing;
-      if(s.qty!=null) sizes.push('Qty '+s.qty);
-      if(s.width) sizes.push('W '+s.width+' mm');
-      if(s.length) sizes.push('L '+s.length+' mm');
-      if(s.height) sizes.push('H '+s.height+' mm');
-      if(s.depth) sizes.push('D '+s.depth+' mm');
-      if(s.angle) sizes.push(s.angle+'°');
-    }
-    inner += '<div class="divider"></div>'+
-      '<div class="hstack" style="align-items:flex-start;gap:16px;flex-wrap:wrap;">'+
-        weldImageSVG(rec.markers, {style:'width:160px;height:96px;flex:0 0 auto;'})+
-        '<div style="flex:1;min-width:180px;">'+
-          '<div class="label-sm">ISO 6520-1 imperfection</div>'+
-          '<div class="val-lg">'+rec.reasonCode+' '+rec.reasonLabel+'</div>'+
-          (sizes.length?'<div class="muted" style="font-size:13px;margin-top:4px;">'+sizes.join(' · ')+'</div>':'')+
-          '<div class="label-sm" style="margin-top:8px;">Remarks</div><div style="font-size:14px;">'+esc(rec.remarks||'—')+'</div>'+
-        '</div>'+
-      '</div>'+
-      '<div class="divider"></div>'+
-      '<div class="grid2">'+
-        '<div><div class="label-sm">NCR raised</div><div class="val-lg">'+rec.ncr+'</div></div>'+
-        '<div><div class="label-sm">Disposition</div><div class="val-lg">Awaiting QA</div></div>'+
-      '</div>';
-  }
-  if(rec.type==='retest'){
-    inner += '<div class="divider"></div><div class="muted" style="font-size:13px;">References the original Not acceptable record above and closes <strong>'+rec.closesNcr+'</strong>. Recorded as a new record — the original is never edited.</div>';
-  }
-  return '<div class="card'+(isHistory?'' : '')+'" style="'+(isHistory?'background:var(--surface-sunken);border-style:dashed;':'')+'">'+inner+'</div>';
-}
-
 function weldBreadcrumbHtml(part){
-  return '<span class="crumb-link" onclick="App.nav(\'assembly\')">'+esc(ASSEMBLY.name)+'</span>'+
+  const asm = assemblyFor(part);
+  return '<span class="crumb-link" onclick="App.nav(\'assembly\',{assemblyId:\''+asm.id+'\'})">'+esc(asm.name)+'</span>'+
     '<span class="crumb-sep">/</span>'+
     '<span class="crumb-link" onclick="App.nav(\'part\',{partId:\''+part.id+'\'})">'+esc(part.id+' · '+part.name)+'</span>';
 }
@@ -1471,29 +1639,10 @@ function weldSessionBreadcrumbHtml(part, weldId){
     '<span class="crumb-link" onclick="App.nav(\'weld\',{weldId:\''+weldId+'\'})">'+esc(weldId)+'</span>';
 }
 
-function inspectionRowHtml(w, insp){
-  const mine = insp.assignedTo===ASSEMBLY.inspector.name;
-  const cert = inspectorCertFor(insp.method);
-  let rightHtml;
-  if(insp.result==='Acceptable') rightHtml = '<span class="badge badge-success">Acceptable</span>';
-  else if(insp.result==='Failed') rightHtml = '<span class="badge badge-error">Failed</span>';
-  else if(!insp.assignedTo && cert) rightHtml = '<span class="badge badge-info">Unassigned · Claim</span>';
-  else if(!insp.assignedTo) rightHtml = '<span class="badge badge-muted">Requires '+insp.method+' Level 2</span>';
-  else rightHtml = '<span class="badge badge-muted">Ready for inspection</span>';
-  return '<div class="list-row" onclick="App.nav(\'inspectionDetail\',{weldId:\''+w.id+'\',method:\''+insp.method+'\'})">'+
-    '<div class="weld-id" style="min-width:44px;">'+insp.method+'</div>'+
-    '<div class="row-meta"><div>'+METHOD_INFO[insp.method].name+'</div>'+
-      '<div class="top">'+(insp.assignedTo ? (mine?'Assigned to you':'Assigned to '+esc(insp.assignedTo)) : insp.method+' · not assigned to you')+'</div>'+
-    '</div>'+
-    rightHtml+
-    '<span class="chevron">'+ICON.chevron+'</span>'+
-  '</div>';
-}
-
 SCREENS.weld = {
   topbar(params){
     const {part} = findWeld(params.weldId);
-    return topbarWithReports({title:params.weldId, subHtml:weldBreadcrumbHtml(part), variant:'assembly'});
+    return topbarBase({title:params.weldId, subHtml:weldBreadcrumbHtml(part), variant:'assembly'});
   },
   render(params){
     const found = findWeld(params.weldId);
@@ -1501,6 +1650,7 @@ SCREENS.weld = {
     const meta = w.type+' · '+w.process+' · '+w.position;
 
     if(part.blocked){
+      const welder = assemblyFor(part).welder;
       return '<div class="stack">'+
         '<div class="card">'+
           '<div class="hstack" style="justify-content:space-between;">'+
@@ -1512,122 +1662,55 @@ SCREENS.weld = {
         '<div class="card" style="text-align:center;padding:28px 18px;">'+
           '<div style="color:var(--text-muted);margin-bottom:8px;">'+ICON.lock.replace('<svg','<svg style="width:28px;height:28px;"')+'</div>'+
           '<div style="font-weight:700;">Not yet ready for inspection</div>'+
-          '<div class="muted" style="font-size:14px;margin-top:4px;">This weld is still with '+ASSEMBLY.welder.name+' ('+ASSEMBLY.welder.stamp+'). You can look, but you can\'t start an inspection yet.</div>'+
+          '<div class="muted" style="font-size:14px;margin-top:4px;">This weld is still with '+welder.name+' ('+welder.stamp+'). You can look, but you can\'t start an inspection yet.</div>'+
         '</div>'+
       '</div>';
     }
 
-    let historyHtml = '';
-    if(w.records.length && (w.status==='Not acceptable' || w.readyForRetest)){
-      historyHtml = recordCardHtml(w.records[0], true);
-    }
-
-    let statusHtml = '';
-    if(w.status==='Not acceptable'){
-      statusHtml = recordCardHtml(w.records[w.records.length-1], false)+
-        '<div class="banner banner-warning" style="margin-top:14px;">'+ICON.alert.replace('<svg','<svg style="width:18px;height:18px;flex:0 0 auto;"')+'<span>Returned to '+ASSEMBLY.welder.name+' ('+ASSEMBLY.welder.stamp+') for repair. This weld will reappear for re-test once repaired.</span></div>';
-    }
-
-    const inspRows = (w.inspections||[]).map(insp=>inspectionRowHtml(w, insp)).join('');
+    const info = weldDetailInfo(part, w);
+    const inspBadges = (w.inspections||[]).map(insp=>{
+      const cls = insp.result==='Acceptable' ? 'badge-success' : insp.result==='Failed' ? 'badge-error' : 'badge-muted';
+      const label = insp.method+' · '+(insp.result || (insp.assignedTo ? 'pending' : 'unassigned'));
+      return '<span class="badge '+cls+'">'+label+'</span>';
+    }).join(' ');
 
     return '<div class="stack">'+
       '<div class="muted" style="font-size:13px;">'+esc(weldPositionText(part, w.id))+'</div>'+
-      (w.status==='Repair — re-test' ? '<div class="badge badge-warning" style="align-self:flex-start;">Repair — re-test</div>' : '')+
+      weldStepperHtml(w)+
       '<div class="card">'+
-        '<div style="font-weight:700;font-size:18px;">'+w.id+'</div><div class="muted">'+meta+'</div>'+
+        '<div class="hstack" style="justify-content:space-between;flex-wrap:wrap;gap:8px;">'+
+          '<div><div style="font-weight:700;font-size:18px;">'+w.id+'</div><div class="muted">'+meta+'</div></div>'+
+          '<div class="hstack" style="gap:6px;flex-wrap:wrap;">'+inspBadges+'</div>'+
+        '</div>'+
+        '<div class="divider"></div>'+
+        '<div class="grid2" style="gap:14px;">'+
+          '<div><div class="label-sm">Weld ID</div><div class="val-lg">'+w.id+'</div></div>'+
+          '<div><div class="label-sm">Weld part number</div><div class="val-lg">'+info.partNumber+'</div></div>'+
+          '<div><div class="label-sm">Weld type</div><div class="val-lg">'+esc(info.weldType)+'</div></div>'+
+          '<div><div class="label-sm">Base material — part 1</div><div class="val-lg">'+esc(info.baseMaterial1)+'</div></div>'+
+          '<div><div class="label-sm">Base material — part 2</div><div class="val-lg">'+esc(info.baseMaterial2)+'</div></div>'+
+          '<div><div class="label-sm">Weld length</div><div class="val-lg">'+info.length+'</div></div>'+
+          '<div><div class="label-sm">Part</div><div class="val-lg crumb-link" style="cursor:pointer;" onclick="App.nav(\'part\',{partId:\''+part.id+'\'})">'+part.id+' · '+esc(part.name)+'</div></div>'+
+          '<div><div class="label-sm">ISO drawing</div><div class="val-lg">'+esc(info.isoDrawing)+'</div></div>'+
+          '<div><div class="label-sm">WPS</div><div class="val-lg">'+esc(info.wpsWithRevision)+'</div></div>'+
+        '</div>'+
+        '<div class="divider"></div>'+
+        '<div class="label-sm" style="margin-bottom:8px;">Filler metal per process</div>'+
+        '<div class="param-row"><div class="param-name">'+esc(PROCESS_LABEL[w.process]||w.process)+'</div><div>'+esc(PROCESS_FILLER[w.process]||'—')+'</div></div>'+
       '</div>'+
-      historyHtml+
-      '<div class="card"><div class="section-title">Inspections</div><div class="stack" style="gap:10px;">'+(inspRows||'<div class="muted">No inspections on this weld.</div>')+'</div></div>'+
-      weldSessionsCard(w)+
-      statusHtml+
+      weldTraceabilityHtml(part, w)+
+      grooveDesignHtml(w)+
+      whoDidTheWorkHtml(part, w)+
+      weldSessionsSectionHtml(w)+
     '</div>';
   },
   footer(params){
     const {part, weld:w} = findWeld(params.weldId);
-    if(part.blocked){
-      return '<span class="hint">Inspection unavailable — weld not yet complete.</span>';
-    }
+    if(part.blocked) return '<span class="hint">Inspection unavailable — weld not yet complete.</span>';
     const nid = nextWeldId(part, w.id);
     return '<span class="hint">'+esc(weldPositionText(part, w.id))+'</span>'+
-      (nid
-        ? '<button class="btn btn-primary btn-lg" onclick="App.nav(\'weld\',{weldId:\''+nid+'\'})">Next weld '+ICON.chevron.replace('<svg','<svg style="width:16px;height:16px;"')+'</button>'
-        : '<span class="muted" style="font-size:13px;">Last weld on '+part.id+'</span>');
-  },
-};
-
-SCREENS.inspectionDetail = {
-  topbar(params){
-    const {part} = findWeld(params.weldId);
-    return topbarWithReports({title:params.method+' inspection', subHtml:weldSessionBreadcrumbHtml(part, params.weldId), variant:'assembly'});
-  },
-  render(params){
-    const {part, weld:w} = findWeld(params.weldId);
-    const insp = w.inspections.find(i=>i.method===params.method);
-    const info = METHOD_INFO[params.method];
-    const mine = insp.assignedTo===ASSEMBLY.inspector.name;
-    const cert = inspectorCertFor(params.method);
-    const actionable = mine;
-
-    let assignBlock = '';
-    if(!insp.assignedTo){
-      assignBlock = cert
-        ? '<div class="banner banner-info"><span>'+params.method+' · not assigned to you — you hold '+esc(cert)+'</span>'+
-            '<button class="btn btn-primary" style="margin-left:auto;min-height:36px;" onclick="WeldActions.claimInspection(\''+w.id+'\',\''+params.method+'\')">Claim</button></div>'
-        : '<div class="banner banner-warning" style="opacity:.8;"><span>'+params.method+' · not assigned to you — requires '+params.method+' Level 2</span></div>';
-    } else if(!mine){
-      assignBlock = '<div class="banner banner-info"><span>'+params.method+' · assigned to '+esc(insp.assignedTo)+'</span></div>';
-    }
-
-    let resultBlock;
-    if(insp.result==null){
-      resultBlock = actionable
-        ? '<div class="card"><div class="section-title">Record result</div>'+
-            '<div class="result-toggle">'+
-              '<button class="result-btn acceptable" onclick="WeldActions.openAccept(\''+w.id+'\',\''+params.method+'\')">Acceptable</button>'+
-              '<button class="result-btn failed" onclick="WeldActions.startReject(\''+w.id+'\',\''+params.method+'\')">Failed</button>'+
-            '</div></div>'
-        : '';
-    } else {
-      resultBlock = '<div class="card"><div class="hstack" style="justify-content:space-between;">'+
-        '<div class="section-title" style="margin:0;">Result</div>'+
-        '<span class="badge '+(insp.result==='Acceptable'?'badge-success':'badge-error')+'">'+insp.result+'</span>'+
-      '</div></div>';
-    }
-
-    const indRows = insp.indications.map(i=>{
-      const sizes = [];
-      if(i.qty!=null) sizes.push('Qty '+i.qty);
-      if(i.width) sizes.push('W '+i.width+' mm');
-      if(i.length) sizes.push('L '+i.length+' mm');
-      if(i.height) sizes.push('H '+i.height+' mm');
-      if(i.depth) sizes.push('D '+i.depth+' mm');
-      return '<div class="card" style="padding:14px;">'+
-        '<div class="hstack" style="justify-content:space-between;">'+
-          '<div style="font-weight:600;">'+i.code+' '+esc(i.label)+'</div>'+
-          (i.causedRejection ? '<span class="badge badge-error" style="font-size:11px;">Caused rejection</span>' : '<span class="badge badge-muted" style="font-size:11px;">Within acceptance limits</span>')+
-        '</div>'+
-        (sizes.length ? '<div class="muted" style="font-size:13px;margin-top:4px;">'+sizes.join(' · ')+'</div>' : '')+
-        (i.remarks ? '<div style="font-size:13px;margin-top:6px;">'+esc(i.remarks)+'</div>' : '')+
-        (i.markers && i.markers.length ? '<div style="margin-top:8px;">'+weldImageSVG(i.markers,{style:'width:140px;height:84px;'})+'</div>' : '')+
-      '</div>';
-    }).join('');
-
-    return '<div class="stack">'+
-      '<div class="card">'+
-        '<div class="hstack" style="justify-content:space-between;flex-wrap:wrap;">'+
-          '<div><div style="font-weight:700;font-size:17px;">'+params.method+' — '+info.name+'</div><div class="muted">'+w.id+' · '+part.id+' · '+part.name+'</div></div>'+
-          (insp.reportId ? '<button class="btn btn-ghost" style="min-height:38px;padding:0 12px;font-size:13px;" onclick="App.nav(\'report\',{reportId:\''+insp.reportId+'\'})">On '+insp.reportId+' '+ICON.chevron.replace('<svg','<svg style="width:14px;height:14px;"')+'</button>' : '<span class="badge badge-muted">Not yet on a report</span>')+
-        '</div>'+
-      '</div>'+
-      assignBlock+
-      resultBlock+
-      '<div class="card"><div class="hstack" style="justify-content:space-between;">'+
-        '<div class="section-title" style="margin:0;">Imperfections ('+insp.indications.length+')</div>'+
-        (actionable ? '<button class="btn btn-outline" style="min-height:38px;padding:0 12px;font-size:13px;" onclick="RejectFlow.startAddImperfection(\''+w.id+'\',\''+params.method+'\')">'+ICON.plus.replace('<svg','<svg style="width:15px;height:15px;"')+' Add imperfection</button>' : '')+
-      '</div>'+
-      '<div class="stack" style="gap:10px;margin-top:'+(insp.indications.length?'10px':'0')+';">'+(indRows||'<div class="muted">No imperfections recorded — clean so far.</div>')+'</div>'+
-      '</div>'+
-    '</div>';
+      (nid ? '<button class="btn btn-outline btn-lg" onclick="App.nav(\'weld\',{weldId:\''+nid+'\'})">Next weld '+ICON.chevron.replace('<svg','<svg style="width:16px;height:16px;"')+'</button>' : '<span class="muted" style="font-size:13px;">Last weld on '+part.id+'</span>')+
+      '<button class="btn btn-primary btn-lg" onclick="App.back()">Close</button>';
   },
 };
 
@@ -1637,7 +1720,7 @@ function sessionInfoStripCard(part, w, s){
     ['Operator', s.operator],
     ['WPS', WPS.id],
     ['Work order', 'Not set'],
-    ['Assembly', ASSEMBLY.name],
+    ['Assembly', assemblyFor(part).name],
     ['Part', part.id+' · '+part.name],
     ['Weld ID', w.id],
   ];
@@ -1770,19 +1853,18 @@ const SIZE_FIELDS = [
   {key:'angle', label:'Angle', unit:'°'},
 ];
 
-function newImperfectionDraft(mode, weldId, method){
-  return {mode, weldId, method, stackDepth: state.stack.length,
+/* imperfection recording is now fully independent of the result — an observation, not a
+   verdict (change 5). The wizard's screens are unchanged; only how it's reached and what
+   happens on save are new: it always just adds a chip to the weld row and returns there. */
+function newImperfectionDraft(weldId, method, reportId){
+  return {weldId, method, reportId, stackDepth: state.stack.length,
     reasonCode:null, reasonLabel:null, qty:null,width:null,length:null,height:null,depth:null,angle:null,
     markers:[], remarks:'', search:'', photoTaken:false};
 }
 
 const RejectFlow = {
-  startReject(weldId, method){
-    state.draft = newImperfectionDraft('reject', weldId, method);
-    App.nav('rejectReason');
-  },
-  startAddImperfection(weldId, method){
-    state.draft = newImperfectionDraft('add', weldId, method);
+  startAddImperfection(weldId, method, reportId){
+    state.draft = newImperfectionDraft(weldId, method, reportId);
     App.nav('rejectReason');
   },
   setSearch(v){ state.draft.search = v; renderReasonList(); },
@@ -1808,53 +1890,14 @@ const RejectFlow = {
   },
   toRemarks(){ App.nav('rejectRemarks'); },
   setRemarks(v){ state.draft.remarks = v; },
-  submit(){
-    const d = state.draft;
-    const rid = resolveReportFor(d.weldId, d.method);
-    if(rid==null){ showReportChooserModal(d.weldId, d.method, 'reject'); return; }
-    RejectFlow.finalizeReject(d.weldId, d.method, rid);
-  },
-  finalizeReject(weldId, method, reportId){
-    const d = state.draft;
-    const {weld:w} = findWeld(weldId);
-    const insp = w.inspections.find(i=>i.method===method);
-    const ncrId = 'NCR-2026-'+String(DATA.ncrCounter).padStart(4,'0');
-    DATA.ncrCounter++;
-    insp.indications.push({n:insp.indications.length+1, code:d.reasonCode, label:d.reasonLabel,
-      qty:d.qty,width:d.width,length:d.length,height:d.height,depth:d.depth,angle:d.angle,
-      markers:d.markers, remarks:d.remarks, causedRejection:true});
-    insp.result = 'Failed';
-    addWeldToReport(reportId, weldId);
-    state.activeReport = reportId;
-    const rec = {
-      type:'inspection', verdict:'Not acceptable', timestamp:demoTimestamp(), inspector:{...ASSEMBLY.inspector}, method,
-      reasonCode:d.reasonCode, reasonLabel:d.reasonLabel,
-      sizing:{qty:d.qty,width:d.width,length:d.length,height:d.height,depth:d.depth,angle:d.angle},
-      markers:d.markers, remarks:d.remarks, ncr:ncrId,
-    };
-    w.records.push(rec);
-    w.ncr = ncrId;
-    w.status = 'Not acceptable';
-    w.disposition = 'awaiting QA';
-    w.stage = 'Welding';
-    w.readyForRetest = false;
-    queueOrToast(weldId+' — '+method+' Not acceptable, '+ncrId+' raised');
-    App.nav('rejectConfirm');
-  },
   submitImperfection(){
     const d = state.draft;
     const {weld:w} = findWeld(d.weldId);
     const insp = w.inspections.find(i=>i.method===d.method);
     insp.indications.push({n:insp.indications.length+1, code:d.reasonCode, label:d.reasonLabel,
       qty:d.qty,width:d.width,length:d.length,height:d.height,depth:d.depth,angle:d.angle,
-      markers:d.markers, remarks:d.remarks, causedRejection:false});
+      markers:d.markers, remarks:d.remarks, causedRejection: insp.result==='Failed'});
     queueOrToast('Imperfection recorded on '+d.weldId+' ('+d.method+')');
-    state.stack = state.stack.slice(0, d.stackDepth);
-    state.draft = null;
-    render();
-  },
-  done(){
-    const d = state.draft;
     state.stack = state.stack.slice(0, d.stackDepth);
     state.draft = null;
     render();
@@ -1870,7 +1913,7 @@ function renderReasonList(){
     const sel = state.draft.reasonCode===i.code;
     return '<div class="reason-row'+(sel?' selected':'')+'" onclick="RejectFlow.selectReason(\''+i.code+'\', '+esc(JSON.stringify(i.label))+')">'+
       '<div class="reason-code">'+i.code+'</div><div style="flex:1;font-size:16px;">'+i.label+'</div>'+
-      (sel? '<span style="color:var(--assembly-solid);">'+ICON.check+'</span>' : '')+
+      (sel? '<span style="color:var(--accent-text);">'+ICON.check+'</span>' : '')+
     '</div>';
   }).join('') || '<div class="muted" style="padding:24px;text-align:center;">No matches for "'+esc(q)+'"</div>';
   const nextBtn = document.getElementById('reasonNextBtn');
@@ -1880,8 +1923,7 @@ function renderReasonList(){
 SCREENS.rejectReason = {
   topbar(){
     const d = state.draft;
-    const title = d.mode==='reject' ? 'Reason for rejection' : 'Add imperfection';
-    return topbarBase({title, sub:'ISO 6520-1 · '+d.weldId+' · '+d.method, variant:'assembly'});
+    return topbarBase({title:'Add imperfection', sub:'ISO 6520-1 · '+d.weldId+' · '+d.method, variant:'assembly'});
   },
   render(){
     return '<div class="stack">'+
@@ -1896,7 +1938,7 @@ SCREENS.rejectReason = {
 };
 
 SCREENS.rejectSize = {
-  topbar(){ return topbarBase({title:'Size the imperfection', sub:state.draft.reasonCode+' '+state.draft.reasonLabel+(state.draft.mode==='reject'?' · caused rejection':' · within acceptance limits'), variant:'assembly'}); },
+  topbar(){ return topbarBase({title:'Size the imperfection', sub:state.draft.reasonCode+' '+state.draft.reasonLabel, variant:'assembly'}); },
   render(){
     const d = state.draft;
     const fields = SIZE_FIELDS.map(f=>{
@@ -1957,7 +1999,7 @@ SCREENS.rejectPhoto = {
 SCREENS.rejectRemarks = {
   topbar(){
     const d = state.draft;
-    return topbarBase({title: d.mode==='reject' ? 'Remarks & submit' : 'Remarks & save', sub:d.weldId, variant:'assembly'});
+    return topbarBase({title:'Remarks & save', sub:d.weldId, variant:'assembly'});
   },
   render(){
     const d = state.draft;
@@ -1975,33 +2017,7 @@ SCREENS.rejectRemarks = {
     '</div>';
   },
   footer(){
-    const d = state.draft;
-    return d.mode==='reject'
-      ? '<button class="btn btn-danger btn-lg" onclick="RejectFlow.submit()">Submit — Not acceptable</button>'
-      : '<button class="btn btn-primary btn-lg" onclick="RejectFlow.submitImperfection()">Save imperfection</button>';
-  },
-};
-
-SCREENS.rejectConfirm = {
-  topbar(){ return topbarBase({title:'Rejection recorded', showBack:false, variant:'assembly'}); },
-  noPadBottom:true,
-  render(){
-    const d = state.draft;
-    const {weld:w, part} = findWeld(d.weldId);
-    return '<div class="stack" style="max-width:520px;margin:20px auto;text-align:center;">'+
-      '<div style="width:72px;height:72px;border-radius:50%;background:rgba(226,57,0,.12);color:var(--error);display:flex;align-items:center;justify-content:center;margin:0 auto;">'+ICON.x.replace('<svg','<svg style="width:34px;height:34px;"')+'</div>'+
-      '<h2 style="font-size:22px;">'+d.weldId+' — Not acceptable</h2>'+
-      '<div class="card" style="text-align:left;">'+
-        '<div class="stack" style="gap:12px;">'+
-          '<div class="hstack" style="justify-content:space-between;"><span class="muted">NCR raised</span><strong>'+w.ncr+'</strong></div>'+
-          '<div class="hstack" style="justify-content:space-between;"><span class="muted">Disposition</span><strong>Awaiting QA</strong></div>'+
-          '<div class="hstack" style="justify-content:space-between;"><span class="muted">Weld stage</span><strong>Welding (returned)</strong></div>'+
-          '<div class="hstack" style="justify-content:space-between;"><span class="muted">Routing</span><strong>Returned to the welding queue for '+part.id+' — will be reassigned by the supervisor</strong></div>'+
-        '</div>'+
-      '</div>'+
-      '<div class="banner banner-info" style="text-align:left;">'+ICON.check.replace('<svg','<svg style="width:18px;height:18px;flex:0 0 auto;"')+'<span>Result is live in Assembly — no separate submission needed.</span></div>'+
-      '<button class="btn btn-primary btn-lg btn-block" onclick="RejectFlow.done()">Done</button>'+
-    '</div>';
+    return '<button class="btn btn-primary btn-lg" onclick="RejectFlow.submitImperfection()">Save imperfection</button>';
   },
 };
 </script>
@@ -2022,46 +2038,125 @@ function formField(label, value, opts){
   return '<div class="field"><label'+(opts.required?' class="req"':'')+'>'+label+'</label>'+
     '<div class="select-display">'+esc(value)+ICON.chevronDown+'</div></div>';
 }
+/* a field that is a fixed attribute of the report, not something to edit — the inspector's
+   identity and the report's test type both lock the moment the report is created */
+function lockedField(label, value){
+  return '<div class="field"><label>'+label+'</label><div class="select-display" style="opacity:.85;">'+esc(value)+ICON.lock.replace('<svg','<svg style="width:15px;height:15px;color:var(--text-muted);"')+'</div></div>';
+}
 
-const ReportFlow = {
-  createNewSilent(method){
-    const id = 'NDT-2026-'+String(DATA.reportCounter).padStart(4,'0');
-    DATA.reportCounter++;
-    const info = METHOD_INFO[method];
-    const report = {
-      id, method, created:demoDateStr(), welds:[], status:'draft', signedBy:null, signedAt:null,
-      date:demoDateStr(), site:ASSEMBLY.site,
-      procedure:info.procedure, acceptance:info.acceptance,
-      notes:'', pdfAttached:false, photos:[],
-      surfaceCondition:null, surfaceTemp:null, penetrantBatch:'', developerBatch:'', dwellTime:null,
-      sectionsOpen:{conditions:false},
-    };
-    DATA.reports[id] = report;
-    return report;
-  },
-  createNew(method){
-    const r = ReportFlow.createNewSilent(method);
-    state.activeReport = r.id;
-    Modal.close();
-    App.nav('report', {reportId:r.id});
-  },
-  promptNew(){
+/* ---- which test methods a weld selection actually requires, filtered to what's not
+   already on a report — this drives change 7's "only show what's needed" ---- */
+function methodsRequiredByWelds(weldIds){
+  const set = [];
+  weldIds.forEach(id=>{
+    const found = findWeld(id);
+    if(!found) return;
+    (found.weld.inspections||[]).forEach(i=>{ if(!i.reportId && set.indexOf(i.method)===-1) set.push(i.method); });
+  });
+  return set;
+}
+/* the credential gate from change 7 — a method with no matching credential shows disabled,
+   with the reason, rather than being hidden */
+function testTypePickerHtml(methods, onChooseFnName){
+  if(!methods.length){
+    return '<h2>New report</h2><p class="muted">The selected welds already have every inspection on a report.</p>'+
+      '<div class="modal-actions"><button class="btn btn-outline" onclick="Modal.close()">Close</button></div>';
+  }
+  const rows = methods.map(m=>{
+    const cert = inspectorCertFor(m);
+    return cert
+      ? '<button class="btn btn-outline btn-block" style="justify-content:space-between;" onclick="'+onChooseFnName+'(\''+m+'\')"><span>'+m+' — '+METHOD_INFO[m].name+'</span></button>'
+      : '<button class="btn btn-outline btn-block" style="justify-content:space-between;opacity:.5;cursor:not-allowed;" disabled><span>'+m+' — '+METHOD_INFO[m].name+'</span><span style="font-size:12px;">'+esc(missingCredentialReason(m))+'</span></button>';
+  }).join('');
+  return '<h2>New report</h2><p class="muted">Only test methods the selected welds actually require are shown.</p>'+
+    '<div class="stack" style="gap:8px;">'+rows+'</div>'+
+    '<div class="modal-actions"><button class="btn btn-outline" onclick="Modal.close()">Cancel</button></div>';
+}
+/* ---- "Add to report" — the one entry point that replaces every old "New report" button
+   (change 9). Only usable once welds are selected; it never asks the inspector to guess a
+   scope up front the way the old flow did. ---- */
+const AddToReport = {
+  open(scope){
+    state.pendingReportScope = scope;
+    const methods = methodsRequiredByWelds(scope.weldIds);
+    const existing = draftReportsList().filter(r=>r.assemblyId===scope.assemblyId && methods.indexOf(r.method)!==-1);
     Modal.open(
-      '<h2>New report</h2><p class="muted">Choose the test method for this report.</p>'+
+      '<h2>Add to report</h2>'+
+      '<p class="muted">'+scope.weldIds.length+' weld'+(scope.weldIds.length===1?'':'s')+' selected.</p>'+
       '<div class="stack" style="gap:8px;">'+
-        Object.keys(METHOD_INFO).map(m=>'<button class="btn btn-outline btn-block" onclick="ReportFlow.createNew(\''+m+'\')">'+m+' — '+METHOD_INFO[m].name+'</button>').join('')+
+        '<div class="reason-row" style="border-color:var(--accent-text);" onclick="AddToReport.newReport()">'+
+          '<div style="flex:1;font-weight:600;color:var(--accent-text);">'+ICON.plus.replace('<svg','<svg style="width:16px;height:16px;"')+' New report</div>'+
+        '</div>'+
+        (existing.length ? existing.map(r=>
+          '<div class="reason-row" onclick="AddToReport.addToExisting(\''+r.id+'\')">'+
+            '<div style="flex:1;"><div style="font-weight:600;">'+r.method+' · '+r.id+'</div><div class="muted" style="font-size:13px;">'+r.welds.length+' weld'+(r.welds.length===1?'':'s')+' so far</div></div>'+
+          '</div>'
+        ).join('') : '<div class="muted" style="font-size:13px;">No matching draft reports yet on this assembly.</div>')+
       '</div>'+
       '<div class="modal-actions"><button class="btn btn-outline" onclick="Modal.close()">Cancel</button></div>'
     );
   },
-  openReport(id){ state.activeReport = id; App.nav('report', {reportId:id}); },
+  newReport(){
+    const scope = state.pendingReportScope || {weldIds:[]};
+    const methods = methodsRequiredByWelds(scope.weldIds);
+    Modal.open(testTypePickerHtml(methods, 'AddToReport.chooseMethod'));
+  },
+  chooseMethod(method){
+    const scope = state.pendingReportScope || {weldIds:[]};
+    const r = ReportFlow.createNewChecked(method, scope.assemblyId, scope.partId);
+    Modal.close();
+    if(!r) return;
+    scope.weldIds.forEach(id=>{
+      const found = findWeld(id);
+      if(found && found.weld.inspections.some(i=>i.method===method && !i.reportId)) addWeldToReport(r.id, id);
+    });
+    state.partSelection = null;
+    App.nav('report', {reportId:r.id});
+  },
+  addToExisting(reportId){
+    const scope = state.pendingReportScope || {weldIds:[]};
+    const r = DATA.reports[reportId];
+    scope.weldIds.forEach(id=>{
+      const found = findWeld(id);
+      if(found && found.weld.inspections.some(i=>i.method===r.method && !i.reportId)) addWeldToReport(reportId, id);
+    });
+    state.partSelection = null;
+    Modal.close();
+    App.nav('report', {reportId});
+  },
+};
+
+const ReportFlow = {
+  createNewSilent(method, assemblyId, scopePartId){
+    const id = 'NDT-2026-'+String(DATA.reportCounter).padStart(4,'0');
+    DATA.reportCounter++;
+    const report = makeReportBase(id, method, assemblyId, scopePartId, demoDateStr());
+    report.title = 'NEW: '+method+' '+id;
+    DATA.reports[id] = report;
+    return report;
+  },
+  /* the only gate on creating a new draft report — caps concurrent drafts at 3 */
+  createNewChecked(method, assemblyId, scopePartId){
+    // reports engineering already prepared don't eat into the inspector's own cap
+    const ownDrafts = draftReportsList().filter(r=>!r.preparedByEngineering).length;
+    if(ownDrafts>=3){
+      toast('You already have 3 draft reports open — sign or complete one before starting another.');
+      return null;
+    }
+    return ReportFlow.createNewSilent(method, assemblyId, scopePartId);
+  },
+  openReport(id){ App.nav('report', {reportId:id}); },
   toggleSection(reportId, key){ const r=DATA.reports[reportId]; r.sectionsOpen[key] = !r.sectionsOpen[key]; render(); },
-  setCondition(reportId, v){ DATA.reports[reportId].surfaceCondition = v; render(); },
-  openTemp(reportId){ const r=DATA.reports[reportId]; Keypad.open('Surface temperature', r.surfaceTemp, '°C', v=>{ r.surfaceTemp=v; }); },
-  openDwell(reportId){ const r=DATA.reports[reportId]; Keypad.open('Dwell time', r.dwellTime, 'min', v=>{ r.dwellTime=v; }); },
-  setPenetrant(reportId, v){ DATA.reports[reportId].penetrantBatch = v; },
-  setDeveloper(reportId, v){ DATA.reports[reportId].developerBatch = v; },
+  setTestTypeVar(reportId, key, v){ DATA.reports[reportId].testTypeVars[key] = v; },
+  openTestTypeVarKeypad(reportId, key, label, unit){
+    const r = DATA.reports[reportId];
+    Keypad.open(label, r.testTypeVars[key], unit, v=>{ r.testTypeVars[key]=v; render(); });
+  },
+  addMaterial(reportId){ DATA.reports[reportId].ndtMaterials.push(makeMaterial('', NDT_MATERIAL_TYPES[0], '')); render(); },
+  removeMaterial(reportId, idx){ DATA.reports[reportId].ndtMaterials.splice(idx,1); render(); },
+  setMaterialField(reportId, idx, field, v){ DATA.reports[reportId].ndtMaterials[idx][field] = v; },
   setNotes(reportId, v){ DATA.reports[reportId].notes = v; },
+  setTitle(reportId, v){ DATA.reports[reportId].title = v; },
   togglePdf(reportId){
     const r = DATA.reports[reportId];
     r.pdfAttached = !r.pdfAttached;
@@ -2073,89 +2168,274 @@ const ReportFlow = {
     else state.addWeldsSelection.add(weldId);
     render();
   },
+  toggleSelectAllEligible(partId, reportId){
+    const r = DATA.reports[reportId];
+    const part = findPart(partId);
+    const eligibleIds = part.welds.filter(w=>{
+      const insp = w.inspections.find(i=>i.method===r.method);
+      return insp && !insp.reportId;
+    }).map(w=>w.id);
+    const allSelected = eligibleIds.every(id=>state.addWeldsSelection.has(id));
+    eligibleIds.forEach(id=> allSelected ? state.addWeldsSelection.delete(id) : state.addWeldsSelection.add(id));
+    render();
+  },
   commitAddWelds(reportId){
     const ids = Array.from(state.addWeldsSelection);
     ids.forEach(weldId=>addWeldToReport(reportId, weldId));
     state.addWeldsSelection = new Set();
-    state.activeReport = reportId;
     queueOrToast(ids.length+' weld'+(ids.length===1?'':'s')+' added to '+reportId);
     App.back();
   },
+  /* the only confirmation left in the flow (change 5) — everything else is immediate */
   sign(reportId){
     const r = DATA.reports[reportId];
+    const partIds = new Set(r.welds.map(id=>{ const f=findWeld(id); return f?f.part.id:null; }).filter(Boolean));
+    const passed = r.welds.filter(id=>{ const {weld:w}=findWeld(id); return w.inspections.find(i=>i.method===r.method).result==='Acceptable'; }).length;
+    const failed = r.welds.filter(id=>{ const {weld:w}=findWeld(id); return w.inspections.find(i=>i.method===r.method).result==='Failed'; }).length;
+    Modal.open(
+      '<h2>Sign &amp; save report</h2>'+
+      '<div class="card" style="background:var(--surface-sunken);">'+
+        '<div class="grid2">'+
+          '<div><div class="label-sm">Report number</div><div class="val-lg">'+r.id+'</div></div>'+
+          '<div><div class="label-sm">Test type</div><div class="val-lg">'+r.method+'</div></div>'+
+          '<div><div class="label-sm">Parts</div><div class="val-lg">'+partIds.size+'</div></div>'+
+          '<div><div class="label-sm">Welds</div><div class="val-lg">'+r.welds.length+'</div></div>'+
+          '<div><div class="label-sm">Passed</div><div class="val-lg" style="color:var(--success);">'+passed+'</div></div>'+
+          '<div><div class="label-sm">Failed</div><div class="val-lg" style="color:var(--error);">'+failed+'</div></div>'+
+        '</div>'+
+      '</div>'+
+      '<p class="muted" style="font-size:13px;margin-top:12px;">Signed by '+esc(INSPECTOR.name)+' · '+r.method+' Level '+INSPECTOR.level+' · '+esc(inspectorCertFor(r.method)||'')+'.</p>'+
+      '<div class="modal-actions"><button class="btn btn-outline" onclick="Modal.close()">Cancel</button><button class="btn btn-success" onclick="ReportFlow.doSign(\''+reportId+'\')">Sign &amp; save</button></div>'
+    );
+  },
+  doSign(reportId){
+    const r = DATA.reports[reportId];
     r.status = 'signed';
-    r.signedBy = ASSEMBLY.inspector.name;
-    r.signedLevel = ASSEMBLY.inspector.level;
+    r.signedBy = INSPECTOR.name;
+    r.signedLevel = INSPECTOR.level;
     r.signedCert = inspectorCertFor(r.method);
     r.signedAt = demoTimestampFull();
-    if(state.activeReport===reportId) state.activeReport = null;
+    Modal.close();
     queueOrToast(r.id+' signed and saved — sent to WeldCloud Assembly');
-    render();
+    App.home();
   },
 };
+
+/* ---- weld row actions — recording a result is immediate and reversible (change 5); no
+   per-weld confirmation, no "active report" to resolve since the report is already the
+   screen we're on ---- */
+const WeldRowActions = {
+  setResult(reportId, weldId, result){
+    const r = DATA.reports[reportId];
+    const {weld:w} = findWeld(weldId);
+    const insp = w.inspections.find(i=>i.method===r.method);
+    insp.result = result;
+    if(result==='Failed'){
+      if(!w.ncr) w.ncr = 'NCR-2026-'+String(DATA.ncrCounter++).padStart(4,'0');
+      w.status = 'Not acceptable';
+      w.disposition = 'awaiting QA';
+      w.stage = 'Welding';
+      queueOrToast(weldId+' — '+r.method+' Not acceptable, '+w.ncr+' raised');
+    } else {
+      w.status = w.inspections.every(i=>i.result==='Acceptable') ? 'Acceptable' : 'Pending';
+      if(w.status==='Acceptable') w.stage = 'Finishing';
+      queueOrToast(weldId+' '+r.method+' recorded — Acceptable');
+    }
+    render();
+  },
+  claim(reportId, weldId){
+    const r = DATA.reports[reportId];
+    const {weld:w} = findWeld(weldId);
+    const insp = w.inspections.find(i=>i.method===r.method);
+    if(!inspectorCertFor(r.method)) return;
+    insp.assignedTo = INSPECTOR.name;
+    queueOrToast(r.method+' on '+weldId+' claimed');
+    render();
+  },
+  addPhoto(reportId, weldId){
+    const r = DATA.reports[reportId];
+    const {weld:w} = findWeld(weldId);
+    const insp = w.inspections.find(i=>i.method===r.method);
+    insp.photos.push({id:'ph-'+Math.random().toString(36).slice(2)});
+    render();
+  },
+  removePhoto(reportId, weldId, idx){
+    const r = DATA.reports[reportId];
+    const {weld:w} = findWeld(weldId);
+    const insp = w.inspections.find(i=>i.method===r.method);
+    insp.photos.splice(idx,1);
+    render();
+  },
+  setRemarks(reportId, weldId, v){
+    const r = DATA.reports[reportId];
+    const {weld:w} = findWeld(weldId);
+    const insp = w.inspections.find(i=>i.method===r.method);
+    insp.remarks = v;
+  },
+};
+
+/* ---- report screen building blocks (change 4: collapsed identity up top, change 2/3
+   expanded test-type variables and materials, change 5/8 the rich grouped weld rows) ---- */
+function reportIdentityCardHtml(r){
+  const info = METHOD_INFO[r.method];
+  const asm = ASSEMBLIES[r.assemblyId];
+  return '<div class="card collapsible">'+
+    '<div class="head'+(r.sectionsOpen.identity?'':' closed')+'" onclick="ReportFlow.toggleSection(\''+r.id+'\',\'identity\')"><h3>Report identity</h3>'+ICON.chevronDown+'</div>'+
+    (r.sectionsOpen.identity ? '<div class="body"><div class="grid2" style="gap:16px;">'+
+      formField('Report number', r.id, {required:true})+
+      '<div class="field"><label class="req">Date</label><div class="date-display"><span class="txt">'+formatDateDMY(r.date)+'</span><span class="cal">'+ICON.calendar+'</span></div></div>'+
+      lockedField('Type of test', r.method+' — '+info.name)+
+      formField('Assembly', asm.id+' — '+asm.name, {required:true})+
+      lockedField('Inspector', INSPECTOR.name)+
+      formField('Site', r.site, {})+
+    '</div></div>' : '')+
+  '</div>';
+}
+function testTypeVariablesCardHtml(r){
+  const fields = TEST_TYPE_VAR_FIELDS[r.method];
+  const editable = r.status==='draft';
+  if(!fields || !fields.length){
+    return '<div class="card"><div class="section-title">Test type variables</div><div class="muted">No test type variables defined for '+r.method+' in this prototype.</div></div>';
+  }
+  const fieldsHtml = fields.map(f=>{
+    const v = r.testTypeVars[f.key];
+    if(f.type==='select'){
+      return '<div class="field"><label>'+esc(f.label)+'</label>'+
+        '<select class="select" '+(editable?'':'disabled')+' onchange="ReportFlow.setTestTypeVar(\''+r.id+'\',\''+f.key+'\',this.value)">'+
+          '<option value=""'+(v?'':' selected')+'>Select…</option>'+
+          f.options.map(o=>'<option value="'+esc(o)+'"'+(v===o?' selected':'')+'>'+esc(o)+'</option>').join('')+
+        '</select></div>';
+    }
+    if(f.type==='number'){
+      return '<div class="field"><label>'+esc(f.label)+'</label><div class="keypad-display'+(v==null?' empty':'')+'" onclick="'+(editable?"ReportFlow.openTestTypeVarKeypad('"+r.id+"','"+f.key+"',"+esc(JSON.stringify(f.label))+","+esc(JSON.stringify(f.unit||''))+")":'')+'">'+(v==null?'Tap to enter':v+' '+(f.unit||''))+'</div></div>';
+    }
+    return '<div class="field"><label>'+esc(f.label)+'</label><input class="input" '+(editable?'':'disabled')+' value="'+esc(v||'')+'" oninput="ReportFlow.setTestTypeVar(\''+r.id+'\',\''+f.key+'\',this.value)"/></div>';
+  }).join('');
+  return '<div class="card"><div class="section-title">Test type variables · '+r.method+'</div>'+
+    (r.method==='PT' ? '<div class="banner banner-warning" style="margin-bottom:12px;">'+ICON.alert.replace('<svg','<svg style="width:16px;height:16px;flex:0 0 auto;"')+'<span>Illustrative only — not yet verified against Assembly\'s PT Variables dialog.</span></div>' : '')+
+    '<div class="grid2" style="gap:16px;">'+fieldsHtml+'</div>'+
+  '</div>';
+}
+function ndtMaterialsCardHtml(r){
+  const editable = r.status==='draft';
+  const rows = r.ndtMaterials.map((m,idx)=>
+    '<tr>'+
+      '<td>'+(editable?'<input class="input" style="min-height:38px;" value="'+esc(m.name)+'" oninput="ReportFlow.setMaterialField(\''+r.id+'\','+idx+',\'name\',this.value)"/>':esc(m.name))+'</td>'+
+      '<td>'+(editable?'<select class="select" style="min-height:38px;" onchange="ReportFlow.setMaterialField(\''+r.id+'\','+idx+',\'type\',this.value)">'+NDT_MATERIAL_TYPES.map(t=>'<option value="'+esc(t)+'"'+(m.type===t?' selected':'')+'>'+esc(t)+'</option>').join('')+'</select>':esc(m.type))+'</td>'+
+      '<td>'+(editable?'<input class="input" style="min-height:38px;" value="'+esc(m.serial)+'" oninput="ReportFlow.setMaterialField(\''+r.id+'\','+idx+',\'serial\',this.value)"/>':esc(m.serial))+'</td>'+
+      '<td>'+(editable?'<button class="btn btn-outline" style="min-height:38px;padding:0 10px;" onclick="ReportFlow.removeMaterial(\''+r.id+'\','+idx+')">'+ICON.trash.replace('<svg','<svg style="width:15px;height:15px;"')+'</button>':'')+'</td>'+
+    '</tr>'
+  ).join('');
+  return '<div class="card">'+
+    '<div class="hstack" style="justify-content:space-between;">'+
+      '<div class="section-title" style="margin:0;">NDT materials</div>'+
+      (editable ? '<button class="btn btn-outline" style="min-height:38px;padding:0 12px;font-size:13px;" onclick="ReportFlow.addMaterial(\''+r.id+'\')">'+ICON.plus.replace('<svg','<svg style="width:15px;height:15px;"')+' Add material</button>' : '')+
+    '</div>'+
+    (r.ndtMaterials.length ? '<div class="wrap-table" style="margin-top:12px;"><table class="ind"><thead><tr><th>Name</th><th>Type</th><th># Serial</th><th>Action</th></tr></thead><tbody>'+rows+'</tbody></table></div>'
+      : '<div class="muted" style="margin-top:10px;">No materials recorded yet — consumables and equipment used for this report go here.</div>')+
+  '</div>';
+}
+function procedureCardHtml(r){
+  return '<div class="card collapsible">'+
+    '<div class="head'+(r.sectionsOpen.procedure?'':' closed')+'" onclick="ReportFlow.toggleSection(\''+r.id+'\',\'procedure\')"><h3>Procedure &amp; acceptance criteria</h3>'+ICON.chevronDown+'</div>'+
+    (r.sectionsOpen.procedure ? '<div class="body">'+
+      '<div class="field" style="margin-bottom:8px;"><label>Procedure</label><div class="select-display">'+esc(r.procedure)+ICON.chevronDown+'</div></div>'+
+      '<div class="field"><label>Acceptance criteria</label><div class="select-display">'+esc(r.acceptance)+ICON.chevronDown+'</div></div>'+
+    '</div>' : '')+
+  '</div>';
+}
+function imperfectionChipsHtml(insp){
+  const counts = {};
+  insp.indications.forEach(i=>{ const key=i.code+' '+i.label; counts[key]=(counts[key]||0)+1; });
+  return Object.keys(counts).map(key=>'<span class="chip">'+esc(key)+(counts[key]>1?' ×'+counts[key]:'')+'</span>').join(' ');
+}
+function reportWeldRowHtml(r, weldId){
+  const {weld:w, part} = findWeld(weldId);
+  const insp = w.inspections.find(i=>i.method===r.method);
+  const editable = r.status==='draft';
+  const mine = insp.assignedTo===INSPECTOR.name;
+  const cert = inspectorCertFor(r.method);
+  let claimBanner = '';
+  if(!insp.assignedTo){
+    claimBanner = cert
+      ? '<div class="banner banner-info" style="margin-bottom:12px;"><span>Not assigned to you — you hold '+esc(cert)+'</span><button class="btn btn-primary" style="margin-left:auto;min-height:34px;padding:0 12px;" onclick="WeldRowActions.claim(\''+r.id+'\',\''+weldId+'\')">Claim</button></div>'
+      : '<div class="banner banner-warning" style="margin-bottom:12px;opacity:.85;"><span>Not assigned to you — '+esc(missingCredentialReason(r.method))+'</span></div>';
+  } else if(!mine){
+    claimBanner = '<div class="banner banner-info" style="margin-bottom:12px;"><span>Assigned to '+esc(insp.assignedTo)+'</span></div>';
+  }
+  const canRecord = editable && (insp.assignedTo ? mine : !!cert);
+  const photos = insp.photos||[];
+  const thumbs = photos.map((p,idx)=>
+    '<div class="thumb" style="background:linear-gradient(135deg,#6b6b6d,#54545a);">'+
+      (editable?'<button class="rm" onclick="event.stopPropagation();WeldRowActions.removePhoto(\''+r.id+'\',\''+weldId+'\','+idx+')">'+ICON.x+'</button>':'')+
+    '</div>'
+  ).join('') + (editable ? '<button class="thumb-add" onclick="WeldRowActions.addPhoto(\''+r.id+'\',\''+weldId+'\')">'+ICON.camera.replace('<svg','<svg style="width:18px;height:18px;"')+'<span>Add</span></button>' : '');
+  return '<div class="card" style="padding:16px;">'+
+    '<div class="hstack" style="justify-content:space-between;flex-wrap:wrap;gap:8px;">'+
+      '<div><div class="weld-id" style="font-size:17px;">'+weldId+'</div><div class="muted" style="font-size:13px;">'+w.type+' · '+w.process+' · '+w.position+'</div></div>'+
+      '<button class="btn btn-outline" style="min-height:40px;padding:0 14px;" onclick="App.nav(\'weld\',{weldId:\''+weldId+'\'})">Open weld '+ICON.chevron.replace('<svg','<svg style="width:14px;height:14px;"')+'</button>'+
+    '</div>'+
+    '<div class="divider"></div>'+
+    claimBanner+
+    '<div class="result-toggle">'+
+      '<button class="result-btn acceptable'+(insp.result==='Acceptable'?' on':'')+'" '+(canRecord?'':'disabled')+' onclick="WeldRowActions.setResult(\''+r.id+'\',\''+weldId+'\',\'Acceptable\')">Acceptable</button>'+
+      '<button class="result-btn failed'+(insp.result==='Failed'?' on':'')+'" '+(canRecord?'':'disabled')+' onclick="WeldRowActions.setResult(\''+r.id+'\',\''+weldId+'\',\'Failed\')">Failed</button>'+
+    '</div>'+
+    '<div class="hstack" style="justify-content:space-between;align-items:center;margin-top:12px;flex-wrap:wrap;gap:8px;">'+
+      '<div class="hstack" style="gap:6px;flex-wrap:wrap;">'+(imperfectionChipsHtml(insp)||'<span class="muted" style="font-size:13px;">No imperfections recorded</span>')+'</div>'+
+      (canRecord ? '<button class="btn btn-outline" style="min-height:38px;padding:0 12px;font-size:13px;" onclick="RejectFlow.startAddImperfection(\''+weldId+'\',\''+r.method+'\',\''+r.id+'\')">'+ICON.plus.replace('<svg','<svg style="width:15px;height:15px;"')+' Add imperfection</button>' : '')+
+    '</div>'+
+    '<div style="margin-top:12px;"><div class="label-sm" style="margin-bottom:8px;">Photos</div><div class="thumb-strip">'+thumbs+'</div></div>'+
+    '<div class="field" style="margin-top:12px;"><label>Remarks</label><textarea class="input" rows="2" '+(canRecord?'':'disabled')+' placeholder="Optional remarks…" oninput="WeldRowActions.setRemarks(\''+r.id+'\',\''+weldId+'\',this.value)">'+esc(insp.remarks||'')+'</textarea></div>'+
+  '</div>';
+}
+/* groups r.welds by part, preserving the order parts were first added — never interleaved (change 8) */
+function weldGroupsForReport(r){
+  const order = []; const map = {};
+  r.welds.forEach(weldId=>{
+    const found = findWeld(weldId);
+    if(!found) return;
+    const pid = found.part.id;
+    if(!map[pid]){ map[pid] = {part:found.part, weldIds:[]}; order.push(pid); }
+    map[pid].weldIds.push(weldId);
+  });
+  return order.map(pid=>map[pid]);
+}
+function reportWeldsCardHtml(r){
+  const groups = weldGroupsForReport(r);
+  const editable = r.status==='draft';
+  const body = groups.length ? groups.map(g=>
+    '<div style="margin-top:16px;">'+
+      '<div style="font-size:17px;font-weight:700;color:var(--text);">'+g.part.id+' — '+esc(g.part.name)+'</div>'+
+      '<div class="stack" style="gap:10px;margin-top:8px;">'+g.weldIds.map(id=>reportWeldRowHtml(r,id)).join('')+'</div>'+
+    '</div>'
+  ).join('') : '<div class="muted" style="margin-top:10px;">No welds yet — add some.</div>';
+  return '<div class="card">'+
+    '<div class="hstack" style="justify-content:space-between;">'+
+      '<div class="section-title" style="margin:0;">Welds on this report ('+r.welds.length+')</div>'+
+      (editable ? '<button class="btn btn-outline" style="min-height:38px;padding:0 12px;font-size:13px;" onclick="App.nav(\'reportAddWelds\',{reportId:\''+r.id+'\'})">'+ICON.plus.replace('<svg','<svg style="width:15px;height:15px;"')+' Add welds</button>' : '')+
+    '</div>'+
+    body+
+  '</div>';
+}
 
 SCREENS.report = {
   topbar(params){
     const r = DATA.reports[params.reportId];
-    return topbarWithReports({title:r.method+' report', sub:r.id+(r.status==='signed'?' · Signed':' · Draft'), variant:'assembly'});
+    return topbarBase({title:r.method+' report', sub:r.id+(r.status==='signed'?' · Signed':' · Draft'), variant:'assembly'});
   },
   render(params){
     const r = DATA.reports[params.reportId];
-    const info = METHOD_INFO[r.method];
     const editable = r.status==='draft';
-    const weldRows = r.welds.map(weldId=>{
-      const {weld:w, part} = findWeld(weldId);
-      const insp = w.inspections.find(i=>i.method===r.method);
-      const badge = insp.result==='Acceptable' ? '<span class="badge badge-success">Acceptable</span>'
-        : insp.result==='Failed' ? '<span class="badge badge-error">Failed</span>'
-        : '<span class="badge badge-muted">Awaiting result</span>';
-      const n = insp.indications.length;
-      return '<div class="list-row" onclick="App.nav(\'inspectionDetail\',{weldId:\''+weldId+'\',method:\''+r.method+'\'})">'+
-        '<div class="weld-id">'+weldId+'</div>'+
-        '<div class="row-meta"><div>'+part.id+' · '+part.name+'</div><div class="top">'+n+' imperfection'+(n===1?'':'s')+'</div></div>'+
-        badge+
-        '<span class="chevron">'+ICON.chevron+'</span>'+
-      '</div>';
-    }).join('');
     return '<div class="stack">'+
+      '<input class="report-title" '+(editable?'':'disabled')+' value="'+esc(r.title||'')+'" placeholder="Untitled report" '+
+        'oninput="ReportFlow.setTitle(\''+r.id+'\',this.value)" aria-label="Report title"/>'+
       (r.status==='signed' ? '<div class="banner banner-info">'+ICON.check.replace('<svg','<svg style="width:18px;height:18px;flex:0 0 auto;"')+'<span>Signed by '+esc(r.signedBy)+' · '+r.method+' Level '+r.signedLevel+' · '+esc(r.signedCert||'')+' · '+r.signedAt+'</span></div>' : '')+
-      '<div class="card"><div class="section-title">Report</div>'+
-        '<div class="grid2" style="gap:16px;">'+
-          formField('Report number', r.id, {required:true})+
-          '<div class="field"><label class="req">Date</label><div class="date-display"><span class="txt">'+formatDateDMY(r.date)+'</span><span class="cal">'+ICON.calendar+'</span></div></div>'+
-          formField('Type of test', r.method+' — '+info.name, {required:true})+
-          formField('Assembly', ASSEMBLY.id+' — '+ASSEMBLY.name, {required:true})+
-          formField('Inspector', ASSEMBLY.inspector.name, {})+
-          formField('Site', r.site, {})+
-        '</div>'+
-      '</div>'+
-      '<div class="card">'+
-        '<div class="field" style="margin-bottom:8px;"><label>Procedure</label><div class="select-display">'+esc(r.procedure)+ICON.chevronDown+'</div></div>'+
-        '<div class="field" style="margin-top:14px;"><label>Acceptance criteria</label><div class="select-display">'+esc(r.acceptance)+ICON.chevronDown+'</div></div>'+
-      '</div>'+
-      '<div class="card collapsible">'+
-        '<div class="head'+(r.sectionsOpen.conditions?'':' closed')+'" onclick="ReportFlow.toggleSection(\''+r.id+'\',\'conditions\')"><h3>Test conditions</h3>'+ICON.chevronDown+'</div>'+
-        (r.sectionsOpen.conditions ? '<div class="body">'+
-          '<div class="field" style="margin-bottom:14px;"><label>Surface condition</label>'+
-            '<div class="hstack" style="gap:8px;">'+
-              ['as-welded','ground','blasted'].map(v=>'<button class="check-btn'+(r.surfaceCondition===v?' pass on':'')+'" onclick="ReportFlow.setCondition(\''+r.id+'\',\''+v+'\')">'+v[0].toUpperCase()+v.slice(1).replace('-',' ')+'</button>').join('')+
-            '</div>'+
-          '</div>'+
-          '<div class="grid2" style="gap:14px;">'+
-            '<div class="field"><label>Surface temperature</label><div class="keypad-display" onclick="ReportFlow.openTemp(\''+r.id+'\')">'+(r.surfaceTemp==null?'Tap to enter':r.surfaceTemp+' °C')+'</div></div>'+
-            '<div class="field"><label>Dwell time</label><div class="keypad-display" onclick="ReportFlow.openDwell(\''+r.id+'\')">'+(r.dwellTime==null?'Tap to enter':r.dwellTime+' min')+'</div></div>'+
-            '<div class="field"><label>Penetrant batch no.</label><input class="input" placeholder="e.g. PN-2411-08" value="'+esc(r.penetrantBatch)+'" oninput="ReportFlow.setPenetrant(\''+r.id+'\',this.value)"/></div>'+
-            '<div class="field"><label>Developer batch no.</label><input class="input" placeholder="e.g. DV-2402-19" value="'+esc(r.developerBatch)+'" oninput="ReportFlow.setDeveloper(\''+r.id+'\',this.value)"/></div>'+
-          '</div>'+
-        '</div>' : '')+
-      '</div>'+
-      '<div class="card">'+
-        '<div class="hstack" style="justify-content:space-between;">'+
-          '<div class="section-title" style="margin:0;">Welds on this report ('+r.welds.length+')</div>'+
-          (editable ? '<button class="btn btn-outline" style="min-height:38px;padding:0 12px;font-size:13px;" onclick="App.nav(\'reportAddWelds\',{reportId:\''+r.id+'\'})">'+ICON.plus.replace('<svg','<svg style="width:15px;height:15px;"')+' Add welds</button>' : '')+
-        '</div>'+
-        '<div class="stack" style="gap:10px;margin-top:10px;">'+(weldRows||'<div class="muted">No welds yet — add some.</div>')+'</div>'+
-      '</div>'+
+      reportIdentityCardHtml(r)+
+      testTypeVariablesCardHtml(r)+
+      ndtMaterialsCardHtml(r)+
+      reportWeldsCardHtml(r)+
+      procedureCardHtml(r)+
       '<div class="card">'+
         '<div class="field"><label>Notes</label><textarea class="input" rows="3" placeholder="Optional notes for this report…" '+(editable?'':'disabled')+' oninput="ReportFlow.setNotes(\''+r.id+'\',this.value)">'+esc(r.notes)+'</textarea></div>'+
         '<div class="field" style="margin-top:14px;"><label>PDF file</label>'+
@@ -2176,30 +2456,44 @@ SCREENS.report = {
 };
 
 SCREENS.reportAddWelds = {
-  topbar(params){ const r=DATA.reports[params.reportId]; return topbarBase({title:'Add welds', sub:r.method+' · '+r.id, variant:'assembly'}); },
+  topbar(params){ const r=DATA.reports[params.reportId]; return topbarBase({title:'Add welds', sub:r.method+' · '+r.id+' · any part in this assembly', variant:'assembly'}); },
   render(params){
     if(!state.addWeldsSelection || state.addWeldsSelectionReport!==params.reportId){
       state.addWeldsSelection = new Set();
       state.addWeldsSelectionReport = params.reportId;
     }
     const r = DATA.reports[params.reportId];
-    const eligible = [];
+    // one long list spanning every part in the assembly, grouped under a part heading —
+    // a report is never limited to the part it started on (change 8)
+    const groups = []; const byPart = {};
     DATA.parts.forEach(part=>{
-      if(part.blocked) return;
+      if(part.blocked || part.assemblyId!==r.assemblyId) return;
       part.welds.forEach(w=>{
         const insp = w.inspections.find(i=>i.method===r.method);
-        if(insp && !insp.reportId) eligible.push({part, w});
+        if(!insp || insp.reportId) return;
+        if(!byPart[part.id]){ byPart[part.id] = {part, welds:[]}; groups.push(byPart[part.id]); }
+        byPart[part.id].welds.push(w);
       });
     });
-    const rows = eligible.map(({part,w})=>{
-      const checked = state.addWeldsSelection.has(w.id);
-      return '<div class="list-row" style="'+(checked?'border-color:var(--assembly-solid);background:rgba(165,40,80,.06);':'')+'" onclick="ReportFlow.toggleWeldSelect(\''+w.id+'\')">'+
-        '<div class="weld-id">'+w.id+'</div>'+
-        '<div class="row-meta"><div>'+part.id+' · '+part.name+'</div></div>'+
-        (checked ? '<span style="color:var(--assembly-solid);">'+ICON.check+'</span>' : '')+
+    const body = groups.map(g=>{
+      const allSelected = g.welds.every(w=>state.addWeldsSelection.has(w.id));
+      const rows = g.welds.map(w=>{
+        const checked = state.addWeldsSelection.has(w.id);
+        return '<div class="list-row" style="'+(checked?'border-color:var(--accent-text);background:rgba(234,179,8,.08);':'')+'" onclick="ReportFlow.toggleWeldSelect(\''+w.id+'\')">'+
+          '<div class="weld-id">'+w.id+'</div>'+
+          '<div class="row-meta"><div>'+w.type+' · '+w.process+' · '+w.position+'</div></div>'+
+          (checked ? '<span style="color:var(--accent-text);">'+ICON.check+'</span>' : '')+
+        '</div>';
+      }).join('');
+      return '<div style="margin-top:16px;">'+
+        '<div class="hstack" style="justify-content:space-between;">'+
+          '<div class="section-title" style="font-size:13px;margin:0;">'+g.part.id+' — '+esc(g.part.name)+'</div>'+
+          '<button class="link-btn" onclick="ReportFlow.toggleSelectAllEligible(\''+g.part.id+'\',\''+params.reportId+'\')">'+(allSelected?'Deselect all':'Select all')+'</button>'+
+        '</div>'+
+        '<div class="stack" style="gap:8px;margin-top:8px;">'+rows+'</div>'+
       '</div>';
     }).join('');
-    return '<div class="stack">'+(rows || '<div class="muted" style="padding:24px;text-align:center;">No eligible '+r.method+' welds to add — every '+r.method+' inspection is already on a report.</div>')+'</div>';
+    return '<div class="stack">'+(body || '<div class="muted" style="padding:24px;text-align:center;">No eligible '+r.method+' welds to add — every '+r.method+' inspection in this assembly is already on a report.</div>')+'</div>';
   },
   footer(params){
     const n = state.addWeldsSelection ? state.addWeldsSelection.size : 0;
@@ -2211,7 +2505,7 @@ SCREENS.reportAddWelds = {
 <script>
 /* ============================= FLEET / MACHINE ============================= */
 SCREENS.fleet = {
-  topbar(){ return topbarBase({title:'Machine fleet', sub:ASSEMBLY.site, variant:'fleet'}); },
+  topbar(){ return topbarBase({title:'Machine fleet', sub:ASSEMBLIES[state.currentAssemblyId].site, variant:'fleet'}); },
   render(){
     return '<div class="grid2">'+MACHINES.map(m=>{
       const dotColor = m.online ? 'var(--success)' : 'var(--text-muted)';
@@ -2269,9 +2563,10 @@ SCREENS.machineSessions = {
       return '<div class="card" style="text-align:center;padding:36px 18px;"><div class="muted">No weld sessions recorded for this machine in this demo.</div></div>';
     }
     const p = findPart(partId);
+    const asm = assemblyFor(p);
     const rows = p.welds.map((w,idx)=>{
       const s = w.session;
-      return '<tr><td>'+ASSEMBLY.welder.name+'</td><td>'+WPS.id+'</td><td>'+ASSEMBLY.id+'</td><td>'+partId+'</td><td>'+w.id+'</td><td>Pass '+(idx%2===0?1:2)+'</td><td>'+(4+idx)+':'+(10+idx*3)+'</td><td>'+s.current+'A / '+s.voltage+'V</td></tr>';
+      return '<tr><td>'+asm.welder.name+'</td><td>'+WPS.id+'</td><td>'+asm.id+'</td><td>'+partId+'</td><td>'+w.id+'</td><td>Pass '+(idx%2===0?1:2)+'</td><td>'+(4+idx)+':'+(10+idx*3)+'</td><td>'+s.current+'A / '+s.voltage+'V</td></tr>';
     }).join('');
     return '<div class="wrap-table"><table class="ind"><thead><tr><th>Operator</th><th>WPS</th><th>Assembly</th><th>Part</th><th>Weld</th><th>Pass</th><th>Arc time</th><th>Avg I/V</th></tr></thead><tbody>'+rows+'</tbody></table></div>';
   },
@@ -2330,7 +2625,7 @@ function wpsHeroHtml(){
     ['Base metal', WPS.material],
   ];
   return '<div class="card" style="padding:0;overflow:hidden;">'+
-    '<div style="background:linear-gradient(90deg,var(--assembly-1),var(--assembly-2));color:#fff;padding:24px 26px;">'+
+    '<div style="background:linear-gradient(90deg,var(--assembly-1),var(--assembly-2));color:var(--text-on-accent);padding:24px 26px;">'+
       '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:20px;text-align:center;">'+
         cols.map(([label,val])=>'<div><div style="font-size:17px;font-weight:700;">'+esc(val)+'</div>'+
           '<div style="font-size:12px;opacity:.85;font-style:italic;margin-top:4px;">'+label+'</div></div>').join('')+
@@ -2408,22 +2703,270 @@ SCREENS.wps = {
 
 /* ============================= QR SCAN ============================= */
 SCREENS.qrScan = {
-  topbar(){ return topbarBase({title:'Scan part QR', variant:'assembly'}); },
-  render(){
+  topbar(params){ return topbarBase({title: params.mode==='traceability' ? 'Confirm part' : 'Scan part QR', variant:'assembly'}); },
+  render(params){
+    const isTrace = params.mode==='traceability';
+    const copy = isTrace
+      ? 'Scan the part traveler to confirm you\'ve picked up the right part before you begin — a quick traceability check when several similar parts are in front of you.'
+      : 'Point the tablet camera at the QR code printed on the part traveler. Works whether or not the part is assigned to you.';
     return '<div class="stack" style="align-items:center;text-align:center;margin-top:10px;">'+
       '<div class="scan-frame">'+
         '<div class="corner c1"></div><div class="corner c2"></div><div class="corner c3"></div><div class="corner c4"></div>'+
         '<div class="scan-line"></div>'+
       '</div>'+
-      '<div class="muted" style="margin-top:16px;">Point the tablet camera at the QR code printed on the part traveler.</div>'+
-      '<button class="btn btn-primary btn-lg" style="margin-top:18px;" onclick="QrScan.simulate()">Simulate scan</button>'+
+      '<div class="muted" style="margin-top:16px;">'+copy+'</div>'+
+      '<button class="btn btn-primary btn-lg" style="margin-top:18px;" onclick="QrScan.simulate(\''+(params.mode||'selfDirected')+'\',\''+(params.assemblyId||'')+'\')">Simulate scan</button>'+
     '</div>';
   },
 };
 const QrScan = {
-  simulate(){
-    toast('Scanned P-01 — Base Frame');
-    setTimeout(()=>{ App.nav('part', {partId:'P-01'}); }, 250);
+  simulate(mode, assemblyId){
+    if(mode==='traceability'){
+      const asm = ASSEMBLIES[assemblyId];
+      const part = DATA.parts.find(p=>p.assemblyId===assemblyId && p.assigned && !p.blocked) || DATA.parts.find(p=>p.assemblyId===assemblyId);
+      toast('Confirmed — '+part.id+' · '+part.name+' matches '+asm.id);
+      // if engineering already prepared a report for this part, go straight there —
+      // scanning it shouldn't route through the "New report" flow
+      const prepared = !partSummary(part).complete ? findPreparedReportForPart(part) : null;
+      setTimeout(()=>{
+        if(prepared) ReportFlow.openReport(prepared.id);
+        else App.nav('part', {partId:part.id});
+      }, 250);
+    } else {
+      // the self-directed path lands on a real part that has no assignment at all
+      const part = findPart('P-07');
+      toast('Scanned '+part.id+' — '+part.name);
+      setTimeout(()=>{ App.nav('part', {partId:part.id}); }, 250);
+    }
+  },
+};
+
+/* ============================= ASSEMBLIES (change 10) ============================= */
+/* Every assembly, part and weld the inspector has permission to see — scoped by site, not
+   by assignment. Not just things assigned to them, not only things with inspections. */
+SCREENS.assemblies = {
+  topbar(){ return topbarBase({title:'Assemblies', sub:'Every assembly, part and weld at your sites', variant:'neutral'}); },
+  render(){
+    const f = state.assembliesFilter;
+    return '<div class="stack">'+
+      '<input class="search-input" placeholder="Search by assembly, part or weld…" value="'+esc(f.search||'')+'" oninput="AssembliesPage.setSearch(this.value)"/>'+
+      '<label class="hstack" style="gap:10px;cursor:pointer;"><input type="checkbox" class="weld-check" style="width:22px;height:22px;" '+(f.onlyWithInspections?'checked':'')+' onclick="AssembliesPage.toggleOnlyWithInspections()"/><span style="font-size:14px;font-weight:500;">Only welds with inspections</span></label>'+
+      '<div id="assembliesList"></div>'+
+    '</div>';
+  },
+  after(){ renderAssembliesList(); },
+};
+function weldMatchesAssembliesFilter(part, w, q){
+  if(!q) return true;
+  const asm = assemblyFor(part);
+  const hay = (asm.id+' '+asm.name+' '+part.id+' '+part.name+' '+w.id).toLowerCase();
+  return hay.indexOf(q)!==-1;
+}
+function assembliesWeldRowHtml(part, w){
+  const meta = w.type+' · '+w.process+' · '+w.position;
+  const chips = (w.inspections||[]).map(i=>{
+    const cls = i.result==='Acceptable'?'badge-success':i.result==='Failed'?'badge-error':'badge-muted';
+    return '<span class="badge '+cls+'">'+i.method+(i.result?' · '+i.result:'')+'</span>';
+  }).join(' ');
+  const hasInspections = w.inspections && w.inspections.length;
+  const createBtn = !hasInspections
+    ? (part.blocked
+        ? '<span class="muted" style="font-size:12px;">Weld not yet complete</span>'
+        : '<button class="btn btn-outline" style="min-height:38px;padding:0 12px;font-size:13px;" onclick="event.stopPropagation();AssembliesPage.createInspection(\''+w.id+'\')">Create inspection</button>')
+    : '';
+  return '<div class="list-row" onclick="App.nav(\'weld\',{weldId:\''+w.id+'\'})">'+
+    '<div class="weld-id">'+w.id+'</div>'+
+    '<div class="row-meta"><div>'+meta+'</div></div>'+
+    '<div class="hstack" style="gap:6px;flex-wrap:wrap;">'+(chips||'<span class="muted" style="font-size:13px;">No inspections</span>')+'</div>'+
+    createBtn+
+    '<span class="chevron">'+ICON.chevron+'</span>'+
+  '</div>';
+}
+function renderAssembliesList(){
+  const host = document.getElementById('assembliesList');
+  if(!host) return;
+  const f = state.assembliesFilter;
+  const q = (f.search||'').toLowerCase().trim();
+  const sections = Object.values(ASSEMBLIES).map(asm=>{
+    const parts = DATA.parts.filter(p=>p.assemblyId===asm.id);
+    const partSections = parts.map(part=>{
+      const welds = part.welds.filter(w=>{
+        if(f.onlyWithInspections && (!w.inspections || !w.inspections.length)) return false;
+        return weldMatchesAssembliesFilter(part, w, q);
+      });
+      if(!welds.length) return '';
+      return '<div style="margin-top:14px;">'+
+        '<div style="font-weight:600;font-size:15px;">'+part.id+' · '+esc(part.name)+(part.assigned?'':' <span class="badge badge-info" style="margin-left:6px;">Unassigned</span>')+(part.blocked?' <span class="badge badge-muted" style="margin-left:6px;">Blocked</span>':'')+'</div>'+
+        '<div class="stack" style="gap:8px;margin-top:8px;">'+welds.map(w=>assembliesWeldRowHtml(part,w)).join('')+'</div>'+
+      '</div>';
+    }).filter(Boolean).join('');
+    if(!partSections) return '';
+    return '<div class="card">'+
+      '<div class="section-title" style="margin-bottom:0;">'+esc(asm.name)+'</div>'+
+      '<div class="muted" style="font-size:13px;">'+asm.id+' · '+esc(asm.site)+'</div>'+
+      partSections+
+    '</div>';
+  }).filter(Boolean).join('');
+  host.innerHTML = '<div class="stack">'+(sections || '<div class="muted" style="padding:24px;text-align:center;">No matching assemblies, parts or welds.</div>')+'</div>';
+}
+const AssembliesPage = {
+  setSearch(v){ state.assembliesFilter.search = v; renderAssembliesList(); },
+  toggleOnlyWithInspections(){ state.assembliesFilter.onlyWithInspections = !state.assembliesFilter.onlyWithInspections; render(); },
+  createInspection(weldId){
+    state.pendingInspectionScope = {weldId};
+    Modal.open(testTypePickerHtml(Object.keys(METHOD_INFO), 'AssembliesPage.chooseMethod'));
+  },
+  chooseMethod(method){
+    const scope = state.pendingInspectionScope;
+    const {weld:w} = findWeld(scope.weldId);
+    w.inspections.push(makeInspection(method, INSPECTOR.name));
+    Modal.close();
+    queueOrToast(method+' inspection created on '+scope.weldId+' — ready to add to a report');
+    App.nav('weld', {weldId:scope.weldId});
+  },
+};
+
+/* ============================= NDT REPORTS (finished-report history) ============================= */
+function reportPartsInvolved(r){
+  const ids = r.welds.map(weldId=>{ const found = findWeld(weldId); return found ? found.part.id : null; }).filter(Boolean);
+  return Array.from(new Set(ids));
+}
+function reportMatchesHistoryFilter(r, f, q){
+  if(f.method!=='all' && r.method!==f.method) return false;
+  if(f.assemblyId!=='all' && r.assemblyId!==f.assemblyId) return false;
+  if(!q) return true;
+  const asm = ASSEMBLIES[r.assemblyId];
+  const partWords = reportPartsInvolved(r).map(id=>{ const p=findPart(id); return p ? p.id+' '+p.name : id; }).join(' ');
+  const hay = (r.id+' '+r.method+' '+asm.id+' '+asm.name+' '+partWords+' '+(r.signedBy||'')).toLowerCase();
+  return hay.indexOf(q)!==-1;
+}
+function reportsHistoryRowHtml(r){
+  const asm = ASSEMBLIES[r.assemblyId];
+  const partIds = reportPartsInvolved(r);
+  const isDraft = r.status==='draft';
+  const rightCol = isDraft
+    ? '<span class="badge '+(r.preparedByEngineering?'badge-info':'badge-warning')+'">'+(r.preparedByEngineering?'Prepared':'Draft')+'</span>'
+    : esc(r.signedBy||'')+'<br>'+esc(r.signedAt||'');
+  return '<div class="list-row" onclick="App.nav(\'report\',{reportId:\''+r.id+'\'})">'+
+    '<div class="weld-id" style="min-width:112px;">'+r.id+'</div>'+
+    '<div class="row-meta">'+
+      '<div>'+r.method+' — '+esc(asm.name)+'</div>'+
+      '<div class="top">'+(partIds.join(', ')||'—')+' · '+r.welds.length+' weld'+(r.welds.length===1?'':'s')+'</div>'+
+    '</div>'+
+    '<div class="muted" style="font-size:13px;text-align:right;white-space:nowrap;">'+rightCol+'</div>'+
+    '<span class="chevron">'+ICON.chevron+'</span>'+
+  '</div>';
+}
+function renderReportsHistoryList(){
+  const host = document.getElementById('reportsHistoryList');
+  if(!host) return;
+  const f = state.reportsFilter;
+  const q = (f.search||'').toLowerCase().trim();
+  const wantDrafts = f.tab==='drafts';
+  const scoped = Object.values(DATA.reports).filter(r=> wantDrafts ? r.status==='draft' : r.status==='signed');
+  const rows = scoped
+    .filter(r=>reportMatchesHistoryFilter(r, f, q))
+    .sort((a,b)=> wantDrafts ? b.id.localeCompare(a.id) : (b.signedAt||'').localeCompare(a.signedAt||''))
+    .map(reportsHistoryRowHtml).join('');
+  const empty = scoped.length===0
+    ? (wantDrafts ? 'No draft reports yet — start one from a part’s weld list.' : 'No signed reports yet — finished reports will show up here once signed.')
+    : 'No reports match your search or filters.';
+  host.innerHTML = '<div class="stack" style="gap:10px;">'+(rows || '<div class="muted" style="padding:24px;text-align:center;">'+empty+'</div>')+'</div>';
+}
+SCREENS.reports = {
+  topbar(){ return topbarBase({title:'NDT reports', sub:'Draft and signed reports', variant:'neutral'}); },
+  render(){
+    const f = state.reportsFilter;
+    const draftCount = draftReportsList().length;
+    const signedCount = Object.values(DATA.reports).filter(r=>r.status==='signed').length;
+    const tabChips = '<button class="filter-chip'+(f.tab==='drafts'?' on':'')+'" onclick="ReportsHistory.setTab(\'drafts\')">Drafts ('+draftCount+')</button>'+
+      '<button class="filter-chip'+(f.tab==='signed'?' on':'')+'" onclick="ReportsHistory.setTab(\'signed\')">Signed ('+signedCount+')</button>';
+    const methodChips = ['all'].concat(Object.keys(METHOD_INFO)).map(m=>
+      '<button class="filter-chip'+(f.method===m?' on':'')+'" onclick="ReportsHistory.setMethod(\''+m+'\')">'+(m==='all'?'All methods':m)+'</button>'
+    ).join('');
+    const asmChips = ['all'].concat(Object.keys(ASSEMBLIES)).map(id=>
+      '<button class="filter-chip'+(f.assemblyId===id?' on':'')+'" onclick="ReportsHistory.setAssembly(\''+id+'\')">'+(id==='all'?'All assemblies':esc(ASSEMBLIES[id].name))+'</button>'
+    ).join('');
+    return '<div class="stack">'+
+      '<div class="filter-row">'+tabChips+'</div>'+
+      '<input class="search-input" placeholder="Search by report number, part, assembly or inspector…" value="'+esc(f.search)+'" oninput="ReportsHistory.setSearch(this.value)"/>'+
+      '<div class="filter-row">'+methodChips+'</div>'+
+      '<div class="filter-row">'+asmChips+'</div>'+
+      '<div id="reportsHistoryList"></div>'+
+    '</div>';
+  },
+  after(){ renderReportsHistoryList(); },
+};
+const ReportsHistory = {
+  setTab(t){ state.reportsFilter.tab = t; render(); },
+  setSearch(v){ state.reportsFilter.search = v; renderReportsHistoryList(); },
+  setMethod(m){ state.reportsFilter.method = m; render(); },
+  setAssembly(id){ state.reportsFilter.assemblyId = id; render(); },
+};
+</script>
+<script>
+/* ============================= FACILITATOR (change 12) ============================= */
+/* Demo shortcuts for whoever is running the prototype — reset, offline toggle, jump a weld
+   to repair, and seed a draft report spanning two parts so the grouped multi-part welds
+   card (change 8) is on screen without ten setup taps. Never shown to a real inspector. */
+const Facilitator = {
+  open(){
+    Modal.open(
+      '<h2>Facilitator controls</h2>'+
+      '<p class="muted" style="margin-bottom:14px;">Demo-only shortcuts — not part of the product.</p>'+
+      '<div class="stack" style="gap:8px;">'+
+        '<button class="btn btn-outline btn-block" onclick="Facilitator.toggleOffline()">'+(state.offline?'Go online':'Go offline')+'</button>'+
+        '<button class="btn btn-outline btn-block" onclick="Facilitator.jumpToRepair()">Jump a weld to repair</button>'+
+        '<button class="btn btn-outline btn-block" onclick="Facilitator.seedMultiPartDraft()">Seed a multi-part VT draft report</button>'+
+        '<button class="btn btn-danger btn-block" onclick="Facilitator.reset()">Reset demo data</button>'+
+      '</div>'+
+      '<div class="modal-actions"><button class="btn btn-outline" onclick="Modal.close()">Close</button></div>'
+    );
+  },
+  toggleOffline(){
+    state.offline = !state.offline;
+    const nowOffline = state.offline;
+    Modal.close();
+    toast(nowOffline ? 'Now offline — actions will queue' : 'Back online — queued actions will sync');
+    render();
+  },
+  jumpToRepair(){
+    const found = findWeld('W-005');
+    if(found){
+      const {weld:w} = found;
+      const insp = w.inspections[0];
+      if(insp){
+        insp.result = 'Failed';
+        if(!w.ncr) w.ncr = 'NCR-2026-'+String(DATA.ncrCounter++).padStart(4,'0');
+        w.status = 'Not acceptable';
+        w.disposition = 'awaiting QA';
+        w.stage = 'Welding';
+      }
+    }
+    Modal.close();
+    queueOrToast('W-005 jumped to repair — NCR raised');
+    App.nav('weld', {weldId:'W-005'});
+  },
+  seedMultiPartDraft(){
+    const p01 = findPart('P-01'), p03 = findPart('P-03');
+    const r = ReportFlow.createNewSilent('VT', 'ASM-2026-0412', null);
+    r.title = 'VT — Base Frame + Pump Skid Bracket';
+    [p01.welds[0].id, p01.welds[1].id, p03.welds[0].id].forEach(id=>{
+      const f = findWeld(id);
+      if(f && f.weld.inspections.some(i=>i.method==='VT' && !i.reportId)) addWeldToReport(r.id, id);
+    });
+    Modal.close();
+    queueOrToast('Seeded multi-part draft '+r.id);
+    App.nav('report', {reportId:r.id});
+  },
+  reset(){
+    DATA = seedData();
+    state.stack = [{screen:'home', params:{}}];
+    state.partSelection = null;
+    state.addWeldsSelection = null;
+    Modal.close();
+    toast('Demo data reset');
+    App.home();
   },
 };
 </script>
