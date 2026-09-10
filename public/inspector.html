@@ -882,11 +882,32 @@ function seedData(){
     if(insp && !insp.reportId){ insp.reportId = skidDraft1.id; skidDraft1.welds.push(w.id); }
   });
 
+  // Base Frame: W-002 and W-003's VT already accepted on a signed report — gives the part's
+  // weld list a real mix of statuses (ready to inspect / on a draft / already inspected) the
+  // moment you open P-01, instead of only being reachable after working through the demo.
+  const vtSigned1 = makeReportBase('NDT-2026-0385', 'VT', 'ASM-2026-0412', null, '2026-09-04');
+  vtSigned1.title = 'VT — Base Frame batch 0';
+  vtSigned1.status = 'signed';
+  vtSigned1.signedBy = INSPECTOR.name;
+  vtSigned1.signedLevel = INSPECTOR.level;
+  vtSigned1.signedCert = inspectorCertFor('VT');
+  vtSigned1.signedAt = '2026-09-04T14:20:00';
+  [p01.welds[1], p01.welds[2]].forEach(w=>{
+    const insp = w.inspections.find(i=>i.method==='VT');
+    insp.reportId = vtSigned1.id;
+    insp.result = 'Acceptable';
+    vtSigned1.welds.push(w.id);
+  });
+  // W-003 has only a VT inspection, so accepting it completes the weld; W-002 also needs
+  // its still-unclaimed PT, so it stays Pending overall — same rule WeldRowActions.setResult uses.
+  p01.welds[2].status = 'Acceptable';
+  p01.welds[2].stage = 'Finishing';
+
   return {
     parts,
     ncrCounter:88,
     reportCounter:417,
-    reports:{ [p04Report.id]:p04Report, [p05Report.id]:p05Report, [skidDraft1.id]:skidDraft1 },
+    reports:{ [p04Report.id]:p04Report, [p05Report.id]:p05Report, [skidDraft1.id]:skidDraft1, [vtSigned1.id]:vtSigned1 },
   };
 }
 
@@ -1158,16 +1179,70 @@ const Keypad = {
 };
 
 /* ============================= SHARED HELPERS ============================= */
-function weldStatusBadge(w){
-  const map = {
-    'Pending': ['badge-muted','Ready for inspection'],
-    'Acceptable': ['badge-success','Acceptable'],
-    'Not acceptable': ['badge-error','Not acceptable'],
-    'Repair — re-test': ['badge-warning','Repair — re-test'],
-  };
-  const [cls,label] = map[w.status] || ['badge-muted', w.status];
-  return '<span class="badge '+cls+'">'+label+'</span>';
+/* ---- per-inspection status on a weld: a weld can carry several test methods, each at a
+   different point — ready / on a draft report / already inspected / not yet claimed — so a
+   single weld-level badge can't say what's actually happening. One chip per inspection instead. */
+function inspectionStatusChip(insp, weldId){
+  if(insp.result){
+    const cls = insp.result==='Acceptable' ? 'badge-success' : 'badge-error';
+    const jump = insp.reportId ? ' style="cursor:pointer;" onclick="event.stopPropagation();ReportFlow.openReport(\''+insp.reportId+'\')"' : '';
+    return '<span class="badge '+cls+'"'+jump+'>'+insp.method+' · Already inspected'+(insp.reportId?' ('+insp.reportId+')':'')+'</span>';
+  }
+  if(insp.reportId){
+    return '<span class="badge badge-info" style="cursor:pointer;" onclick="event.stopPropagation();ReportFlow.openReport(\''+insp.reportId+'\')">'+insp.method+' · On report '+insp.reportId+'</span>';
+  }
+  if(insp.assignedTo===INSPECTOR.name){
+    return '<span class="badge badge-muted">'+insp.method+' · Ready to inspect</span>';
+  }
+  if(insp.assignedTo){
+    return '<span class="badge badge-muted">'+insp.method+' · Assigned to '+esc(insp.assignedTo)+'</span>';
+  }
+  const cert = inspectorCertFor(insp.method);
+  return cert
+    ? '<span class="badge badge-warning" style="cursor:pointer;" onclick="event.stopPropagation();ClaimFlow.open(\''+weldId+'\',\''+insp.method+'\')">'+insp.method+' · Not assigned — you can claim it</span>'
+    : '<span class="badge badge-muted" style="opacity:.7;">'+insp.method+' · '+esc(missingCredentialReason(insp.method))+'</span>';
 }
+function weldInspectionStatusHtml(w){
+  if(!w.inspections || !w.inspections.length) return '<span class="badge badge-muted">No inspection assigned</span>';
+  return w.inspections.map(i=>inspectionStatusChip(i, w.id)).join(' ');
+}
+/* ---- claiming an unassigned inspection straight from its pill — no report exists yet at
+   this point, so this assigns the inspector directly on the weld, same effect as the
+   in-report Claim banner (change 6) but reachable before a report is ever opened. ---- */
+const ClaimFlow = {
+  open(weldId, method){
+    const found = findWeld(weldId);
+    if(!found) return;
+    const {weld:w, part} = found;
+    const insp = w.inspections.find(i=>i.method===method);
+    if(!insp) return;
+    const cert = inspectorCertFor(method);
+    const info = METHOD_INFO[method];
+    Modal.open(
+      '<h2>Claim '+method+' inspection</h2>'+
+      '<div class="card" style="background:var(--surface-sunken);">'+
+        '<div class="grid2">'+
+          '<div><div class="label-sm">Weld</div><div class="val-lg">'+weldId+'</div></div>'+
+          '<div><div class="label-sm">Part</div><div class="val-lg">'+part.id+' · '+esc(part.name)+'</div></div>'+
+          '<div><div class="label-sm">Test method</div><div class="val-lg">'+method+' — '+esc(info.name)+'</div></div>'+
+          '<div><div class="label-sm">Your credential</div><div class="val-lg">'+esc(cert)+'</div></div>'+
+        '</div>'+
+      '</div>'+
+      '<p class="muted" style="font-size:13px;margin-top:12px;">Not currently assigned to anyone. Claiming it makes it yours to inspect — you can start it right away.</p>'+
+      '<div class="modal-actions"><button class="btn btn-outline" onclick="Modal.close()">Cancel</button><button class="btn btn-primary" onclick="ClaimFlow.confirm(\''+weldId+'\',\''+method+'\')">Claim '+method+'</button></div>'
+    );
+  },
+  confirm(weldId, method){
+    const found = findWeld(weldId);
+    if(!found) return;
+    const insp = found.weld.inspections.find(i=>i.method===method);
+    if(!insp || !inspectorCertFor(method)) return;
+    insp.assignedTo = INSPECTOR.name;
+    Modal.close();
+    queueOrToast(method+' on '+weldId+' claimed');
+    render();
+  },
+};
 function weldProgressBadge(w){
   const map = {'Welded':['badge-muted','Welded'],'Welding':['badge-warning','Welding'],'Waiting':['badge-muted','Waiting']};
   const [cls,label] = map[w.weldStatus] || ['badge-muted', w.weldStatus];
@@ -1332,8 +1407,11 @@ function partInspectionProgress(part){
 }
 function partCardHtml(part, sum){
   const disabledNote = part.blocked ? '<div class="muted" style="font-size:13px;margin-top:8px;">Open to view — inspection unavailable until welding is complete.</div>' : '';
+  // always land on the weld list first (see change: inspector reviews welds before opening a
+  // report, even when engineering already prepared one) — a report chip below is still a
+  // one-tap shortcut for resuming it directly.
   const reports = part.blocked ? [] : reportsForPart(part);
-  const onclick = (reports.length===1) ? "ReportFlow.openReport('"+reports[0].id+"')" : "App.nav('part',{partId:'"+part.id+"'})";
+  const onclick = "App.nav('part',{partId:'"+part.id+"'})";
   const statusBadge = part.blocked ? '<span class="badge badge-muted">Blocked</span>'
     : sum.complete ? '<span class="badge badge-success">Done</span>'
     : '<span class="badge badge-info">In progress</span>';
@@ -1392,7 +1470,7 @@ SCREENS.assembly = {
       parts.map(part=>{
         const sum = partSummary(part);
         const prepared = (!part.blocked && !sum.complete) ? findPreparedReportForPart(part) : null;
-        const onclick = prepared ? "ReportFlow.openReport('"+prepared.id+"')" : "App.nav('part',{partId:'"+part.id+"'})";
+        const onclick = "App.nav('part',{partId:'"+part.id+"'})";
         return '<div class="card tap" onclick="'+onclick+'">'+
           '<div class="hstack" style="justify-content:space-between;">'+
             '<div style="font-weight:700;font-size:16px;">'+part.id+' · '+part.name+(part.assigned?'':' <span class="badge badge-info" style="margin-left:6px;">Unassigned</span>')+(prepared?' <span class="badge badge-purple" style="margin-left:6px;">On '+prepared.id+'</span>':'')+'</div>'+
@@ -1405,7 +1483,12 @@ SCREENS.assembly = {
   },
 };
 
-/* ---- weld selection on the part screen: feeds "Add to report" directly, no +VT/+PT pills ---- */
+/* ---- weld selection on the part screen: feeds "Add to report" directly, no +VT/+PT pills ----
+   a weld with every inspection already on a report has nothing left to add — it can only be
+   removed from that report, which is done on the report screen, not here. */
+function weldSelectable(w){
+  return (w.inspections||[]).some(i=>!i.reportId);
+}
 function getPartSelection(partId){
   if(!state.partSelection || state.partSelection.partId!==partId){
     state.partSelection = {partId, ids:new Set()};
@@ -1414,6 +1497,8 @@ function getPartSelection(partId){
 }
 const PartActions = {
   toggleWeldSelect(partId, weldId){
+    const found = findWeld(weldId);
+    if(!found || !weldSelectable(found.weld)) return;
     const ids = getPartSelection(partId);
     if(ids.has(weldId)) ids.delete(weldId); else ids.add(weldId);
     render();
@@ -1421,8 +1506,10 @@ const PartActions = {
   toggleSelectAll(partId){
     const part = findPart(partId);
     const ids = getPartSelection(partId);
-    if(ids.size===part.welds.length) ids.clear();
-    else part.welds.forEach(w=>ids.add(w.id));
+    const selectable = part.welds.filter(weldSelectable);
+    const allSelected = selectable.length>0 && selectable.every(w=>ids.has(w.id));
+    if(allSelected) selectable.forEach(w=>ids.delete(w.id));
+    else selectable.forEach(w=>ids.add(w.id));
     render();
   },
   addToReportFromPart(partId){
@@ -1434,8 +1521,10 @@ const PartActions = {
 };
 function partSelectionBarHtml(part){
   const ids = getPartSelection(part.id);
-  const total = part.welds.length;
-  const allSelected = total>0 && ids.size===total;
+  const selectable = part.welds.filter(weldSelectable);
+  const total = selectable.length;
+  if(!total) return '';
+  const allSelected = selectable.every(w=>ids.has(w.id));
   return '<div class="hstack" style="justify-content:space-between;padding:2px 4px 8px;">'+
     '<label class="hstack" style="gap:10px;cursor:pointer;">'+
       '<input type="checkbox" class="weld-check" '+(allSelected?'checked':'')+' onclick="PartActions.toggleSelectAll(\''+part.id+'\')"/>'+
@@ -1444,16 +1533,50 @@ function partSelectionBarHtml(part){
     '<span class="muted" style="font-size:13px;">'+ids.size+' of '+total+' selected</span>'+
   '</div>';
 }
+/* ---- jump buttons to any report already carrying a weld from this part — colored by status,
+   the same green/blue used on the inspection pills below, so "done" vs "still needs you" reads
+   at a glance: signed is a green checkmark, draft is a blue arrow saying keep going. ---- */
+function reportWeldCountForPart(r, part){
+  return part.welds.filter(w=>(w.inspections||[]).some(i=>i.reportId===r.id)).length;
+}
+function partReportJumpHtml(part){
+  const reports = part.blocked ? [] : reportsForPart(part);
+  if(!reports.length) return '';
+  // drafts still needing work lead — signed reports are done and just there for reference
+  const sorted = reports.slice().sort((a,b)=>(a.status==='signed')-(b.status==='signed'));
+  return '<div style="margin-bottom:16px;">'+
+    '<div class="label-sm" style="margin-bottom:8px;">Continue a report</div>'+
+    '<div class="hstack" style="gap:8px;flex-wrap:wrap;">'+
+      sorted.map(r=>{
+        const n = reportWeldCountForPart(r, part);
+        const done = r.status==='signed';
+        const style = done
+          ? 'background:var(--badge-success-bg);border:1.5px solid var(--success);color:var(--badge-success-fg);'
+          : 'background:rgba(2,132,199,.12);border:1.5px solid var(--info);color:var(--info);';
+        const leadIcon = done ? ICON.check.replace('<svg','<svg style="width:16px;height:16px;flex:0 0 auto;"') : '';
+        const trailIcon = done ? '' : ICON.chevron.replace('<svg','<svg style="width:16px;height:16px;flex:0 0 auto;"');
+        return '<button class="btn" style="'+style+'min-height:44px;padding:0 14px;font-weight:500;" onclick="ReportFlow.openReport(\''+r.id+'\')">'+
+          leadIcon+
+          '<span style="font-weight:700;">'+r.method+'</span>'+
+          '<span style="font-size:13px;opacity:.85;">'+r.id+' · '+n+' weld'+(n===1?'':'s')+' here · '+(done?'Signed':'Continue')+'</span>'+
+          trailIcon+
+        '</button>';
+      }).join('')+
+    '</div>'+
+  '</div>';
+}
 function partWeldRowHtml(part, w){
   const meta = w.type+' · '+w.process+' · '+w.position;
-  const reqText = (w.inspections||[]).map(i=>i.method).join(' + ') || '—';
-  const badge = part.blocked ? weldProgressBadge(w) : weldStatusBadge(w);
-  const selected = !part.blocked && getPartSelection(part.id).has(w.id);
+  const canSelect = !part.blocked && weldSelectable(w);
+  const selected = canSelect && getPartSelection(part.id).has(w.id);
+  const statusHtml = part.blocked ? weldProgressBadge(w) : weldInspectionStatusHtml(w);
+  const checkboxHtml = part.blocked ? ''
+    : canSelect ? '<input type="checkbox" class="weld-check" '+(selected?'checked':'')+' onclick="event.stopPropagation();PartActions.toggleWeldSelect(\''+part.id+'\',\''+w.id+'\')" aria-label="Select '+w.id+'"/>'
+    : '<span class="weld-check" style="visibility:hidden;" aria-hidden="true"></span>';
   return '<div class="list-row" onclick="App.nav(\'weld\',{weldId:\''+w.id+'\'})">'+
-    (part.blocked ? '' : '<input type="checkbox" class="weld-check" '+(selected?'checked':'')+' onclick="event.stopPropagation();PartActions.toggleWeldSelect(\''+part.id+'\',\''+w.id+'\')" aria-label="Select '+w.id+'"/>')+
+    checkboxHtml+
     '<div class="weld-id">'+w.id+'</div>'+
-    '<div class="row-meta"><div>'+meta+'</div><div class="top"><span class="chip" style="pointer-events:none;">Requires '+esc(reqText)+'</span></div></div>'+
-    '<div class="stack" style="gap:6px;align-items:flex-end;">'+badge+'</div>'+
+    '<div class="row-meta"><div>'+meta+'</div><div class="top hstack" style="gap:6px;flex-wrap:wrap;">'+statusHtml+'</div></div>'+
     '<span class="chevron">'+ICON.chevron+'</span>'+
   '</div>';
 }
@@ -1469,13 +1592,15 @@ SCREENS.part = {
     let banner = '';
     if(part.blocked) banner = '<div class="banner banner-info">'+ICON.alert.replace('<svg','<svg style="width:18px;height:18px;flex:0 0 auto;"')+'<span>'+esc(sum.text)+'. You can open a weld to look, but inspection is unavailable until welding is complete.</span></div>';
     else if(sum.repair) banner = '<div class="banner banner-warning">'+ICON.alert.replace('<svg','<svg style="width:18px;height:18px;flex:0 0 auto;"')+'<span>'+sum.repair+' weld returned for repair — this part cannot complete until it is re-tested and accepted.</span></div>';
+    const reportJump = partReportJumpHtml(part);
     const selectionBar = part.blocked ? '' : partSelectionBarHtml(part);
     const rows = part.welds.map(w=>partWeldRowHtml(part, w)).join('');
-    return banner + selectionBar + '<div class="stack" style="gap:10px;">'+rows+'</div>';
+    return banner + reportJump + selectionBar + '<div class="stack" style="gap:10px;">'+rows+'</div>';
   },
   footer(params){
     const part = findPart(params.partId);
     if(part.blocked) return '<span class="hint">Inspection unavailable — weld not yet complete.</span>';
+    if(!part.welds.some(weldSelectable)) return '<span class="hint">Every weld here is already on a report — open one above to continue.</span>';
     const n = getPartSelection(part.id).size;
     return '<span class="hint">'+(n===0?'Select welds to add to a report.':n+' weld'+(n===1?'':'s')+' selected')+'</span>'+
       '<button class="btn btn-primary btn-lg" '+(n===0?'disabled':'')+' onclick="PartActions.addToReportFromPart(\''+part.id+'\')">Add to report</button>';
@@ -1668,11 +1793,7 @@ SCREENS.weld = {
     }
 
     const info = weldDetailInfo(part, w);
-    const inspBadges = (w.inspections||[]).map(insp=>{
-      const cls = insp.result==='Acceptable' ? 'badge-success' : insp.result==='Failed' ? 'badge-error' : 'badge-muted';
-      const label = insp.method+' · '+(insp.result || (insp.assignedTo ? 'pending' : 'unassigned'));
-      return '<span class="badge '+cls+'">'+label+'</span>';
-    }).join(' ');
+    const inspBadges = weldInspectionStatusHtml(w);
 
     return '<div class="stack">'+
       '<div class="muted" style="font-size:13px;">'+esc(weldPositionText(part, w.id))+'</div>'+
@@ -2272,6 +2393,19 @@ const WeldRowActions = {
     const insp = w.inspections.find(i=>i.method===r.method);
     insp.remarks = v;
   },
+  /* the only way a weld comes off a report — un-assigns this inspection so it's selectable
+     from the part's weld list again. Draft reports only; a signed report is locked. */
+  removeFromReport(reportId, weldId){
+    const r = DATA.reports[reportId];
+    if(!r || r.status!=='draft') return;
+    const {weld:w} = findWeld(weldId);
+    const insp = w.inspections.find(i=>i.method===r.method);
+    if(insp){ insp.reportId = null; insp.result = null; }
+    const idx = r.welds.indexOf(weldId);
+    if(idx!==-1) r.welds.splice(idx,1);
+    queueOrToast(weldId+' removed from '+r.id);
+    render();
+  },
 };
 
 /* ---- report screen building blocks (change 4: collapsed identity up top, change 2/3
@@ -2373,7 +2507,10 @@ function reportWeldRowHtml(r, weldId){
   return '<div class="card" style="padding:16px;">'+
     '<div class="hstack" style="justify-content:space-between;flex-wrap:wrap;gap:8px;">'+
       '<div><div class="weld-id" style="font-size:17px;">'+weldId+'</div><div class="muted" style="font-size:13px;">'+w.type+' · '+w.process+' · '+w.position+'</div></div>'+
-      '<button class="btn btn-outline" style="min-height:40px;padding:0 14px;" onclick="App.nav(\'weld\',{weldId:\''+weldId+'\'})">Open weld '+ICON.chevron.replace('<svg','<svg style="width:14px;height:14px;"')+'</button>'+
+      '<div class="hstack" style="gap:8px;">'+
+        (editable ? '<button class="btn btn-outline" style="min-height:40px;padding:0 12px;color:var(--error);border-color:var(--error);" onclick="WeldRowActions.removeFromReport(\''+r.id+'\',\''+weldId+'\')">Remove</button>' : '')+
+        '<button class="btn btn-outline" style="min-height:40px;padding:0 14px;" onclick="App.nav(\'weld\',{weldId:\''+weldId+'\'})">Open weld '+ICON.chevron.replace('<svg','<svg style="width:14px;height:14px;"')+'</button>'+
+      '</div>'+
     '</div>'+
     '<div class="divider"></div>'+
     claimBanner+
